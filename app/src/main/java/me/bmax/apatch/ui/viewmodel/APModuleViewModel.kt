@@ -76,9 +76,6 @@ class APModuleViewModel : ViewModel() {
     fun fetchModuleList() {
         viewModelScope.launch(Dispatchers.IO) {
             isRefreshing = true
-
-            delay(350)
-
             val oldModuleList = modules
 
             val start = SystemClock.elapsedRealtime()
