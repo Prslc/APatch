@@ -77,6 +77,7 @@ import me.bmax.apatch.util.DownloadListener
 import me.bmax.apatch.util.download
 import me.bmax.apatch.util.hasMagisk
 import me.bmax.apatch.util.toggleModule
+import me.bmax.apatch.util.undoUninstallModule
 import me.bmax.apatch.util.uninstallModule
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
@@ -99,6 +100,7 @@ import top.yukonga.miuix.kmp.icon.extended.Delete
 import top.yukonga.miuix.kmp.icon.extended.Download
 import top.yukonga.miuix.kmp.icon.extended.HorizontalSplit
 import top.yukonga.miuix.kmp.icon.extended.Play
+import top.yukonga.miuix.kmp.icon.extended.Undo
 import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 
@@ -317,7 +319,9 @@ private fun ModuleList(
     val failedEnable = stringResource(R.string.apm_failed_to_enable)
     val failedDisable = stringResource(R.string.apm_failed_to_disable)
     val failedUninstall = stringResource(R.string.apm_uninstall_failed)
+    val failedUndoUninstall = stringResource(R.string.apm_module_undo_uninstall_failed)
     val successUninstall = stringResource(R.string.apm_uninstall_success)
+    val successUndoUninstall = stringResource(R.string.apm_uninstall_success)
     val rebootToApply = stringResource(id = R.string.apm_reboot_to_apply)
     val moduleStr = stringResource(id = R.string.apm)
     val uninstall = stringResource(id = R.string.apm_remove)
@@ -420,6 +424,25 @@ private fun ModuleList(
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 
+    suspend fun onUndoModuleUninstall(module: APModuleViewModel.ModuleInfo) {
+        val success = loadingDialog.withLoading {
+            withContext(Dispatchers.IO) {
+                undoUninstallModule(module.id)
+            }
+        }
+
+        if (success) viewModel.fetchModuleList()
+
+        val message = if (success) {
+            successUndoUninstall.format(module.name)
+        } else {
+            failedUndoUninstall.format(module.name)
+        }
+
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+    }
+
+
     PullToRefresh(
         modifier = modifier,
         isRefreshing = viewModel.isRefreshing,
@@ -478,6 +501,9 @@ private fun ModuleList(
                             onUninstall = {
                                 scope.launch { onModuleUninstall(module) }
                             },
+                            onUndoUninstall = {
+                                scope.launch { onUndoModuleUninstall(module) }
+                            },
                             onCheckChanged = {
                                 scope.launch {
                                     val success = loadingDialog.withLoading {
@@ -526,6 +552,7 @@ private fun ModuleItem(
     module: APModuleViewModel.ModuleInfo,
     updateUrl: String,
     onUninstall: (APModuleViewModel.ModuleInfo) -> Unit,
+    onUndoUninstall: (APModuleViewModel.ModuleInfo) -> Unit,
     onCheckChanged: (Boolean) -> Unit,
     onUpdate: (APModuleViewModel.ModuleInfo) -> Unit,
     onClick: (APModuleViewModel.ModuleInfo) -> Unit,
@@ -695,6 +722,12 @@ private fun ModuleItem(
                             textRes = R.string.apm_remove,
                             iconRes = MiuixIcons.Delete,
                             onClick = { onUninstall(module) }
+                        )
+                    } else {
+                        IconTextButton(
+                            textRes = R.string.apm_undo,
+                            iconRes = MiuixIcons.Undo,
+                            onClick = { onUndoUninstall(module) }
                         )
                     }
                 }
