@@ -406,15 +406,14 @@ private fun ModuleList(
             return
         }
 
-        val success = loadingDialog.withLoading {
-            withContext(Dispatchers.IO) {
-                uninstallModule(module.id)
-            }
+        val success = withContext(Dispatchers.IO) {
+            uninstallModule(module.id)
         }
 
         if (success) {
             viewModel.fetchModuleList()
         }
+
         val message = if (success) {
             successUninstall.format(module.name)
         } else {
@@ -425,13 +424,13 @@ private fun ModuleList(
     }
 
     suspend fun onUndoModuleUninstall(module: APModuleViewModel.ModuleInfo) {
-        val success = loadingDialog.withLoading {
-            withContext(Dispatchers.IO) {
+        val success = withContext(Dispatchers.IO) {
                 undoUninstallModule(module.id)
-            }
         }
 
-        if (success) viewModel.fetchModuleList()
+        if (success) {
+            viewModel.fetchModuleList()
+        }
 
         val message = if (success) {
             successUndoUninstall.format(module.name)
