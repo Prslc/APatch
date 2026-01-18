@@ -7,7 +7,6 @@ import java.net.URI
 
 plugins {
     alias(libs.plugins.agp.app)
-    alias(libs.plugins.kotlin)
     alias(libs.plugins.kotlin.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.lsplugin.apksign)
@@ -55,11 +54,6 @@ android {
     }
 
     dependenciesInfo.includeInApk = false
-
-    // https://stackoverflow.com/a/77745844
-    tasks.withType<PackageAndroidArtifact> {
-        doFirst { appMetadata.asFile.orNull?.writeText("") }
-    }
 
     buildFeatures {
         aidl = true
@@ -112,7 +106,12 @@ android {
         generateLocaleConfig = true
     }
 
-    sourceSets["main"].jniLibs.srcDir("libs")
+    sourceSets["main"].jniLibs.directories.add("libs")
+}
+
+// https://stackoverflow.com/a/77745844
+tasks.withType<PackageAndroidArtifact> {
+    doFirst { appMetadata.asFile.orNull?.writeText("") }
 }
 
 java {
