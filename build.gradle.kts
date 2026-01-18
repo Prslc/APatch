@@ -59,7 +59,7 @@ subprojects {
             buildToolsVersion = androidBuildToolsVersion
             ndkVersion = androidCompileNdkVersion
 
-            defaultConfig {
+            defaultConfig.apply {
                 minSdk = androidMinSdkVersion
                 if (this is ApplicationDefaultConfig) {
                     targetSdk = androidTargetSdkVersion
@@ -68,7 +68,7 @@ subprojects {
                 }
             }
 
-            lint {
+            lint.apply {
                 abortOnError = true
                 checkReleaseBuilds = false
             }

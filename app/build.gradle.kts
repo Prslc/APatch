@@ -30,9 +30,6 @@ apksign {
 
 android {
     namespace = "me.bmax.apatch"
-        defaultConfig {
-        applicationId = "me.bmax.apatch"
-    }
 
     buildTypes {
         debug {
@@ -72,9 +69,21 @@ android {
     }
 
     defaultConfig {
+        applicationId = "me.bmax.apatch"
         buildConfigField("String", "buildKPV", "\"$kernelPatchVersion\"")
-
         base.archivesName = "APatch_${managerVersionCode}_${managerVersionName}_${branchName}"
+
+        externalNativeBuild {
+            cmake {
+                arguments += listOf(
+                    "-DANDROID_STL=none",
+                    "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+                )
+                abiFilters("arm64-v8a")
+                cppFlags += "-std=c++2b"
+                cFlags += "-std=c2x"
+            }
+        }
     }
 
     compileOptions {
@@ -104,14 +113,6 @@ android {
     }
 
     sourceSets["main"].jniLibs.srcDir("libs")
-
-    applicationVariants.all {
-        kotlin.sourceSets {
-            getByName(name) {
-                kotlin.srcDir("build/generated/ksp/$name/kotlin")
-            }
-        }
-    }
 }
 
 java {
@@ -211,9 +212,9 @@ tasks.register<Exec>("cargoBuild") {
     val useWSL = isWSLAvailable()
 
     if (useWSL) {
-    val apdPath = System.getenv("APATCH_APD_PATH")
-        ?: error("Please set APATCH_APD_PATH environment variable pointing to the apd folder")
-        
+        val apdPath = System.getenv("APATCH_APD_PATH")
+            ?: error("Please set APATCH_APD_PATH environment variable pointing to the apd folder")
+
         println("Using WSL for Rust build")
         executable("wsl")
         args("bash", "-lc", "cd $apdPath && cargo ndk -t arm64-v8a build --release")
@@ -310,14 +311,4 @@ dependencies {
     implementation(libs.ini4j)
 
     compileOnly(libs.cxx)
-}
-
-cmaker {
-    default {
-        arguments += "-DANDROID_STL=none"
-        arguments += "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
-        abiFilters("arm64-v8a")
-        cppFlags += "-std=c++2b"
-        cFlags += "-std=c2x"
-    }
 }
