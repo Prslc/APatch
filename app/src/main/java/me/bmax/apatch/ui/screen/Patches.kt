@@ -395,11 +395,7 @@ private fun BottomButtons(
                             .height(52.dp),
                         colors = ButtonDefaults.textButtonColorsPrimary(),
                         onClick = {
-                            if (canUnpatch) {
-                                viewModel.doUnpatch()
-                            } else {
-                                viewModel.doPatch(mode)
-                            }
+                            viewModel.doAction(mode)
                         }
                     )
                 }
