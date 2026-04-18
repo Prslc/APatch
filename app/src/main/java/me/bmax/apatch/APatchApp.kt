@@ -268,6 +268,7 @@ class APApplication : Application(), Thread.UncaughtExceptionHandler {
         // TODO: 1. make me root by kernel
         // TODO: 2. remove all usage of superkey
         sharedPreferences = getSharedPreferences(SP_NAME, MODE_PRIVATE)
+        superKey = "su"
 
         okhttpClient =
             OkHttpClient.Builder().cache(Cache(File(cacheDir, "okhttp"), 10 * 1024 * 1024))
