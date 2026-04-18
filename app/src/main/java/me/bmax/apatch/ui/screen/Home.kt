@@ -160,7 +160,6 @@ fun HomeScreen(
                         onVerifySuperKey = { key -> viewModel.verifySuperKey(key) },
                         onApmClick = {
                             val index = availablePages.indexOf(BottomBarDestination.AModule)
-                            // 4. 改用 navigator 统一接口
                             if (index != -1) navigator.switchToTab(index)
                         },
                         onKpmClick = {
