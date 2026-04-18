@@ -65,8 +65,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.LocaleManagerCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
-import com.ramcosta.composedestinations.generated.destinations.AboutScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -78,8 +76,9 @@ import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.ArrowItem
 import me.bmax.apatch.ui.component.SwitchItem
 import me.bmax.apatch.ui.component.rememberLoadingDialog
-import me.bmax.apatch.ui.theme.getAppBarColor
+import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.theme.blurEffect
+import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.util.APatchKeyHelper
 import me.bmax.apatch.util.calculateCacheSize
@@ -107,10 +106,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun SettingScreen(
-    bottomPadding: Dp,
-    navigator: DestinationsNavigator
-) {
+fun SettingScreen(bottomPadding: Dp) {
+    val navigator = LocalNavigator.current
     val scrollBehavior = MiuixScrollBehavior()
     val backdrop = rememberBlurBackdrop(true)
 
@@ -457,7 +454,7 @@ fun SettingScreen(
                         icon = Icons.Filled.Info,
                         contentDescription = stringResource(R.string.home_more_menu_about),
                         onClick = {
-                            navigator.navigate(AboutScreenDestination)
+                            navigator.navigateToAbout()
                         }
                     )
                 }

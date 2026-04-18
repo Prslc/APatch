@@ -50,19 +50,18 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ramcosta.composedestinations.generated.destinations.ModeSelectScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.Natives
 import me.bmax.apatch.R
 import me.bmax.apatch.apApp
-import me.bmax.apatch.ui.LocalHandlePageChange
 import me.bmax.apatch.ui.component.AStatusCard
 import me.bmax.apatch.ui.component.BottomBarDestination
 import me.bmax.apatch.ui.component.DropdownItem
 import me.bmax.apatch.ui.component.KStatusCard
 import me.bmax.apatch.ui.component.WarningCard
 import me.bmax.apatch.ui.component.rememberConfirmDialog
+import me.bmax.apatch.ui.navigation.LocalNavigator
+import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
@@ -97,10 +96,9 @@ import top.yukonga.miuix.kmp.window.WindowListPopup
 @Composable
 fun HomeScreen(
     bottomPadding: Dp,
-    navigator: DestinationsNavigator,
     viewModel: HomeViewModel = viewModel()
 ) {
-    val handlePageChange = LocalHandlePageChange.current
+    val navigator = LocalNavigator.current
 
     val scrollBehavior = MiuixScrollBehavior()
     val backdrop = rememberBlurBackdrop(true)
@@ -129,8 +127,8 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopBar(
-                navigator = navigator,
                 backdrop = backdrop,
+                navigator = navigator,
                 kpState = kpState,
                 scrollBehavior = scrollBehavior
             )
@@ -157,17 +155,17 @@ fun HomeScreen(
                     KStatusCard(
                         kpState = kpState,
                         apState = apState,
-                        navigator = navigator,
                         apmCount = apmCount,
                         kpmCount = kpmCount,
                         onVerifySuperKey = { key -> viewModel.verifySuperKey(key) },
                         onApmClick = {
                             val index = availablePages.indexOf(BottomBarDestination.AModule)
-                            if (index != -1) handlePageChange(index)
+                            // 4. 改用 navigator 统一接口
+                            if (index != -1) navigator.switchToTab(index)
                         },
                         onKpmClick = {
                             val index = availablePages.indexOf(BottomBarDestination.KModule)
-                            if (index != -1) handlePageChange(index)
+                            if (index != -1) navigator.switchToTab(index)
                         }
                     )
                     if (kpState != APApplication.State.UNKNOWN_STATE && apState != APApplication.State.ANDROIDPATCH_INSTALLED) {
@@ -290,8 +288,8 @@ fun AuthSuperKey(
 
 @Composable
 private fun TopBar(
-    navigator: DestinationsNavigator,
     backdrop: LayerBackdrop?,
+    navigator: Navigator,
     kpState: APApplication.State,
     scrollBehavior: ScrollBehavior
 ) {
@@ -311,7 +309,7 @@ private fun TopBar(
         title = stringResource(R.string.app_name),
         actions = {
             IconButton(onClick = dropUnlessResumed {
-                navigator.navigate(ModeSelectScreenDestination())
+                navigator.navigateToModeSelect()
             }) {
                 Icon(
                     imageVector = Icons.Filled.InstallMobile,
@@ -499,7 +497,8 @@ fun UpdateCard(viewModel: HomeViewModel) {
             enter = fadeIn() + expandVertically(),
             exit = shrinkVertically() + fadeOut()
         ) {
-            val updateDialog = rememberConfirmDialog(onConfirm = { uriHandler.openUri(info.downloadUrl) })
+            val updateDialog =
+                rememberConfirmDialog(onConfirm = { uriHandler.openUri(info.downloadUrl) })
 
             WarningCard(
                 message = stringResource(id = R.string.home_new_apatch_found).format(info.versionCode),

@@ -28,11 +28,10 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.dropUnlessResumed
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.KeyEventBlocker
 import me.bmax.apatch.ui.theme.getAppBarColor
@@ -56,12 +55,12 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@Serializable
 enum class MODULE_TYPE {
     KPM, APM
 }
 
 @Composable
-@Destination<RootGraph>
 fun InstallScreen(uri: Uri, type: MODULE_TYPE) {
     var text by remember { mutableStateOf("") }
     var tempText: String

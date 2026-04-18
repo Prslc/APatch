@@ -4,17 +4,16 @@ kotlin = "2.3.20"
 ksp = "2.3.6"
 compose-bom = "2026.03.01"
 lifecycle = "2.10.0"
-compose-destination = "2.3.0"
 libsu = "6.0.0"
 miuix = "0.9.0"
 navigation-compose = "2.9.7"
 
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 lsplugin-apksign = { id = "org.lsposed.lsplugin.apksign", version = "1.4" }
 lsplugin-resopt = { id = "org.lsposed.lsplugin.resopt", version = "1.6" }
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version = "1.13.0" }
@@ -51,9 +50,6 @@ io-coil-kt-coil-compose = { group = "io.coil-kt", name = "coil-compose", version
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.10.2" }
 
 me-zhanghai-android-appiconloader-coil = { group = "me.zhanghai.android.appiconloader", name = "appiconloader-coil", version = "1.5.0" }
-
-compose-destinations-core = { group = "io.github.raamcosta.compose-destinations", name = "core", version.ref = "compose-destination" }
-compose-destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "compose-destination" }
 
 markdown = { group = "io.noties.markwon", name = "core", version = "4.6.2" }
 

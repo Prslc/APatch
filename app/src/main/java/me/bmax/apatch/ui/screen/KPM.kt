@@ -44,9 +44,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ramcosta.composedestinations.generated.destinations.InstallScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.PatchesDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -58,6 +55,7 @@ import me.bmax.apatch.ui.component.IconTextButton
 import me.bmax.apatch.ui.component.LoadingIndicator
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.component.rememberLoadingDialog
+import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
@@ -99,10 +97,8 @@ private const val TAG = "KernelPatchModule"
 private lateinit var targetKPMToControl: KPModel.KPMInfo
 
 @Composable
-fun KPModuleScreen(
-    bottomPadding: Dp,
-    navigator: DestinationsNavigator
-) {
+fun KPModuleScreen(bottomPadding: Dp) {
+    val navigator = LocalNavigator.current
     val backdrop = rememberBlurBackdrop(true)
 
     val state by APApplication.apStateLiveData.observeAsState(APApplication.State.UNKNOWN_STATE)
@@ -164,7 +160,7 @@ fun KPModuleScreen(
                     val data = it.data ?: return@rememberLauncherForActivityResult
                     val uri = data.data ?: return@rememberLauncherForActivityResult
                     Log.i(TAG, "select zip result: $uri")
-                    navigator.navigate(InstallScreenDestination(uri, MODULE_TYPE.KPM))
+                    navigator.navigateToInstall(uri, MODULE_TYPE.KPM)
                 }
 
                 val selectKpmLauncher = rememberLauncherForActivityResult(
@@ -217,10 +213,9 @@ fun KPModuleScreen(
                                     index = index,
                                     onSelectedIndexChange = {
                                         when (label) {
-                                            moduleEmbed -> navigator.navigate(
-                                                PatchesDestination(PatchesViewModel.PatchMode.PATCH_AND_INSTALL)
+                                            moduleEmbed -> navigator.navigateToPatches(
+                                                PatchesViewModel.PatchMode.PATCH_AND_INSTALL
                                             )
-
                                             moduleInstall -> {
 //                                            val intent = Intent(Intent.ACTION_GET_CONTENT)
 //                                            intent.type = "application/zip"

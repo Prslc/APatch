@@ -19,14 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.generated.destinations.PatchesDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.rememberConfirmDialog
-import me.bmax.apatch.ui.theme.getAppBarColor
+import me.bmax.apatch.ui.navigation.LocalNavigator
+import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.theme.blurEffect
+import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.viewmodel.PatchesViewModel
 import me.bmax.apatch.util.isABDevice
@@ -46,11 +44,9 @@ import top.yukonga.miuix.kmp.preference.CheckboxPreference
 
 var selectedBootImage: Uri? = null
 
-@Destination<RootGraph>
 @Composable
-fun ModeSelectScreen(
-    navigator: DestinationsNavigator
-) {
+fun ModeSelectScreen() {
+    val navigator = LocalNavigator.current
     val backdrop = rememberBlurBackdrop(true)
 
     Scaffold(
@@ -75,7 +71,7 @@ fun ModeSelectScreen(
 }
 
 @Composable
-private fun SelectInstallMethod(navigator: DestinationsNavigator) {
+private fun SelectInstallMethod(navigator: Navigator) {
     val rootAvailable = rootAvailable()
     val isAbDevice = isABDevice()
 
@@ -101,14 +97,14 @@ private fun SelectInstallMethod(navigator: DestinationsNavigator) {
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.data?.let { uri ->
                 selectedBootImage = uri
-                navigator.navigate(PatchesDestination(PatchesViewModel.PatchMode.PATCH_ONLY))
+                navigator.navigateToPatches(PatchesViewModel.PatchMode.PATCH_ONLY)
             }
         }
     }
 
     val confirmDialog = rememberConfirmDialog(
         onConfirm = {
-            navigator.navigate(PatchesDestination(PatchesViewModel.PatchMode.INSTALL_TO_NEXT_SLOT))
+            navigator.navigateToPatches(PatchesViewModel.PatchMode.INSTALL_TO_NEXT_SLOT)
         },
         onDismiss = null
     )
@@ -153,7 +149,7 @@ private fun SelectInstallMethod(navigator: DestinationsNavigator) {
                     }
 
                     is InstallMethod.DirectInstall -> {
-                        navigator.navigate(PatchesDestination(PatchesViewModel.PatchMode.PATCH_AND_INSTALL))
+                        navigator.navigateToPatches(PatchesViewModel.PatchMode.PATCH_AND_INSTALL)
                     }
 
                     is InstallMethod.DirectInstallToInactiveSlot -> {

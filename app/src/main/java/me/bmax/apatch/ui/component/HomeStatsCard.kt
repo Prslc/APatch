@@ -35,11 +35,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ramcosta.composedestinations.generated.destinations.ModeSelectScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.PatchesDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
+import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.screen.AuthFailedTipDialog
 import me.bmax.apatch.ui.screen.AuthSuperKey
 import me.bmax.apatch.ui.theme.isInDarkTheme
@@ -227,13 +225,13 @@ fun APApplication.State.toAPatchCardState(managerVersion: Pair<String, Long>): A
 fun KStatusCard(
     kpState: APApplication.State,
     apState: APApplication.State,
-    navigator: DestinationsNavigator,
     onVerifySuperKey: (String) -> Boolean,
     apmCount: Int,
     kpmCount: Int,
     onApmClick: () -> Unit,
     onKpmClick: () -> Unit
 ) {
+    val navigator = LocalNavigator.current
     val cardState = remember(kpState, apState) {
         kpState.toKPatchCardState(apState, managerVersion)
     }
@@ -242,7 +240,7 @@ fun KStatusCard(
     val showAuthKeyDialog = remember { mutableStateOf(false) }
     val showUninstallDialog = remember { mutableStateOf(false) }
 
-    UninstallDialog(showUninstallDialog, navigator)
+    UninstallDialog(showUninstallDialog)
     AuthFailedTipDialog(showAuthFailedTipDialog)
     AuthSuperKey(
         showDialog = showAuthKeyDialog,
@@ -255,9 +253,9 @@ fun KStatusCard(
             KPatchAction.AUTH_KEY -> showAuthKeyDialog.value = true
             KPatchAction.UPDATE -> {
                 if (Version.installedKPVUInt() < 0x900u) {
-                    navigator.navigate(PatchesDestination(PatchesViewModel.PatchMode.PATCH_ONLY))
+                    navigator.navigateToPatches(PatchesViewModel.PatchMode.PATCH_ONLY)
                 } else {
-                    navigator.navigate(ModeSelectScreenDestination())
+                    navigator.navigateToModeSelect()
                 }
             }
 
@@ -268,13 +266,13 @@ fun KStatusCard(
                 ) {
                     showUninstallDialog.value = true
                 } else {
-                    navigator.navigate(PatchesDestination(PatchesViewModel.PatchMode.UNPATCH))
+                    navigator.navigateToPatches(PatchesViewModel.PatchMode.UNPATCH)
                 }
             }
 
             else -> {
                 if (kpState != APApplication.State.KERNELPATCH_INSTALLED) {
-                    navigator.navigate(ModeSelectScreenDestination())
+                    navigator.navigateToModeSelect()
                 }
             }
         }

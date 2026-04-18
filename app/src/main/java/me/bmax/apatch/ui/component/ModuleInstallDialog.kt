@@ -1,5 +1,6 @@
 package me.bmax.apatch.ui.component
 
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,7 +21,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,18 +28,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
-import com.ramcosta.composedestinations.generated.destinations.InstallScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.bmax.apatch.R
-import me.bmax.apatch.ui.screen.MODULE_TYPE
-import me.bmax.apatch.ui.viewmodel.APModuleViewModel
 import me.bmax.apatch.util.InstallPreview
 import me.bmax.apatch.util.ModuleParser
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
@@ -50,56 +46,37 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
 import top.yukonga.miuix.kmp.window.WindowDialog
 
 @Composable
-fun ModuleInstallHandler(
-    uri: Uri?,
-    viewModel: APModuleViewModel,
-    navigator: DestinationsNavigator,
-    onReset: () -> Unit
+fun ModuleInstallDialog(
+    uri: Uri,
+    onDismiss: () -> Unit,
+    onConfirm: (Uri) -> Unit
 ) {
-    val apmTitle = stringResource(R.string.apm)
     val context = LocalContext.current
     val loadingDialog = rememberLoadingDialog()
 
-    val showDialog = remember { mutableStateOf(false) }
     var previewData by remember { mutableStateOf<InstallPreview?>(null) }
     var moduleIcon by remember { mutableStateOf<android.graphics.Bitmap?>(null) }
-    var handledUriString by rememberSaveable { mutableStateOf<String?>(null) }
-    val handledUri = handledUriString?.toUri()
 
     LaunchedEffect(uri) {
-        val currentUri = uri ?: return@LaunchedEffect
-        if (currentUri == handledUri) {
-            onReset()
-            return@LaunchedEffect
-        }
-
-        viewModel.fetchModuleList()
         val preview = loadingDialog.withLoading {
             withContext(Dispatchers.IO) {
-                ModuleParser.getModuleInstallPreview(context, currentUri)
+                ModuleParser.getModuleInstallPreview(context, uri)
             }
         }
 
         moduleIcon = withContext(Dispatchers.Default) {
             preview.icon?.let { bytes ->
-                android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
             }
         }
-
         previewData = preview
-        showDialog.value = true
     }
 
-    if (showDialog.value && previewData != null) {
-        val data = previewData!!
-
+    previewData?.let { data ->
         WindowDialog(
-            show = showDialog.value,
-            title = apmTitle,
-            onDismissRequest = {
-                showDialog.value = false
-                onReset()
-            }
+            show = true,
+            title = stringResource(R.string.apm),
+            onDismissRequest = onDismiss
         ) {
             Column(
                 modifier = Modifier
@@ -107,7 +84,6 @@ fun ModuleInstallHandler(
                     .padding(horizontal = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 // Module icon
                 Box(
                     modifier = Modifier
@@ -124,15 +100,15 @@ fun ModuleInstallHandler(
                         )
                     } else {
                         Image(
-                            painter = androidx.compose.ui.res.painterResource(id = R.drawable.ic_launcher_foreground),
+                            painter = painterResource(id = R.drawable.ic_launcher_foreground),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize()
                         )
                     }
                 }
+
                 Spacer(Modifier.height(16.dp))
 
-                // Module name
                 Text(
                     text = data.name,
                     style = MiuixTheme.textStyles.title4,
@@ -141,7 +117,6 @@ fun ModuleInstallHandler(
                     textAlign = TextAlign.Center
                 )
 
-                // Module id
                 Text(
                     text = data.id,
                     style = MiuixTheme.textStyles.body1,
@@ -151,19 +126,26 @@ fun ModuleInstallHandler(
 
                 Spacer(Modifier.height(24.dp))
 
-                // more info
                 Column(
                     modifier = Modifier.padding(12.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    InfoItem(label = stringResource(R.string.module_info_author), value = data.author)
-                    InfoItem(label = stringResource(R.string.module_info_version), value = data.version)
-                    InfoItem(label = stringResource(R.string.module_info_version_code), value = data.versionCode.toString())
+                    InfoItem(
+                        label = stringResource(R.string.module_info_author),
+                        value = data.author
+                    )
+                    InfoItem(
+                        label = stringResource(R.string.module_info_version),
+                        value = data.version
+                    )
+                    InfoItem(
+                        label = stringResource(R.string.module_info_version_code),
+                        value = data.versionCode.toString()
+                    )
                 }
 
                 Spacer(Modifier.height(16.dp))
 
-                // Module description
                 Text(
                     text = data.description,
                     style = MiuixTheme.textStyles.body2,
@@ -173,7 +155,6 @@ fun ModuleInstallHandler(
                         .fillMaxWidth(),
                 )
 
-                // error msg
                 data.errorMessage?.let { error ->
                     Spacer(Modifier.height(8.dp))
                     Text(
@@ -184,7 +165,6 @@ fun ModuleInstallHandler(
                             .fillMaxWidth(),
                     )
                 }
-
                 Spacer(Modifier.height(28.dp))
             }
 
@@ -195,7 +175,7 @@ fun ModuleInstallHandler(
             ) {
                 TextButton(
                     text = stringResource(android.R.string.cancel),
-                    onClick = { showDialog.value = false; onReset() },
+                    onClick = onDismiss,
                     modifier = Modifier.weight(1f)
                 )
 
@@ -203,10 +183,7 @@ fun ModuleInstallHandler(
 
                 TextButton(
                     text = stringResource(R.string.apm_install),
-                    onClick = {
-                        showDialog.value = false
-                        uri?.let { navigator.navigate(InstallScreenDestination(it, MODULE_TYPE.APM)) }
-                    },
+                    onClick = { onConfirm(uri) },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.textButtonColorsPrimary()
                 )

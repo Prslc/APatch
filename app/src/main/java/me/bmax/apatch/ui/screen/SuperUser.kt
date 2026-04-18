@@ -116,7 +116,7 @@ fun SuperUserScreen(bottomPadding: Dp) {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
-                            .then(backdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier)
+                            .then(backdrop.let { Modifier.layerBackdrop(it) })
                             .overScrollVertical()
                             .nestedScroll(scrollBehavior.nestedScrollConnection),
                         contentPadding = PaddingValues(

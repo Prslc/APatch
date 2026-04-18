@@ -17,10 +17,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import com.ramcosta.composedestinations.generated.destinations.PatchesDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
+import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.viewmodel.PatchesViewModel
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
@@ -31,10 +30,8 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.window.WindowDialog
 
 @Composable
-fun UninstallDialog(
-    showDialog: MutableState<Boolean>,
-    navigator: DestinationsNavigator,
-) {
+fun UninstallDialog(showDialog: MutableState<Boolean>) {
+    val navigator = LocalNavigator.current
     val runAction = { type: UninstallType ->
         showDialog.value = false
 
@@ -42,13 +39,16 @@ fun UninstallDialog(
             UninstallType.TEMPORARY -> {
                 APApplication.uninstallApatch()
             }
+
             UninstallType.RESTORE_STOCK_IMAGE -> {
-                navigator.navigate(PatchesDestination(PatchesViewModel.PatchMode.UNPATCH))
+                navigator.navigateToPatches(PatchesViewModel.PatchMode.UNPATCH)
             }
+
             UninstallType.PERMANENT -> {
                 APApplication.uninstallApatch()
-                navigator.navigate(PatchesDestination(PatchesViewModel.PatchMode.UNPATCH))
+                navigator.navigateToPatches(PatchesViewModel.PatchMode.UNPATCH)
             }
+
             else -> {}
         }
     }

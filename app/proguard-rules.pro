@@ -23,6 +23,9 @@
     public static void throw*(...);
 }
 
+# serialization
+-keep @kotlinx.serialization.Serializable class * { *; }
+
 -repackageclasses
 -allowaccessmodification
 -overloadaggressively

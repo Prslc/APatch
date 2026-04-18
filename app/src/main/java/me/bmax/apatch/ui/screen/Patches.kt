@@ -58,9 +58,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
@@ -68,8 +65,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.LoadingIndicator
-import me.bmax.apatch.ui.theme.getAppBarColor
+import me.bmax.apatch.ui.navigation.LocalNavigator
+import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.theme.blurEffect
+import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.viewmodel.KPModel
 import me.bmax.apatch.ui.viewmodel.PatchesViewModel
@@ -100,12 +99,9 @@ import top.yukonga.miuix.kmp.window.WindowDialog
 
 private const val TAG = "Patches"
 
-@Destination<RootGraph>
 @Composable
-fun Patches(
-    mode: PatchesViewModel.PatchMode,
-    navigator: DestinationsNavigator
-) {
+fun Patches(mode: PatchesViewModel.PatchMode) {
+    val navigator = LocalNavigator.current
     val scrollBehavior = MiuixScrollBehavior()
     val viewModel = viewModel<PatchesViewModel>()
     val context = LocalContext.current
@@ -302,7 +298,7 @@ fun Patches(
 private fun BottomButtons(
     viewModel: PatchesViewModel,
     mode: PatchesViewModel.PatchMode,
-    navigator: DestinationsNavigator,
+    navigator: Navigator,
     selectFileLauncher: ActivityResultLauncher<Intent>,
 ) {
     val scope = rememberCoroutineScope()

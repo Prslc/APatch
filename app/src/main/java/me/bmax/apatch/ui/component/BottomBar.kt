@@ -21,22 +21,22 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
-import me.bmax.apatch.ui.LocalHandlePageChange
 import me.bmax.apatch.ui.LocalSelectedPage
-import me.bmax.apatch.ui.theme.getAppBarColor
+import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.theme.blurEffect
+import me.bmax.apatch.ui.theme.getAppBarColor
 import top.yukonga.miuix.kmp.basic.NavigationBar
 import top.yukonga.miuix.kmp.basic.NavigationBarItem
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
 
 @Composable
 fun BottomBar(backdrop: LayerBackdrop) {
+    val navigator = LocalNavigator.current
+    val selectedPage = LocalSelectedPage.current
+
     val apState by APApplication.apStateLiveData.observeAsState(APApplication.State.UNKNOWN_STATE)
     val kPatchReady = apState != APApplication.State.UNKNOWN_STATE
     val aPatchReady = apState == APApplication.State.ANDROIDPATCH_INSTALLED
-
-    val selectedPage = LocalSelectedPage.current
-    val handlePageChange = LocalHandlePageChange.current
 
     val availablePages = remember(kPatchReady, aPatchReady) {
         BottomBarDestination.entries.filter { d ->
@@ -53,9 +53,7 @@ fun BottomBar(backdrop: LayerBackdrop) {
 
             NavigationBarItem(
                 selected = isSelected,
-                onClick = {
-                    handlePageChange(index)
-                },
+                onClick = { navigator.switchToTab(index) },
                 icon = if (isSelected) destination.iconSelected else destination.iconNotSelected,
                 label = stringResource(destination.label)
             )

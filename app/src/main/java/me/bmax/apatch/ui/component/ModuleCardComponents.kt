@@ -64,7 +64,8 @@ fun IconTextButton(
 
 @Composable
 fun ModuleStateIndicator(
-    icon: ImageVector, color: Color = MiuixTheme.colorScheme.outline
+    icon: ImageVector,
+    color: Color = colorScheme.outline
 ) {
     Image(
         modifier = Modifier.requiredSize(150.dp),

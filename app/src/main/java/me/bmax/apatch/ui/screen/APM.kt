@@ -71,9 +71,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ramcosta.composedestinations.generated.destinations.ExecuteAPMActionScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.InstallScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.topjohnwu.superuser.io.SuFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -89,8 +86,10 @@ import me.bmax.apatch.ui.component.ModuleStateIndicator
 import me.bmax.apatch.ui.component.WarningCard
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.component.rememberLoadingDialog
-import me.bmax.apatch.ui.theme.getAppBarColor
+import me.bmax.apatch.ui.navigation.LocalNavigator
+import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.theme.blurEffect
+import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.viewmodel.APModuleViewModel
 import me.bmax.apatch.util.DownloadListener
@@ -140,10 +139,8 @@ import top.yukonga.miuix.kmp.utils.overScrollVertical
 import top.yukonga.miuix.kmp.window.WindowDialog
 
 @Composable
-fun APModuleScreen(
-    bottomPadding: Dp,
-    navigator: DestinationsNavigator
-) {
+fun APModuleScreen(bottomPadding: Dp) {
+    val navigator = LocalNavigator.current
     val context = LocalContext.current
     val snackBarHostState = remember { SnackbarHostState() }
     val scrollBehavior = MiuixScrollBehavior()
@@ -216,7 +213,7 @@ fun APModuleScreen(
                     rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                         if (it.resultCode == RESULT_OK) {
                             it.data?.data?.let { uri ->
-                                navigator.navigate(InstallScreenDestination(uri, MODULE_TYPE.APM))
+                                navigator.navigateToInstall(uri, MODULE_TYPE.APM)
                                 viewModel.markNeedRefresh()
                             }
                         }
@@ -277,12 +274,7 @@ fun APModuleScreen(
                         contentPadding = innerPadding,
                         bottomPadding = bottomPadding,
                         onInstallModule = {
-                            navigator.navigate(
-                                InstallScreenDestination(
-                                    it,
-                                    MODULE_TYPE.APM
-                                )
-                            )
+                            navigator.navigateToInstall(it, MODULE_TYPE.APM)
                         },
                         onClickModule = { id, name, hasWebUi ->
                             if (hasWebUi) {
@@ -350,7 +342,7 @@ private enum class ShortcutType {
 
 @Composable
 private fun ModuleList(
-    navigator: DestinationsNavigator,
+    navigator: Navigator,
     viewModel: APModuleViewModel,
     state: LazyListState,
     backdrop: LayerBackdrop?,
@@ -906,7 +898,7 @@ private fun ModuleList(
 
 @Composable
 private fun ModuleItem(
-    navigator: DestinationsNavigator,
+    navigator: Navigator,
     module: APModuleViewModel.ModuleInfo,
     updateUrl: String,
     onUninstall: (APModuleViewModel.ModuleInfo) -> Unit,
@@ -1080,7 +1072,7 @@ private fun ModuleItem(
                             textRes = R.string.apm_action,
                             showText = !hideText,
                             onClick = {
-                                navigator.navigate(ExecuteAPMActionScreenDestination(module.id))
+                                navigator.navigateToExecuteAction(module.id)
                                 viewModel.markNeedRefresh()
                             }
                         )

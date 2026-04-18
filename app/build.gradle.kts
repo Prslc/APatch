@@ -7,9 +7,9 @@ import java.net.URI
 plugins {
     alias(libs.plugins.agp.app)
     alias(libs.plugins.kotlin.compose.compiler)
-    alias(libs.plugins.ksp)
     alias(libs.plugins.lsplugin.apksign)
     alias(libs.plugins.lsplugin.resopt)
+    alias(libs.plugins.kotlin.serialization)
     id("kotlin-parcelize")
 }
 
@@ -173,7 +173,6 @@ android {
     }
 
     android.sourceSets.named("main") {
-        kotlin.directories += "build/generated/ksp/$name/kotlin"
         jniLibs.directories += "libs"
     }
 }
@@ -304,10 +303,6 @@ tasks.clean {
     dependsOn("apdClean")
 }
 
-ksp {
-    arg("compose-destinations.defaultTransitions", "none")
-}
-
 dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.splashscreen)
@@ -326,9 +321,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-
-    implementation(libs.compose.destinations.core)
-    ksp(libs.compose.destinations.ksp)
 
     implementation(libs.miuix.ui)
     implementation(libs.miuix.blur)
