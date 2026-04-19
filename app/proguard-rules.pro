@@ -23,6 +23,10 @@
     public static void throw*(...);
 }
 
+-keep class me.bmax.apatch.Natives { native <methods>; }
+-keep class me.bmax.apatch.Natives$Profile { *; }
+-keep class me.bmax.apatch.Natives$KPMCtlRes { *; }
+
 # serialization
 -keep @kotlinx.serialization.Serializable class * { *; }
 
