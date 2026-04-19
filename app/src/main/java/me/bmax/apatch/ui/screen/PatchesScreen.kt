@@ -398,31 +398,21 @@ private fun BottomButtons(
             }
 
             else -> {
-                val canPatch = mode != PatchesViewModel.PatchMode.UNPATCH
+                val isUnpatch = mode == PatchesViewModel.PatchMode.UNPATCH
+                val isSecurityReady = !needKey || viewModel.superkey.isNotEmpty()
 
-                val canUnpatch =
-                    mode == PatchesViewModel.PatchMode.UNPATCH &&
-                            viewModel.kimgInfo.banner.isNotEmpty()
+                val shouldShow = if (isUnpatch) viewModel.kimgInfo.banner.isNotEmpty() else true
+                val isEnabled = !isUnpatch && isSecurityReady || isUnpatch
 
-                if (canPatch || canUnpatch) {
+                val btnText = stringResource(if (isUnpatch) R.string.patch_start_unpatch_btn else R.string.patch_start_patch_btn)
+
+                if (shouldShow) {
                     TextButton(
-                        text = stringResource(
-                            if (canUnpatch)
-                                R.string.patch_start_unpatch_btn
-                            else
-                                R.string.patch_start_patch_btn
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp),
+                        text = btnText,
+                        enabled = isEnabled,
+                        modifier = Modifier.fillMaxWidth().height(52.dp),
                         colors = ButtonDefaults.textButtonColorsPrimary(),
-                        onClick = {
-                            if (canUnpatch) {
-                                viewModel.doUnpatch()
-                            } else {
-                                viewModel.doPatch(mode, needKey)
-                            }
-                        }
+                        onClick = { if (isUnpatch) viewModel.doUnpatch() else viewModel.doPatch(mode, needKey) }
                     )
                 }
             }
