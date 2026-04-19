@@ -38,8 +38,6 @@ import androidx.compose.ui.unit.sp
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.navigation.LocalNavigator
-import me.bmax.apatch.ui.screen.AuthFailedTipDialog
-import me.bmax.apatch.ui.screen.AuthSuperKey
 import me.bmax.apatch.ui.theme.isInDarkTheme
 import me.bmax.apatch.ui.viewmodel.PatchesViewModel
 import me.bmax.apatch.util.Version
@@ -73,7 +71,7 @@ data class KPatchCardState(
 )
 
 enum class KPatchAction {
-    AUTH_KEY,
+    UNKNOWN_STATE,
     UPDATE,
     REBOOT,
     UNINSTALL,
@@ -152,8 +150,8 @@ fun APApplication.State.toKPatchCardState(
             iconDesc = "Unknown",
             title = R.string.home_install_unknown,
             subtitle = null,
-            buttonText = R.string.super_key,
-            buttonAction = KPatchAction.AUTH_KEY
+            buttonText = R.string.home_ap_cando_install,
+            buttonAction = KPatchAction.UNKNOWN_STATE
         )
     }
 }
@@ -225,7 +223,6 @@ fun APApplication.State.toAPatchCardState(managerVersion: Pair<String, Long>): A
 fun KStatusCard(
     kpState: APApplication.State,
     apState: APApplication.State,
-    onVerifySuperKey: (String) -> Boolean,
     apmCount: Int,
     kpmCount: Int,
     onApmClick: () -> Unit,
@@ -236,21 +233,13 @@ fun KStatusCard(
         kpState.toKPatchCardState(apState, managerVersion)
     }
 
-    val showAuthFailedTipDialog = remember { mutableStateOf(false) }
-    val showAuthKeyDialog = remember { mutableStateOf(false) }
     val showUninstallDialog = remember { mutableStateOf(false) }
 
     UninstallDialog(showUninstallDialog)
-    AuthFailedTipDialog(showAuthFailedTipDialog)
-    AuthSuperKey(
-        showDialog = showAuthKeyDialog,
-        showFailedDialog = showAuthFailedTipDialog,
-        onVerify = onVerifySuperKey
-    )
 
     val onMainCardClick = {
         when (cardState.buttonAction) {
-            KPatchAction.AUTH_KEY -> showAuthKeyDialog.value = true
+            KPatchAction.UNKNOWN_STATE -> navigator.navigateToModeSelect()
             KPatchAction.UPDATE -> {
                 if (Version.installedKPVUInt() < 0x900u) {
                     navigator.navigateToPatches(PatchesViewModel.PatchMode.PATCH_ONLY)
@@ -293,7 +282,7 @@ fun KStatusCard(
                 colors = CardDefaults.defaultColors(
                     color = when {
                         cardState.buttonAction == KPatchAction.UPDATE -> colorScheme.errorContainer
-                        cardState.buttonAction == KPatchAction.AUTH_KEY -> colorScheme.surfaceVariant
+                        cardState.buttonAction == KPatchAction.UNKNOWN_STATE -> colorScheme.surfaceVariant
                         isDynamicColor -> colorScheme.secondaryContainer
                         isInDarkTheme(0) -> Color(0xFF1A3825)
                         else -> Color(0xFFDFFAE4)
@@ -313,12 +302,12 @@ fun KStatusCard(
                             modifier = Modifier.size(170.dp),
                             imageVector = when {
                                 cardState.buttonAction == KPatchAction.UPDATE -> Icons.Rounded.ErrorOutline
-                                cardState.buttonAction == KPatchAction.AUTH_KEY -> Icons.AutoMirrored.Outlined.HelpOutline
+                                cardState.buttonAction == KPatchAction.UNKNOWN_STATE -> Icons.AutoMirrored.Outlined.HelpOutline
                                 else -> Icons.Rounded.CheckCircleOutline
                             },
                             tint = when {
                                 cardState.buttonAction == KPatchAction.UPDATE -> colorScheme.error.copy(alpha = 0.6f)
-                                cardState.buttonAction == KPatchAction.AUTH_KEY -> colorScheme.onSurfaceVariantSummary.copy(alpha = 0.4f)
+                                cardState.buttonAction == KPatchAction.UNKNOWN_STATE -> colorScheme.onSurfaceVariantSummary.copy(alpha = 0.4f)
                                 isDynamicColor -> colorScheme.primary.copy(alpha = 0.8f)
                                 else -> Color(0xFF36D167)
                             },

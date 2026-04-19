@@ -97,7 +97,7 @@ private fun WarningCardPreview() {
         WarningCard(message = "Warning message", onClose = {})
         WarningCard(
             message = "Warning message ",
-            MiuixTheme.colorScheme.outline,
+            color = MiuixTheme.colorScheme.outline,
         )
     }
 }

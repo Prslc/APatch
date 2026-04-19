@@ -32,8 +32,6 @@ import androidx.compose.material.icons.filled.Commit
 import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.Engineering
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.filled.KeyOff
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Translate
@@ -80,7 +78,6 @@ import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
-import me.bmax.apatch.util.APatchKeyHelper
 import me.bmax.apatch.util.calculateCacheSize
 import me.bmax.apatch.util.clearAppCache
 import me.bmax.apatch.util.formatSize
@@ -118,15 +115,11 @@ fun SettingScreen(bottomPadding: Dp) {
     var isGlobalNamespaceEnabled by rememberSaveable {
         mutableStateOf(false)
     }
-    var bSkipStoreSuperKey by rememberSaveable {
-        mutableStateOf(APatchKeyHelper.shouldSkipStoreSuperKey())
-    }
     if (kPatchReady && aPatchReady) {
         isGlobalNamespaceEnabled = isGlobalNamespaceEnabled()
     }
     val showResetSuPathDialog = remember { mutableStateOf(false) }
     val showLogDialog = remember { mutableStateOf(false) }
-    val showClearKeyDialog = rememberSaveable { mutableStateOf(false) }
     val showClearDialog = rememberSaveable { mutableStateOf(false) }
 
     val context = LocalContext.current
@@ -177,67 +170,6 @@ fun SettingScreen(bottomPadding: Dp) {
                             }
                         )
                     }
-
-                    // clear key
-                    if (kPatchReady) {
-                        val clearKeyDialogTitle = stringResource(R.string.clear_super_key)
-                        val clearKeyDialogContent =
-                            stringResource(R.string.settings_clear_super_key_dialog)
-
-                        ArrowItem(
-                            title = stringResource(R.string.clear_super_key),
-                            summary = stringResource(R.string.clear_super_key_summary),
-                            icon = Icons.Default.Key,
-                            contentDescription = stringResource(R.string.clear_super_key),
-                            onClick = { showClearKeyDialog.value = true },
-                        )
-
-                        if (showClearKeyDialog.value) {
-                            WindowDialog(
-                                show = showClearKeyDialog.value,
-                                title = clearKeyDialogTitle,
-                                summary = clearKeyDialogContent
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.End
-                                ) {
-
-                                    TextButton(
-                                        stringResource(android.R.string.cancel),
-                                        onClick = { showClearKeyDialog.value = false },
-                                        modifier = Modifier.weight(1f),
-                                    )
-
-                                    Spacer(Modifier.width(20.dp))
-
-                                    TextButton(
-                                        stringResource(android.R.string.ok),
-                                        onClick = {
-                                            APatchKeyHelper.clearConfigKey()
-                                            APApplication.superKey = ""
-                                            showClearKeyDialog.value = false
-                                        },
-                                        modifier = Modifier.weight(1f),
-                                        colors = ButtonDefaults.textButtonColorsPrimary(),
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    // store key local?
-                    SwitchItem(
-                        title = stringResource(R.string.settings_donot_store_superkey),
-                        summary = stringResource(R.string.settings_donot_store_superkey_summary),
-                        icon = Icons.Default.KeyOff,
-                        checked = bSkipStoreSuperKey,
-                        contentDescription = stringResource(R.string.settings_donot_store_superkey_summary),
-                        onCheckedChange = {
-                            bSkipStoreSuperKey = it
-                            APatchKeyHelper.setShouldSkipStoreSuperKey(bSkipStoreSuperKey)
-                        }
-                    )
 
                     // Global mount
                     if (kPatchReady && aPatchReady) {

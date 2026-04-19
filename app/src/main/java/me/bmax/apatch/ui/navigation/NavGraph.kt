@@ -17,6 +17,7 @@ import me.bmax.apatch.ui.screen.ExecuteAPMActionScreen
 import me.bmax.apatch.ui.screen.InstallScreen
 import me.bmax.apatch.ui.screen.MODULE_TYPE
 import me.bmax.apatch.ui.screen.ModeSelectScreen
+import me.bmax.apatch.ui.screen.PatchesScreen
 
 @Composable
 fun NavGraph() {
@@ -79,7 +80,7 @@ fun NavGraph() {
 
         composable<Patches> { backStackEntry ->
             val args = backStackEntry.toRoute<Patches>()
-            Patches(mode = args.mode)
+            PatchesScreen(mode = args.mode)
         }
 
         composable<ExecuteAction> { backStackEntry ->

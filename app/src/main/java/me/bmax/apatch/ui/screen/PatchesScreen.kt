@@ -10,6 +10,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +33,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -39,6 +44,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -65,6 +71,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.LoadingIndicator
+import me.bmax.apatch.ui.component.SwitchItem
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.theme.blurEffect
@@ -100,7 +107,7 @@ import top.yukonga.miuix.kmp.window.WindowDialog
 private const val TAG = "Patches"
 
 @Composable
-fun Patches(mode: PatchesViewModel.PatchMode) {
+fun PatchesScreen(mode: PatchesViewModel.PatchMode) {
     val navigator = LocalNavigator.current
     val scrollBehavior = MiuixScrollBehavior()
     val viewModel = viewModel<PatchesViewModel>()
@@ -108,6 +115,8 @@ fun Patches(mode: PatchesViewModel.PatchMode) {
 
     val scrollState = rememberScrollState()
     val backdrop = rememberBlurBackdrop(true)
+
+    var needKey by rememberSaveable { mutableStateOf(false) }
 
     val selectFileLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -171,6 +180,7 @@ fun Patches(mode: PatchesViewModel.PatchMode) {
                 BottomButtons(
                     viewModel = viewModel,
                     mode = mode,
+                    needKey = needKey,
                     navigator = navigator,
                     selectFileLauncher = selectFileLauncher
                 )
@@ -222,7 +232,27 @@ fun Patches(mode: PatchesViewModel.PatchMode) {
             if (mode != PatchesViewModel.PatchMode.UNPATCH &&
                 viewModel.kimgInfo.banner.isNotEmpty()
             ) {
-                SetSuperKeyView(viewModel)
+                Card {
+                    SwitchItem(
+                        icon = Icons.Default.Key,
+                        title = stringResource(R.string.patch_custom_superkey),
+                        summary = stringResource(R.string.patch_custom_superkey_summary),
+                        checked = needKey,
+                        onCheckedChange = { checked ->
+                            needKey = checked
+                        }
+                    )
+                }
+                AnimatedVisibility(
+                    visible = needKey,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut()
+                ) {
+                    Column {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        SetSuperKeyView(viewModel)
+                    }
+                }
             }
 
             // Select slot
@@ -252,10 +282,7 @@ fun Patches(mode: PatchesViewModel.PatchMode) {
                 }
 
                 // Add KPM module
-                if (viewModel.superkey.isNotEmpty()
-                    && !viewModel.patching
-                    && !viewModel.patchdone
-                ) {
+                if (!viewModel.patching && !viewModel.patchdone) {
                     AddKpmItem { uri ->
                         viewModel.embedKPM(uri)
                     }
@@ -298,6 +325,7 @@ fun Patches(mode: PatchesViewModel.PatchMode) {
 private fun BottomButtons(
     viewModel: PatchesViewModel,
     mode: PatchesViewModel.PatchMode,
+    needKey: Boolean,
     navigator: Navigator,
     selectFileLauncher: ActivityResultLauncher<Intent>,
 ) {
@@ -370,9 +398,7 @@ private fun BottomButtons(
             }
 
             else -> {
-                val canPatch =
-                    mode != PatchesViewModel.PatchMode.UNPATCH &&
-                            viewModel.superkey.isNotEmpty()
+                val canPatch = mode != PatchesViewModel.PatchMode.UNPATCH
 
                 val canUnpatch =
                     mode == PatchesViewModel.PatchMode.UNPATCH &&
@@ -394,7 +420,7 @@ private fun BottomButtons(
                             if (canUnpatch) {
                                 viewModel.doUnpatch()
                             } else {
-                                viewModel.doPatch(mode)
+                                viewModel.doPatch(mode, needKey)
                             }
                         }
                     )

@@ -41,7 +41,7 @@ function boot_execute_ab(){
 		kernelFlagsErr
 	fi
 	mv kernel kernel-origin
-	./lib/arm64-v8a/libkptools.so -p --image kernel-origin --skey "Ap$skey" --kpimg ./assets/kpimg --out ./kernel 2>&1 | tee /dev/tmp/install/log
+	./lib/arm64-v8a/libkptools.so -p --image kernel-origin --kpimg ./assets/kpimg --out ./kernel 2>&1 | tee /dev/tmp/install/log
 	if [[ ! $(cat /dev/tmp/install/log | grep "patch done") ]]; then
 		failed
 	fi
@@ -58,7 +58,7 @@ function boot_execute(){
 		kernelFlagsErr
 	fi
 	mv kernel kernel-origin
-	./lib/arm64-v8a/libkptools.so -p --image kernel-origin --skey "Ap$skey" --kpimg ./assets/kpimg --out ./kernel 2>&1 | tee /dev/tmp/install/log
+	./lib/arm64-v8a/libkptools.so -p --image kernel-origin --kpimg ./assets/kpimg --out ./kernel 2>&1 | tee /dev/tmp/install/log
 	if [[ ! $(cat /dev/tmp/install/log | grep "patch done") ]]; then
 		failed
 	fi

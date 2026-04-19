@@ -56,15 +56,14 @@
     <string name="loading">Loading…</string>
 
     <string name="super_key">SuperKey</string>
-    <string name="clear_super_key">Clear SuperKey</string>
     <string name="clear_super_key_summary">Credentials must be re-entered upon next use</string>
     <string name="patch_set_superkey">Set SuperKey</string>
     <string name="home_patch_set_key_desc">Only credential for KernelPatch</string>
     <string name="home_patch_next_step">Next step</string>
 
     <string name="home_not_installed">Not installed</string>
-    <string name="home_install_unknown">Not installed or authenticated</string>
-    <string name="home_install_unknown_summary">Click to install</string>
+    <string name="home_install_unknown">KernelPatch not installed</string>
+    <string name="home_install_unknown_summary">Root is unavailable. The kernel may not be patched or flashed yet.</string>
     <string name="home_click_to_install">Click to install</string>
     <string name="home_working">Working</string>
 
@@ -75,8 +74,6 @@
     <string name="apatch_version_update">Version: %s -&gt; %s</string>
     <string name="kpatch_version_update">Version: %s -&gt; %s</string>
     <string name="kpatch_shadow_path_title">kpatch</string>
-    <string name="home_auth_key_title">Enter SuperKey</string>
-    <string name="home_auth_key_desc">Start after certification</string>
     <string name="home_kpatch_info_title">Info</string>
 
     <string name="home_ap_cando_install">Install</string>
@@ -115,6 +112,8 @@
     <string name="patch_item_extra_args">Args:</string>
     <string name="patch_item_extra_event">Event:</string>
     <string name="patch_item_skey">SuperKey</string>
+    <string name="patch_custom_superkey">Custom SuperKey</string>
+    <string name="patch_custom_superkey_summary">still can use superkey manager root, now we are verify manager signature by kernel</string>
     <string name="patch_item_set_skey_label">The SuperKey should be 8-63 characters long and include numbers and letters, but no special characters.</string>
 
     <string name="home_kernel">Kernel version</string>
@@ -238,9 +237,6 @@
     <string name="apm_shortcut_permission_tip_oppo">Please enable \"Desktop shortcut\" permission for this app in OPPO settings.</string>
     <string name="apm_shortcut_permission_tip_default">If shortcut creation fails, please enable desktop shortcut permission for this app in system settings.</string>
 
-    <string name="settings_donot_store_superkey">Don\'t store SuperKey in local</string>
-    <string name="settings_donot_store_superkey_summary">Authenticate the SuperKey every time the manager starts</string>
-
     <string name="home_new_apatch_found">New version %s is available, click to upgrade.</string>
 
     <string name="mode_select_page_title">Install</string>
@@ -258,9 +254,6 @@
     <string name="mode_uninstall_method_all_summary">Restore stock images and remove all related files</string>
     <string name="mode_uninstall_method_restore_summary">Restore the partition to stock and remove system patches</string>
     <string name="mode_uninstall_method_ap_only_summary">Remove system patches without modifying the partition</string>
-
-    <string name="home_dialog_auth_fail_title">Authentication failed</string>
-    <string name="home_dialog_auth_fail_content">Unable to authenticate the SuperKey, therefore APatch cannot work properly.\nHere are some possible reasons for authentication failure:\n1. You didn\'t patch the boot.img with KernelPatch.\n2. The patched boot.img wasn\'t flashed.\n3. The SuperKey is wrong or contains special characters.\n4. Your device doesn\'t support APatch and KernelPatch.\n\nPlease check and try again. If there are still issues, you can always ask questions on the official repository\'s issues page.</string>
 
     <string name="home_more_menu_feedback_or_suggestion">Feedback or suggestion</string>
     <string name="home_more_menu_about">About</string>

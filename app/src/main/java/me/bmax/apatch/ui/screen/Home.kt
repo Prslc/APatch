@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,36 +15,26 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.InstallMobile
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
@@ -69,7 +58,6 @@ import me.bmax.apatch.ui.viewmodel.HomeViewModel
 import me.bmax.apatch.util.Version.getManagerVersion
 import me.bmax.apatch.util.reboot
 import top.yukonga.miuix.kmp.basic.BasicComponent
-import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.CardDefaults
 import top.yukonga.miuix.kmp.basic.Icon
@@ -80,8 +68,6 @@ import top.yukonga.miuix.kmp.basic.PopupPositionProvider
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.Text
-import top.yukonga.miuix.kmp.basic.TextButton
-import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
 import top.yukonga.miuix.kmp.blur.layerBackdrop
@@ -90,7 +76,6 @@ import top.yukonga.miuix.kmp.icon.extended.Link
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
-import top.yukonga.miuix.kmp.window.WindowDialog
 import top.yukonga.miuix.kmp.window.WindowListPopup
 
 @Composable
@@ -157,7 +142,6 @@ fun HomeScreen(
                         apState = apState,
                         apmCount = apmCount,
                         kpmCount = kpmCount,
-                        onVerifySuperKey = { key -> viewModel.verifySuperKey(key) },
                         onApmClick = {
                             val index = availablePages.indexOf(BottomBarDestination.AModule)
                             if (index != -1) navigator.switchToTab(index)
@@ -180,107 +164,6 @@ fun HomeScreen(
                 }
                 Spacer(Modifier.height(bottomPadding))
             }
-        }
-    }
-}
-
-@Composable
-fun AuthFailedTipDialog(showDialog: MutableState<Boolean>) {
-    WindowDialog(
-        show = showDialog.value,
-        title = stringResource(R.string.home_dialog_auth_fail_title),
-        summary = stringResource(R.string.home_dialog_auth_fail_content),
-        onDismissRequest = { showDialog.value = false },
-    ) {
-        Spacer(Modifier.height(12.dp))
-
-        Row {
-            TextButton(
-                stringResource(android.R.string.ok),
-                onClick = { showDialog.value = false },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.textButtonColorsPrimary()
-            )
-        }
-    }
-}
-
-val checkSuperKeyValidation: (superKey: String) -> Boolean = { superKey ->
-    superKey.length in 8..63 && superKey.any { it.isDigit() } && superKey.any { it.isLetter() }
-}
-
-@Composable
-fun AuthSuperKey(
-    showDialog: MutableState<Boolean>,
-    showFailedDialog: MutableState<Boolean>,
-    onVerify: (String) -> Boolean
-) {
-    var key by remember { mutableStateOf("") }
-    var keyVisible by remember { mutableStateOf(false) }
-    var enable by remember { mutableStateOf(false) }
-
-    WindowDialog(
-        show = showDialog.value,
-        title = stringResource(R.string.home_auth_key_title),
-        summary = stringResource(R.string.home_auth_key_desc),
-        onDismissRequest = { showDialog.value = false }
-    ) {
-
-        Box(contentAlignment = Alignment.CenterEnd) {
-
-            TextField(
-                value = key,
-                onValueChange = {
-                    key = it
-                    enable = checkSuperKeyValidation(key)
-                },
-                label = stringResource(R.string.super_key),
-                visualTransformation =
-                    if (keyVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            IconButton(
-                modifier = Modifier
-                    .size(40.dp)
-                    .padding(end = 8.dp),
-                onClick = { keyVisible = !keyVisible }
-            ) {
-                Icon(
-                    imageVector = if (keyVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                    contentDescription = null,
-                    tint = Color.Gray
-                )
-            }
-        }
-
-        Spacer(Modifier.height(12.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-
-            TextButton(
-                stringResource(id = android.R.string.cancel),
-                onClick = { showDialog.value = false },
-                modifier = Modifier.weight(1f),
-            )
-
-            Spacer(Modifier.width(20.dp))
-
-            TextButton(
-                stringResource(id = android.R.string.ok),
-                onClick = {
-                    showDialog.value = false
-                    val ok = onVerify(key)
-                    if (!ok) showFailedDialog.value = true
-                },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.textButtonColorsPrimary(),
-                enabled = enable
-            )
         }
     }
 }
@@ -501,7 +384,7 @@ fun UpdateCard(viewModel: HomeViewModel) {
 
             WarningCard(
                 message = stringResource(id = R.string.home_new_apatch_found).format(info.versionCode),
-                colorScheme.outline
+                color = colorScheme.outline
             ) {
                 if (info.changelog.isEmpty()) {
                     uriHandler.openUri(info.downloadUrl)

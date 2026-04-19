@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import me.bmax.apatch.R
+import me.bmax.apatch.ui.component.WarningCard
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.Navigator
@@ -110,20 +111,23 @@ private fun SelectInstallMethod(navigator: Navigator) {
     )
 
     Column {
-        Card {
-            Column {
-                radioOptions.forEach { option ->
-                    CheckboxPreference(
-                        title = stringResource(id = option.label),
-                        summary = when (option) {
-                            is InstallMethod.SelectFile -> stringResource(R.string.mode_install_method_select_file_summary)
-                            is InstallMethod.DirectInstall -> stringResource(R.string.mode_install_method_direct_install_summary)
-                            is InstallMethod.DirectInstallToInactiveSlot -> stringResource(R.string.mode_install_method_inactive_slot_summary)
-                        },
-                        checked = selectedOption?.javaClass == option.javaClass,
-                        onCheckedChange = { selectedOption = option }
-                    )
-                }
+        if (!rootAvailable) {
+            WarningCard(
+                message = stringResource(R.string.home_install_unknown_summary)
+            )
+        }
+        Card(Modifier.padding(top = 16.dp)) {
+            radioOptions.forEach { option ->
+                CheckboxPreference(
+                    title = stringResource(id = option.label),
+                    summary = when (option) {
+                        is InstallMethod.SelectFile -> stringResource(R.string.mode_install_method_select_file_summary)
+                        is InstallMethod.DirectInstall -> stringResource(R.string.mode_install_method_direct_install_summary)
+                        is InstallMethod.DirectInstallToInactiveSlot -> stringResource(R.string.mode_install_method_inactive_slot_summary)
+                    },
+                    checked = selectedOption?.javaClass == option.javaClass,
+                    onCheckedChange = { selectedOption = option }
+                )
             }
         }
 

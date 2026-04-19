@@ -70,17 +70,6 @@ class HomeViewModel : ViewModel() {
         _newVersionInfo.value = info
     }
 
-    fun verifySuperKey(key: String): Boolean {
-        val ok = Natives.nativeReady(key)
-        if (ok) {
-            APApplication.superKey = key
-            viewModelScope.launch(Dispatchers.IO) {
-                refreshCounts()
-            }
-        }
-        return ok
-    }
-
     private fun getSystemVersion(): String {
         return "${Build.VERSION.RELEASE} ${if (Build.VERSION.PREVIEW_SDK_INT != 0) "Preview" else ""} (API ${Build.VERSION.SDK_INT})"
     }
