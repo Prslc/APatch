@@ -1,13 +1,16 @@
 package me.bmax.apatch.ui.component
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.preference.ArrowPreference
 import top.yukonga.miuix.kmp.preference.SwitchPreference
+import top.yukonga.miuix.kmp.preference.WindowDropdownPreference
 import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
 
 @Composable
@@ -56,6 +59,37 @@ fun SwitchItem(
                 contentDescription = contentDescription,
                 tint = colorScheme.onBackground
             )
+        }
+    )
+}
+
+@Composable
+fun DropdownItem(
+    title: String,
+    items: List<String>,
+    selectedIndex: Int,
+    icon: ImageVector,
+    summary: String? = null,
+    contentDescription: String? = null,
+    onSelectedIndexChange: (Int) -> Unit,
+) {
+    WindowDropdownPreference(
+        title = title,
+        summary = summary,
+        items = items,
+        selectedIndex = selectedIndex,
+        onSelectedIndexChange = onSelectedIndexChange,
+        startAction = {
+            Row(
+                verticalAlignment = CenterVertically
+            ) {
+                Icon(
+                    imageVector = icon,
+                    modifier = Modifier.padding(end = 6.dp),
+                    contentDescription = contentDescription,
+                    tint = colorScheme.onBackground
+                )
+            }
         }
     )
 }

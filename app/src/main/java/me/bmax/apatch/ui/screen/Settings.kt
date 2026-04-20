@@ -72,6 +72,7 @@ import me.bmax.apatch.BuildConfig
 import me.bmax.apatch.Natives
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.ArrowItem
+import me.bmax.apatch.ui.component.DropdownItem
 import me.bmax.apatch.ui.component.SwitchItem
 import me.bmax.apatch.ui.component.rememberLoadingDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
@@ -96,7 +97,6 @@ import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.blur.layerBackdrop
-import top.yukonga.miuix.kmp.preference.WindowDropdownPreference
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import top.yukonga.miuix.kmp.window.WindowDialog
 import java.time.LocalDateTime
@@ -158,19 +158,6 @@ fun SettingScreen(bottomPadding: Dp) {
             item {
                 val prefs = APApplication.sharedPreferences
                 Card {
-                    // su path
-                    if (kPatchReady) {
-                        ArrowItem(
-                            title = stringResource(R.string.setting_reset_su_path),
-                            summary = stringResource(R.string.setting_reset_su_path_summary),
-                            icon = Icons.Filled.Commit,
-                            contentDescription = stringResource(R.string.setting_reset_su_path),
-                            onClick = {
-                                showResetSuPathDialog.value = true
-                            }
-                        )
-                    }
-
                     // Global mount
                     if (kPatchReady && aPatchReady) {
                         SwitchItem(
@@ -240,20 +227,15 @@ fun SettingScreen(bottomPadding: Dp) {
                     var themeMode by rememberSaveable {
                         mutableIntStateOf(prefs.getInt("color_mode", 0))
                     }
-                    WindowDropdownPreference(
+                    DropdownItem(
                         title = stringResource(R.string.settings_theme),
                         summary = stringResource(R.string.settings_theme_summary),
                         items = themeItems,
                         selectedIndex = themeMode,
+                        icon = Icons.Rounded.Palette,
                         onSelectedIndexChange = { index ->
                             prefs.edit { putInt("color_mode", index) }
                             themeMode = index
-                        },
-                        startAction = {
-                            Icon(
-                                imageVector = Icons.Rounded.Palette,
-                                contentDescription = stringResource(R.string.settings_theme)
-                            )
                         }
                     )
 
@@ -289,20 +271,28 @@ fun SettingScreen(bottomPadding: Dp) {
                                     ?: 0
                             )
                         }
-                        WindowDropdownPreference(
+                        DropdownItem(
                             title = stringResource(R.string.settings_key_color),
                             summary = stringResource(R.string.settings_key_color_summary),
                             items = colorItems,
                             selectedIndex = keyColorIndex,
+                            icon = Icons.Rounded.Colorize,
                             onSelectedIndexChange = { index ->
                                 prefs.edit { putInt("key_color", colorValues[index]) }
                                 keyColorIndex = index
-                            },
-                            startAction = {
-                                Icon(
-                                    imageVector = Icons.Rounded.Colorize,
-                                    contentDescription = stringResource(R.string.settings_key_color)
-                                )
+                            }
+                        )
+                    }
+
+                    // reset su path
+                    if (kPatchReady) {
+                        ArrowItem(
+                            title = stringResource(R.string.setting_reset_su_path),
+                            summary = stringResource(R.string.setting_reset_su_path_summary),
+                            icon = Icons.Filled.Commit,
+                            contentDescription = stringResource(R.string.setting_reset_su_path),
+                            onClick = {
+                                showResetSuPathDialog.value = true
                             }
                         )
                     }
@@ -327,21 +317,16 @@ fun SettingScreen(bottomPadding: Dp) {
 
                     var selectedIndex by remember { mutableIntStateOf(initialIndex) }
 
-                    WindowDropdownPreference(
+                    DropdownItem(
                         title = stringResource(R.string.settings_app_language),
                         summary = stringResource(R.string.settings_app_language_summary),
                         items = languages.toList(),
                         selectedIndex = selectedIndex,
+                        icon = Icons.Filled.Translate,
                         onSelectedIndexChange = { newIndex ->
                             selectedIndex = newIndex
                             val tag = if (newIndex == 0) "" else languagesValues[newIndex]
                             updateLanguage(context, tag)
-                        },
-                        startAction = {
-                            Icon(
-                                imageVector = Icons.Filled.Translate,
-                                contentDescription = stringResource(R.string.settings_app_language)
-                            )
                         }
                     )
 
