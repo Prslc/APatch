@@ -380,6 +380,7 @@ private fun KPModuleList(
         PullToRefresh(
             isRefreshing = viewModel.isRefreshing,
             pullToRefreshState = pullToRefreshState,
+            contentPadding = contentPadding,
             refreshTexts = listOf(
                 stringResource(R.string.refresh_pulling),
                 stringResource(R.string.refresh_release),

@@ -7,8 +7,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -115,8 +117,9 @@ private fun SelectInstallMethod(navigator: Navigator) {
             WarningCard(
                 message = stringResource(R.string.home_install_unknown_summary)
             )
+            Spacer(modifier = Modifier.height(16.dp))
         }
-        Card(Modifier.padding(top = 16.dp)) {
+        Card {
             radioOptions.forEach { option ->
                 CheckboxPreference(
                     title = stringResource(id = option.label),

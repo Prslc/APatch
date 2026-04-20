@@ -32,6 +32,7 @@ fun LoadingIndicator(
 
             Text(
                 text = text,
+                color = MiuixTheme.colorScheme.onSurface,
                 style = MiuixTheme.textStyles.body1
             )
         }
