@@ -8,11 +8,16 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import io.ktor.client.call.body
+import io.ktor.client.request.get
 import me.bmax.apatch.apApp
+
+private const val TAG = "Downloader"
 
 @SuppressLint("Range")
 fun download(
@@ -53,37 +58,23 @@ fun download(
     downloadManager.enqueue(request)
 }
 
-fun checkNewVersion(): LatestVersionInfo {
+suspend fun checkNewVersion(): LatestVersionInfo {
     val url = "https://api.github.com/repos/bmax121/APatch/releases/latest"
-    val defaultValue = LatestVersionInfo()
-    runCatching {
-        apApp.okhttpClient.newCall(okhttp3.Request.Builder().url(url).build()).execute()
-            .use { response ->
-                if (!response.isSuccessful) {
-                    return defaultValue
-                }
-                val body = response.body?.string() ?: return defaultValue
 
-                val json = org.json.JSONObject(body)
-                val changelog = json.optString("body")
-                val versionCode = json.getInt("name")
+    return try {
+        val release = apApp.httpClient.get(url).body<GithubReleaseDto>()
 
-                val assets = json.getJSONArray("assets")
-                for (i in 0 until assets.length()) {
-                    val asset = assets.getJSONObject(i)
-                    val name = asset.getString("name")
-                    if (!name.endsWith(".apk")) {
-                        continue
-                    }
-                    val downloadUrl = asset.getString("browser_download_url")
+        val apkAsset = release.assets.firstOrNull { it.name.endsWith(".apk") }
 
-                    return LatestVersionInfo(
-                        versionCode, downloadUrl, changelog
-                    )
-                }
-            }
+        LatestVersionInfo(
+            versionCode = release.name.toIntOrNull() ?: 0,
+            downloadUrl = apkAsset?.downloadUrl ?: "",
+            changelog = release.body
+        )
+    } catch (e: Exception) {
+        Log.e(TAG, "checkNewVersion failed: ${e.message}", e)
+        LatestVersionInfo()
     }
-    return defaultValue
 }
 
 @Composable

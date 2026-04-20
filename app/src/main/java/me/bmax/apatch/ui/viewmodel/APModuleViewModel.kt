@@ -8,6 +8,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.isSuccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -125,28 +128,27 @@ class APModuleViewModel : ViewModel() {
         return version.replace(Regex("[^a-zA-Z0-9.\\-_]"), "_")
     }
 
-    fun checkUpdate(m: ModuleInfo): Triple<String, String, String> {
+    suspend fun checkUpdate(m: ModuleInfo): Triple<String, String, String> {
         val empty = Triple("", "", "")
         if (m.updateJson.isEmpty() || m.remove || m.update || !m.enabled) {
             return empty
         }
         // download updateJson
-        val result = kotlin.runCatching {
+        val result = try {
             val url = m.updateJson
             Log.i(TAG, "checkUpdate url: $url")
-            val response = apApp.okhttpClient
-                .newCall(
-                    okhttp3.Request.Builder()
-                        .url(url)
-                        .build()
-                ).execute()
-            Log.d(TAG, "checkUpdate code: ${response.code}")
-            if (response.isSuccessful) {
-                response.body?.string() ?: ""
+            val response = apApp.httpClient.get(url)
+            Log.d(TAG, "checkUpdate code: ${response.status.value}")
+
+            if (response.status.isSuccess()) {
+                response.bodyAsText()
             } else {
                 ""
             }
-        }.getOrDefault("")
+        } catch (e: Exception) {
+            Log.e(TAG, "checkUpdate failed", e)
+            ""
+        }
         Log.i(TAG, "checkUpdate result: $result")
 
         if (result.isEmpty()) {

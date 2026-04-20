@@ -327,14 +327,18 @@ dependencies {
     implementation(libs.miuix.icons)
     implementation(libs.miuix.preference)
 
+    // Ktor
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
+
     implementation(libs.com.github.topjohnwu.libsu.core)
     implementation(libs.com.github.topjohnwu.libsu.service)
     implementation(libs.com.github.topjohnwu.libsu.nio)
     implementation(libs.com.github.topjohnwu.libsu.io)
 
     implementation(libs.dev.rikka.rikkax.parcelablelist)
-
-    implementation(libs.io.coil.kt.coil.compose)
 
     implementation(libs.kotlinx.coroutines.core)
 
