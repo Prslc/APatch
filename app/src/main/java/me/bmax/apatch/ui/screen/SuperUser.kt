@@ -30,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,17 +37,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import kotlinx.coroutines.launch
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.Natives
 import me.bmax.apatch.R
 import me.bmax.apatch.apApp
+import me.bmax.apatch.ui.component.AppIconImage
 import me.bmax.apatch.ui.component.DropdownItem
 import me.bmax.apatch.ui.component.LoadingIndicator
-import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.blurEffect
+import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.viewmodel.SuperUserViewModel
 import me.bmax.apatch.util.PkgConfig
 import top.yukonga.miuix.kmp.basic.Card
@@ -251,16 +249,13 @@ private fun AppItem(app: SuperUserViewModel.AppInfo) {
                 .padding(horizontal = 12.dp, vertical = 8.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(app.packageInfo)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = app.label,
+                AppIconImage(
+                    packageInfo = app.packageInfo,
+                    label = app.label,
                     modifier = Modifier
                         .size(48.dp)
                         .padding(end = 12.dp)
-                )
+                    )
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(app.label, fontWeight = FontWeight.Bold)

@@ -332,9 +332,9 @@ dependencies {
     implementation(libs.com.github.topjohnwu.libsu.nio)
     implementation(libs.com.github.topjohnwu.libsu.io)
 
-    implementation(libs.dev.rikka.rikkax.parcelablelist)
+    implementation(libs.okhttp)
 
-    implementation(libs.io.coil.kt.coil.compose)
+    implementation(libs.dev.rikka.rikkax.parcelablelist)
 
     implementation(libs.kotlinx.coroutines.core)
 
