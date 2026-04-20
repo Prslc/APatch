@@ -28,6 +28,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
+import coil.Coil
+import coil.ImageLoader
 import kotlinx.coroutines.launch
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.ui.component.BottomBar
@@ -41,6 +43,8 @@ import me.bmax.apatch.ui.screen.KPModuleScreen
 import me.bmax.apatch.ui.screen.SettingScreen
 import me.bmax.apatch.ui.screen.SuperUserScreen
 import me.bmax.apatch.ui.theme.APatchTheme
+import me.zhanghai.android.appiconloader.coil.AppIconFetcher
+import me.zhanghai.android.appiconloader.coil.AppIconKeyer
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.blur.layerBackdrop
 import top.yukonga.miuix.kmp.blur.rememberLayerBackdrop
@@ -109,6 +113,18 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        // Initialize Coil
+        val iconSize = resources.getDimensionPixelSize(android.R.dimen.app_icon_size)
+        Coil.setImageLoader(
+            ImageLoader.Builder(this)
+                .components {
+                    add(AppIconKeyer())
+                    add(AppIconFetcher.Factory(iconSize, false, this@MainActivity))
+                }
+                .build()
+        )
+
         isLoading = false
     }
 

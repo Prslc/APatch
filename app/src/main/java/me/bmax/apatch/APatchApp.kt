@@ -11,20 +11,15 @@ import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.topjohnwu.superuser.CallbackList
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.android.Android
-import io.ktor.client.plugins.DefaultRequest
-import io.ktor.client.plugins.HttpTimeout
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.header
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
 import me.bmax.apatch.ui.CrashHandleActivity
 import me.bmax.apatch.util.APatchCli
+import me.bmax.apatch.util.APatchKeyHelper
 import me.bmax.apatch.util.Version
 import me.bmax.apatch.util.getRootShell
 import me.bmax.apatch.util.rootShellForResult
 import me.bmax.apatch.util.verifyAppSignature
+import okhttp3.Cache
+import okhttp3.OkHttpClient
 import java.io.File
 import java.util.Locale
 import kotlin.concurrent.thread
@@ -35,28 +30,7 @@ lateinit var apApp: APApplication
 const val TAG = "APatch"
 
 class APApplication : Application(), Thread.UncaughtExceptionHandler {
-
-    val httpClient: HttpClient by lazy {
-        HttpClient(Android) {
-            install(HttpTimeout) {
-                requestTimeoutMillis = 15000
-                connectTimeoutMillis = 10000
-            }
-
-            install(DefaultRequest) {
-                header("User-Agent", "APatch/${BuildConfig.VERSION_CODE}")
-                header("Accept-Language", Locale.getDefault().toLanguageTag())
-            }
-
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                    isLenient = true
-                    encodeDefaults = true
-                })
-            }
-        }
-    }
+    lateinit var okhttpClient: OkHttpClient
 
     init {
         Thread.setDefaultUncaughtExceptionHandler(this)
@@ -166,11 +140,12 @@ class APApplication : Application(), Thread.UncaughtExceptionHandler {
                 "ln -s $APD_PATH $MAGISKPOLICY_BIN_PATH",
                 "rm -f $RESETPROP_BIN_PATH",
                 "ln -s $APD_PATH $RESETPROP_BIN_PATH",
-
+               
                 "cp -f ${nativeDir}/libbusybox.so $BUSYBOX_BIN_PATH",
                 "chmod +x $BUSYBOX_BIN_PATH",
                 "cp -f ${nativeDir}/libkptools.so $KPTOOLS_BIN_PATH",
                 "chmod +x $KPTOOLS_BIN_PATH",
+
 
 
                 "touch $PACKAGE_CONFIG_FILE",
@@ -294,6 +269,16 @@ class APApplication : Application(), Thread.UncaughtExceptionHandler {
         // TODO: 2. remove all usage of superkey
         sharedPreferences = getSharedPreferences(SP_NAME, MODE_PRIVATE)
         superKey = "su"
+
+        okhttpClient =
+            OkHttpClient.Builder().cache(Cache(File(cacheDir, "okhttp"), 10 * 1024 * 1024))
+                .addInterceptor { block ->
+                    block.proceed(
+                        block.request().newBuilder()
+                            .header("User-Agent", "APatch/${BuildConfig.VERSION_CODE}")
+                            .header("Accept-Language", Locale.getDefault().toLanguageTag()).build()
+                    )
+                }.build()
     }
 
     fun getBackupWarningState(): Boolean {

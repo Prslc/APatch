@@ -72,8 +72,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.topjohnwu.superuser.io.SuFile
-import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -482,14 +480,22 @@ private fun ModuleList(
         fileName: String
     ) {
         val changelog = loadingDialog.withLoading {
-            runCatching {
-                if (Patterns.WEB_URL.matcher(changelogUrl).matches()) {
-                    apApp.httpClient.get(changelogUrl).bodyAsText()
-                } else {
-                    changelogUrl
-                }
-            }.getOrDefault("")
+            withContext(Dispatchers.IO) {
+                runCatching {
+                    if (Patterns.WEB_URL.matcher(changelogUrl).matches()) {
+                        apApp.okhttpClient
+                            .newCall(
+                                okhttp3.Request.Builder().url(changelogUrl).build()
+                            )
+                            .execute()
+                            .use { it.body?.string().orEmpty() }
+                    } else {
+                        changelogUrl
+                    }
+                }.getOrDefault("")
+            }
         }
+
 
         val confirmResult = confirmDialog.awaitConfirm(
             title = changelogText,
