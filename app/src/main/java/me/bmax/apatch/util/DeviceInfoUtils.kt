@@ -1,5 +1,6 @@
 package me.bmax.apatch.util
 
+import android.os.Build
 import android.util.Log
 import com.topjohnwu.superuser.Shell
 
@@ -32,4 +33,16 @@ private fun getSystemProperty(key: String): Boolean {
 // Check to see if device supports A/B (seamless) system updates
 fun isABDevice(): Boolean {
     return getSystemProperty("ro.build.ab_update")
+}
+
+fun getSystemVersion(): String {
+    return "${Build.VERSION.RELEASE} ${if (Build.VERSION.PREVIEW_SDK_INT != 0) "Preview" else ""} (API ${Build.VERSION.SDK_INT})"
+}
+
+fun getDeviceInfo(): String {
+    var manufacturer = Build.MANUFACTURER.replaceFirstChar { it.uppercase() }
+    if (!Build.BRAND.equals(Build.MANUFACTURER, ignoreCase = true)) {
+        manufacturer += " " + Build.BRAND.replaceFirstChar { it.uppercase() }
+    }
+    return "$manufacturer ${Build.MODEL} "
 }

@@ -24,7 +24,6 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.bmax.apatch.APApplication
@@ -54,7 +54,6 @@ import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
-import me.bmax.apatch.ui.page.home.HomeViewModel
 import me.bmax.apatch.util.Version.getManagerVersion
 import me.bmax.apatch.util.reboot
 import top.yukonga.miuix.kmp.basic.BasicComponent
@@ -88,13 +87,10 @@ fun HomeScreen(
     val scrollBehavior = MiuixScrollBehavior()
     val backdrop = rememberBlurBackdrop(true)
 
-    val kpState by viewModel.kpState.collectAsState(APApplication.State.UNKNOWN_STATE)
-    val apState by viewModel.apState.collectAsState(APApplication.State.UNKNOWN_STATE)
-    val apmCount by viewModel.apmCount.collectAsState()
-    val kpmCount by viewModel.kpmCount.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val kPatchReady = apState != APApplication.State.UNKNOWN_STATE
-    val aPatchReady = apState == APApplication.State.ANDROIDPATCH_INSTALLED
+    val kPatchReady = uiState.kpState != APApplication.State.UNKNOWN_STATE
+    val aPatchReady = uiState.apState == APApplication.State.ANDROIDPATCH_NOT_INSTALLED
 
     val availablePages = remember(kPatchReady, aPatchReady) {
         BottomBarDestination.entries.filter { d ->
@@ -114,7 +110,7 @@ fun HomeScreen(
             TopBar(
                 backdrop = backdrop,
                 navigator = navigator,
-                kpState = kpState,
+                kpState = uiState.kpState,
                 scrollBehavior = scrollBehavior
             )
         }
@@ -138,10 +134,10 @@ fun HomeScreen(
                 ) {
                     BackupWarningCard()
                     KStatusCard(
-                        kpState = kpState,
-                        apState = apState,
-                        apmCount = apmCount,
-                        kpmCount = kpmCount,
+                        kpState = uiState.kpState,
+                        apState = uiState.apState,
+                        apmCount = uiState.apmCount,
+                        kpmCount = uiState.kpmCount,
                         onApmClick = {
                             val index = availablePages.indexOf(BottomBarDestination.AModule)
                             if (index != -1) navigator.switchToTab(index)
@@ -151,15 +147,15 @@ fun HomeScreen(
                             if (index != -1) navigator.switchToTab(index)
                         }
                     )
-                    if (kpState != APApplication.State.UNKNOWN_STATE && apState != APApplication.State.ANDROIDPATCH_INSTALLED) {
-                        AStatusCard(apState)
+                    if (uiState.kpState != APApplication.State.UNKNOWN_STATE && uiState.apState != APApplication.State.ANDROIDPATCH_INSTALLED) {
+                        AStatusCard(uiState.apState)
                     }
                     val checkUpdate =
                         APApplication.sharedPreferences.getBoolean("check_update", true)
                     if (checkUpdate) {
-                        UpdateCard(viewModel)
+                        UpdateCard(uiState)
                     }
-                    InfoCard(kpState, viewModel)
+                    InfoCard(uiState)
                     LearnMoreCard()
                 }
                 Spacer(Modifier.height(bottomPadding))
@@ -296,14 +292,8 @@ fun BackupWarningCard() {
 
 
 @Composable
-private fun InfoCard(
-    kpState: APApplication.State,
-    viewModel: HomeViewModel
-) {
-
-    val systemInfo by viewModel.systemInfo.collectAsState()
-
-    val selinuxText = when (systemInfo.selinux) {
+private fun InfoCard(state: HomeUiState) {
+    val selinuxText = when (state.selinux) {
         "Enforcing" -> stringResource(R.string.home_selinux_status_enforcing)
         "Permissive" -> stringResource(R.string.home_selinux_status_permissive)
         "Disabled" -> stringResource(R.string.home_selinux_status_disabled)
@@ -335,7 +325,7 @@ private fun InfoCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            if (kpState != APApplication.State.UNKNOWN_STATE) {
+            if (state.kpState != APApplication.State.UNKNOWN_STATE) {
                 InfoText(
                     title = stringResource(R.string.home_su_path),
                     content = Natives.suPath()
@@ -343,19 +333,19 @@ private fun InfoCard(
             }
             InfoText(
                 title = stringResource(R.string.home_device_info),
-                content = systemInfo.deviceInfo,
+                content = state.deviceInfo,
             )
             InfoText(
                 title = stringResource(R.string.home_kernel),
-                content = systemInfo.kernelVersion
+                content = state.kernelVersion
             )
             InfoText(
                 title = stringResource(R.string.home_system_version),
-                content = systemInfo.androidVersion
+                content = state.androidVersion
             )
             InfoText(
                 title = stringResource(R.string.home_fingerprint),
-                content = systemInfo.fingerprint
+                content = state.fingerprint
             )
             InfoText(
                 title = stringResource(R.string.home_selinux_status),
@@ -367,10 +357,9 @@ private fun InfoCard(
 }
 
 @Composable
-fun UpdateCard(viewModel: HomeViewModel) {
-    val newVersion by viewModel.newVersionInfo.collectAsState()
+fun UpdateCard(state: HomeUiState) {
+    val newVersion = state.newVersionInfo
     val uriHandler = LocalUriHandler.current
-
     val currentCode = remember { getManagerVersion().second }
 
     newVersion?.let { info ->
