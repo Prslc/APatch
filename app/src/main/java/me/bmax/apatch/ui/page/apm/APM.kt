@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.screen
+package me.bmax.apatch.ui.page.apm
 
 import android.app.Activity.RESULT_OK
 import android.content.Context
@@ -88,10 +88,10 @@ import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.component.rememberLoadingDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.Navigator
+import me.bmax.apatch.ui.page.install.MODULE_TYPE
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
-import me.bmax.apatch.ui.viewmodel.APModuleViewModel
 import me.bmax.apatch.util.DownloadListener
 import me.bmax.apatch.util.Shortcut
 import me.bmax.apatch.util.download
@@ -100,6 +100,7 @@ import me.bmax.apatch.util.reboot
 import me.bmax.apatch.util.toggleModule
 import me.bmax.apatch.util.undoUninstallModule
 import me.bmax.apatch.util.uninstallModule
+import okhttp3.Request
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.FloatingActionButton
@@ -485,7 +486,7 @@ private fun ModuleList(
                     if (Patterns.WEB_URL.matcher(changelogUrl).matches()) {
                         apApp.okhttpClient
                             .newCall(
-                                okhttp3.Request.Builder().url(changelogUrl).build()
+                                Request.Builder().url(changelogUrl).build()
                             )
                             .execute()
                             .use { it.body?.string().orEmpty() }

@@ -35,11 +35,11 @@ import me.bmax.apatch.ui.component.BottomBarDestination
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.NavGraph
 import me.bmax.apatch.ui.navigation.Navigator
-import me.bmax.apatch.ui.screen.APModuleScreen
-import me.bmax.apatch.ui.screen.HomeScreen
-import me.bmax.apatch.ui.screen.KPModuleScreen
-import me.bmax.apatch.ui.screen.SettingScreen
-import me.bmax.apatch.ui.screen.SuperUserScreen
+import me.bmax.apatch.ui.page.apm.APModuleScreen
+import me.bmax.apatch.ui.page.home.HomeScreen
+import me.bmax.apatch.ui.page.kpm.KPModuleScreen
+import me.bmax.apatch.ui.page.settings.SettingScreen
+import me.bmax.apatch.ui.page.superuser.SuperUserScreen
 import me.bmax.apatch.ui.theme.APatchTheme
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.blur.layerBackdrop

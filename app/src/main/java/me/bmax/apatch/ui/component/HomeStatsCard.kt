@@ -39,7 +39,7 @@ import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.theme.isInDarkTheme
-import me.bmax.apatch.ui.viewmodel.PatchesViewModel
+import me.bmax.apatch.ui.page.patch.PatchesViewModel
 import me.bmax.apatch.util.Version
 import me.bmax.apatch.util.Version.getManagerVersion
 import me.bmax.apatch.util.reboot

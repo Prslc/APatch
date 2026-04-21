@@ -8,7 +8,7 @@ import android.graphics.drawable.Drawable
 import android.util.LruCache
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.scale
-import me.bmax.apatch.ui.viewmodel.SuperUserViewModel.Companion.getAppIconDrawable
+import me.bmax.apatch.ui.page.superuser.SuperUserViewModel.Companion.getAppIconDrawable
 
 object AppIconUtil {
     // Limit cache size to 200 icons

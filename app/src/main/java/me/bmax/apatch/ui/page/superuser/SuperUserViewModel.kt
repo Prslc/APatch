@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.viewmodel
+package me.bmax.apatch.ui.page.superuser
 
 import android.content.ComponentName
 import android.content.Context
@@ -154,7 +154,13 @@ class SuperUserViewModel : ViewModel() {
                     val uid = appInfo!!.uid
                     val actProfile = if (uids.contains(uid)) Natives.suProfile(uid) else null
                     val config = configs.getOrDefault(
-                        uid, PkgConfig.Config(appInfo.packageName, Natives.isUidExcluded(uid), 0, Natives.Profile(uid = uid))
+                        uid,
+                        PkgConfig.Config(
+                            appInfo.packageName,
+                            Natives.isUidExcluded(uid),
+                            0,
+                            Natives.Profile(uid = uid)
+                        )
                     )
                     config.allow = 0
 

@@ -7,7 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.bmax.apatch.Natives
 import me.bmax.apatch.apApp
-import me.bmax.apatch.ui.viewmodel.KPModel
+import me.bmax.apatch.ui.page.kpm.KPModel
 import java.io.IOException
 
 private const val TAG = "KernelPatchModuleCli"

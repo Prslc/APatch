@@ -17,7 +17,7 @@ import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.ShellUtils
 import com.topjohnwu.superuser.internal.UiThreadHandler
 import me.bmax.apatch.ui.WebUIActivity
-import me.bmax.apatch.ui.viewmodel.SuperUserViewModel
+import me.bmax.apatch.ui.page.superuser.SuperUserViewModel
 import me.bmax.apatch.util.createRootShell
 import org.json.JSONArray
 import org.json.JSONObject

@@ -6,8 +6,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.flow.MutableSharedFlow
-import me.bmax.apatch.ui.screen.MODULE_TYPE
-import me.bmax.apatch.ui.viewmodel.PatchesViewModel
+import me.bmax.apatch.ui.page.install.MODULE_TYPE
+import me.bmax.apatch.ui.page.patch.PatchesViewModel
 
 val LocalNavigator = staticCompositionLocalOf<Navigator> {
     error("NavController not provided")
@@ -47,7 +47,7 @@ class Navigator(val navController: NavHostController) {
             }
 
             uri != null -> {
-                navController.navigate(InstallPreview(uri.toString()))
+                navController.navigate(InstallPreviewRoute(uri.toString()))
             }
 
             else -> {}
@@ -69,16 +69,16 @@ class Navigator(val navController: NavHostController) {
         _switchToTabHandler?.invoke(index)
     }
 
-    fun navigateToModeSelect() = navController.navigate(ModeSelect)
-    fun navigateToAbout() = navController.navigate(About)
+    fun navigateToModeSelect() = navController.navigate(ModeSelectRoute)
+    fun navigateToAbout() = navController.navigate(AboutRoute)
 
     fun navigateToPatches(mode: PatchesViewModel.PatchMode) {
-        navController.navigate(Patches(mode))
+        navController.navigate(PatchesRoute(mode))
     }
 
     fun navigateToInstall(uri: Uri, type: MODULE_TYPE) {
         navController.navigate(
-            Install(
+            InstallRoute(
                 uriString = uri.toString(),
                 type = type
             )
@@ -86,7 +86,7 @@ class Navigator(val navController: NavHostController) {
     }
 
     fun navigateToExecuteAction(moduleId: String) {
-        navController.navigate(ExecuteAction(moduleId)) {
+        navController.navigate(ExecuteActionRoute(moduleId)) {
             launchSingleTop = true
         }
     }

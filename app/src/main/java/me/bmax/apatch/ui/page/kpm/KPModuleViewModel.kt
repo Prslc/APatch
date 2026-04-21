@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.viewmodel
+package me.bmax.apatch.ui.page.kpm
 
 import android.os.SystemClock
 import android.util.Log

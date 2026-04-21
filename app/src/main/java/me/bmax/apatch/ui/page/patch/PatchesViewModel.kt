@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.viewmodel
+package me.bmax.apatch.ui.page.patch
 
 import android.content.ContentValues
 import android.content.Context
@@ -28,6 +28,7 @@ import me.bmax.apatch.APApplication
 import me.bmax.apatch.BuildConfig
 import me.bmax.apatch.R
 import me.bmax.apatch.apApp
+import me.bmax.apatch.ui.page.kpm.KPModel
 import me.bmax.apatch.util.Version
 import me.bmax.apatch.util.copyAndClose
 import me.bmax.apatch.util.copyAndCloseOut
@@ -220,7 +221,7 @@ class PatchesViewModel : ViewModel() {
     }
 
     private fun extractAndParseBootimg(mode: PatchMode) {
-        var cmdBuilder = "./boot_extract.sh"
+        var cmdBuilder = "boot_extract.sh"
 
         if (mode == PatchMode.INSTALL_TO_NEXT_SLOT) {
             cmdBuilder += " true"
