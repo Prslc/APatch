@@ -30,7 +30,7 @@ fun ApplicationInfo.withCurrentUserUid(): ApplicationInfo {
 object AppIconCache {
     private val maxMemory = Runtime.getRuntime().maxMemory() / 1024
     private val cacheSize = (maxMemory / 8).toInt()
-    private val loadSemaphore = Semaphore(4)
+    private val loadSemaphore = Semaphore(2)
 
     private val lruCache = object : LruCache<String, Bitmap>(cacheSize) {
         override fun sizeOf(key: String, value: Bitmap): Int {

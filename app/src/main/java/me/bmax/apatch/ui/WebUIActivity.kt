@@ -34,9 +34,9 @@ import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import me.bmax.apatch.APApplication
+import me.bmax.apatch.data.AppRepository
 import me.bmax.apatch.ui.component.LoadingIndicator
 import me.bmax.apatch.ui.theme.APatchTheme
-import me.bmax.apatch.ui.page.superuser.SuperUserViewModel
 import me.bmax.apatch.ui.webui.AppIconUtil
 import me.bmax.apatch.ui.webui.Insets
 import me.bmax.apatch.ui.webui.SuFilePathHandler
@@ -76,8 +76,8 @@ class WebUIActivity : ComponentActivity() {
         }
 
         lifecycleScope.launch {
-            if (SuperUserViewModel.apps.isEmpty()) {
-                SuperUserViewModel().fetchAppList()
+            if (AppRepository.apps.value.isEmpty()) {
+                AppRepository.fetchAppList()
             }
             setupWebView()
         }

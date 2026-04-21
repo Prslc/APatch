@@ -55,25 +55,14 @@ fun AppIconImage(
             }
         }
 
-        Crossfade(
-            targetState = appBitmap,
-            animationSpec = tween(durationMillis = 150),
-            label = "IconFade"
-        ) { icon ->
-            if (icon == null) {
-                PlaceHolderBox(
-                    Modifier
-                        .fillMaxSize()
-                        .aspectRatio(1f)
-                )
-            } else {
-                val imageBitmap = remember(icon) { icon.asImageBitmap() }
-                Image(
-                    bitmap = imageBitmap,
-                    contentDescription = label,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
+        if (appBitmap == null) {
+            PlaceHolderBox(Modifier.fillMaxSize())
+        } else {
+            Image(
+                bitmap = appBitmap!!.asImageBitmap(),
+                contentDescription = label,
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }
