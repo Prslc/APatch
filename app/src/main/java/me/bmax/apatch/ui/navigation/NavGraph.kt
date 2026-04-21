@@ -12,12 +12,12 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.toRoute
 import me.bmax.apatch.ui.MainScreen
 import me.bmax.apatch.ui.component.ModuleInstallDialog
-import me.bmax.apatch.ui.screen.AboutScreen
-import me.bmax.apatch.ui.screen.ExecuteAPMActionScreen
-import me.bmax.apatch.ui.screen.InstallScreen
-import me.bmax.apatch.ui.screen.MODULE_TYPE
-import me.bmax.apatch.ui.screen.ModeSelectScreen
-import me.bmax.apatch.ui.screen.PatchesScreen
+import me.bmax.apatch.ui.page.about.AboutScreen
+import me.bmax.apatch.ui.page.apm.ExecuteAPMActionScreen
+import me.bmax.apatch.ui.page.install.InstallScreen
+import me.bmax.apatch.ui.page.install.MODULE_TYPE
+import me.bmax.apatch.ui.page.patch.mode.PatchMode
+import me.bmax.apatch.ui.page.patch.PatchesScreen
 
 @Composable
 fun NavGraph() {
@@ -26,7 +26,7 @@ fun NavGraph() {
 
     NavHost(
         navController = navigator.navController,
-        startDestination = Main,
+        startDestination = MainRoute,
         enterTransition = {
             slideInHorizontally(
                 initialOffsetX = { it },
@@ -52,44 +52,44 @@ fun NavGraph() {
             )
         }
     ) {
-        dialog<InstallPreview> { backStackEntry ->
-            val args = backStackEntry.toRoute<InstallPreview>()
+        dialog<InstallPreviewRoute> { backStackEntry ->
+            val args = backStackEntry.toRoute<InstallPreviewRoute>()
             ModuleInstallDialog(
                 uri = args.uriString.toUri(),
                 onDismiss = { navigator.navController.popBackStack() },
                 onConfirm = { uri ->
                     navigator.navController.popBackStack()
                     navigator.navController.navigate(
-                        Install(uriString = uri.toString(), type = MODULE_TYPE.APM)
+                        InstallRoute(uriString = uri.toString(), type = MODULE_TYPE.APM)
                     )
                 }
             )
         }
 
-        composable<Main> {
+        composable<MainRoute> {
             MainScreen()
         }
 
-        composable<ModeSelect> {
-            ModeSelectScreen()
+        composable<ModeSelectRoute> {
+            PatchMode()
         }
 
-        composable<About> {
+        composable<AboutRoute> {
             AboutScreen()
         }
 
-        composable<Patches> { backStackEntry ->
-            val args = backStackEntry.toRoute<Patches>()
+        composable<PatchesRoute> { backStackEntry ->
+            val args = backStackEntry.toRoute<PatchesRoute>()
             PatchesScreen(mode = args.mode)
         }
 
-        composable<ExecuteAction> { backStackEntry ->
-            val args = backStackEntry.toRoute<ExecuteAction>()
+        composable<ExecuteActionRoute> { backStackEntry ->
+            val args = backStackEntry.toRoute<ExecuteActionRoute>()
             ExecuteAPMActionScreen(moduleId = args.moduleId)
         }
 
-        composable<Install> { backStackEntry ->
-            val args = backStackEntry.toRoute<Install>()
+        composable<InstallRoute> { backStackEntry ->
+            val args = backStackEntry.toRoute<InstallRoute>()
             val uri = args.uriString.toUri()
             InstallScreen(
                 uri = uri,

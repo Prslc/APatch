@@ -20,7 +20,7 @@ import me.bmax.apatch.APApplication
 import me.bmax.apatch.APApplication.Companion.SUPERCMD
 import me.bmax.apatch.BuildConfig
 import me.bmax.apatch.apApp
-import me.bmax.apatch.ui.screen.MODULE_TYPE
+import me.bmax.apatch.ui.page.install.MODULE_TYPE
 import org.json.JSONArray
 import java.io.File
 import java.security.MessageDigest

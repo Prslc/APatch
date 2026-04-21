@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.viewmodel
+package me.bmax.apatch.ui.page.home
 
 import android.os.Build
 import android.system.Os
@@ -18,8 +18,8 @@ import me.bmax.apatch.util.getModuleCount
 import me.bmax.apatch.util.getSELinuxStatus
 
 class HomeViewModel : ViewModel() {
-    val kpState = APApplication.kpStateLiveData.asFlow()
-    val apState = APApplication.apStateLiveData.asFlow()
+    val kpState = APApplication.Companion.kpStateLiveData.asFlow()
+    val apState = APApplication.Companion.apStateLiveData.asFlow()
 
     private val _apmCount = MutableStateFlow(0)
     private val _kpmCount = MutableStateFlow(0)

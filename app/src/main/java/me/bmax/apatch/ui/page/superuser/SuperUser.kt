@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.screen
+package me.bmax.apatch.ui.page.superuser
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -47,7 +47,7 @@ import me.bmax.apatch.ui.component.DropdownItem
 import me.bmax.apatch.ui.component.LoadingIndicator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
-import me.bmax.apatch.ui.viewmodel.SuperUserViewModel
+import me.bmax.apatch.ui.page.superuser.SuperUserViewModel
 import me.bmax.apatch.util.PkgConfig
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon

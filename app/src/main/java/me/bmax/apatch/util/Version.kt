@@ -11,7 +11,7 @@ import me.bmax.apatch.APApplication
 import me.bmax.apatch.BuildConfig
 import me.bmax.apatch.Natives
 import me.bmax.apatch.apApp
-import me.bmax.apatch.ui.viewmodel.KPModel
+import me.bmax.apatch.ui.page.kpm.KPModel
 import org.ini4j.Ini
 import java.io.File
 import java.io.StringReader

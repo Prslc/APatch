@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.screen
+package me.bmax.apatch.ui.page.patch.mode
 
 import android.app.Activity
 import android.content.Intent
@@ -29,7 +29,7 @@ import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
-import me.bmax.apatch.ui.viewmodel.PatchesViewModel
+import me.bmax.apatch.ui.page.patch.PatchesViewModel
 import me.bmax.apatch.util.isABDevice
 import me.bmax.apatch.util.rootAvailable
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
@@ -48,7 +48,7 @@ import top.yukonga.miuix.kmp.preference.CheckboxPreference
 var selectedBootImage: Uri? = null
 
 @Composable
-fun ModeSelectScreen() {
+fun PatchMode() {
     val navigator = LocalNavigator.current
     val backdrop = rememberBlurBackdrop(true)
 

@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.screen
+package me.bmax.apatch.ui.page.settings
 
 import android.app.Activity
 import android.app.LocaleManager

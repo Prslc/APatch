@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.screen
+package me.bmax.apatch.ui.page.kpm
 
 import android.app.Activity.RESULT_OK
 import android.content.Intent
@@ -56,12 +56,11 @@ import me.bmax.apatch.ui.component.LoadingIndicator
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.component.rememberLoadingDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
+import me.bmax.apatch.ui.page.install.MODULE_TYPE
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
-import me.bmax.apatch.ui.viewmodel.KPModel
-import me.bmax.apatch.ui.viewmodel.KPModuleViewModel
-import me.bmax.apatch.ui.viewmodel.PatchesViewModel
+import me.bmax.apatch.ui.page.patch.PatchesViewModel
 import me.bmax.apatch.util.controlKernelModule
 import me.bmax.apatch.util.loadKernelModule
 import me.bmax.apatch.util.unloadKernelModule

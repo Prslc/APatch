@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.viewmodel
+package me.bmax.apatch.ui.page.apm
 
 import android.os.SystemClock
 import android.util.Log
@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import me.bmax.apatch.apApp
 import me.bmax.apatch.util.HanziToPinyin
 import me.bmax.apatch.util.listModules
+import okhttp3.Request
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.Collator
@@ -131,12 +132,12 @@ class APModuleViewModel : ViewModel() {
             return empty
         }
         // download updateJson
-        val result = kotlin.runCatching {
+        val result = runCatching {
             val url = m.updateJson
             Log.i(TAG, "checkUpdate url: $url")
             val response = apApp.okhttpClient
                 .newCall(
-                    okhttp3.Request.Builder()
+                    Request.Builder()
                         .url(url)
                         .build()
                 ).execute()
@@ -153,7 +154,7 @@ class APModuleViewModel : ViewModel() {
             return empty
         }
 
-        val updateJson = kotlin.runCatching {
+        val updateJson = runCatching {
             JSONObject(result)
         }.getOrNull() ?: return empty
 

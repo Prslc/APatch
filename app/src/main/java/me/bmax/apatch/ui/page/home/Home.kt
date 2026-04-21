@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.screen
+package me.bmax.apatch.ui.page.home
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -54,7 +54,7 @@ import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
-import me.bmax.apatch.ui.viewmodel.HomeViewModel
+import me.bmax.apatch.ui.page.home.HomeViewModel
 import me.bmax.apatch.util.Version.getManagerVersion
 import me.bmax.apatch.util.reboot
 import top.yukonga.miuix.kmp.basic.BasicComponent
