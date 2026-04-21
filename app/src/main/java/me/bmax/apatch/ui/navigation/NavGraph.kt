@@ -52,10 +52,6 @@ fun NavGraph() {
             )
         }
     ) {
-        composable<Main> {
-            MainScreen()
-        }
-
         dialog<InstallPreview> { backStackEntry ->
             val args = backStackEntry.toRoute<InstallPreview>()
             ModuleInstallDialog(
@@ -68,6 +64,10 @@ fun NavGraph() {
                     )
                 }
             )
+        }
+
+        composable<Main> {
+            MainScreen()
         }
 
         composable<ModeSelect> {

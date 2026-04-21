@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalUriHandler
@@ -24,9 +25,8 @@ import androidx.compose.ui.unit.dp
 import me.bmax.apatch.BuildConfig
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.navigation.LocalNavigator
-import me.bmax.apatch.ui.navigation.Navigator
-import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.blurEffect
+import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.util.Version
 import top.yukonga.miuix.kmp.basic.Card
@@ -77,6 +77,8 @@ fun AboutScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
+                Spacer(modifier = Modifier.height(40.dp))
+
                 Surface(
                     modifier = Modifier.size(95.dp),
                     color = colorResource(id = R.color.ic_launcher_background),
@@ -84,6 +86,7 @@ fun AboutScreen() {
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                        modifier = Modifier.scale(1.4f),
                         contentDescription = "icon",
                     )
                 }
