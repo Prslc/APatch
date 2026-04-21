@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -22,10 +21,8 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,19 +33,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.launch
-import me.bmax.apatch.APApplication
-import me.bmax.apatch.Natives
 import me.bmax.apatch.R
-import me.bmax.apatch.apApp
+import me.bmax.apatch.data.AppInfo
+import me.bmax.apatch.data.AppRepository
 import me.bmax.apatch.ui.component.AppIconImage
 import me.bmax.apatch.ui.component.DropdownItem
 import me.bmax.apatch.ui.component.LoadingIndicator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
-import me.bmax.apatch.ui.page.superuser.SuperUserViewModel
-import me.bmax.apatch.util.PkgConfig
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.IconButton
@@ -74,13 +68,14 @@ import top.yukonga.miuix.kmp.window.WindowListPopup
 @Composable
 fun SuperUserScreen(bottomPadding: Dp) {
     val viewModel = viewModel<SuperUserViewModel>()
-    val scope = rememberCoroutineScope()
-    val scrollBehavior = MiuixScrollBehavior()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val appList by viewModel.filteredApps.collectAsStateWithLifecycle()
 
+    val scrollBehavior = MiuixScrollBehavior()
     val backdrop = rememberLayerBackdrop()
 
     LaunchedEffect(Unit) {
-        if (viewModel.appList.isEmpty()) {
+        if (AppRepository.apps.value.isEmpty()) {
             viewModel.fetchAppList()
         }
     }
@@ -98,17 +93,17 @@ fun SuperUserScreen(bottomPadding: Dp) {
         Box(modifier = Modifier.fillMaxSize()) {
             PullToRefresh(
                 modifier = Modifier.fillMaxSize(),
-                isRefreshing = viewModel.isRefreshing,
+                isRefreshing = uiState.isRefreshing,
                 refreshTexts = listOf(
                     stringResource(R.string.refresh_pulling),
                     stringResource(R.string.refresh_release),
                     stringResource(R.string.refresh_refresh),
                     stringResource(R.string.refresh_complete)
                 ),
-                onRefresh = { scope.launch { viewModel.fetchAppList() } },
+                onRefresh = { viewModel.fetchAppList() },
                 contentPadding = innerPadding
             ) {
-                if (viewModel.isRefreshing && viewModel.appList.isEmpty()) {
+                if (uiState.isRefreshing && appList.isEmpty()) {
                     LoadingIndicator()
                 } else {
                     LazyColumn(
@@ -125,10 +120,16 @@ fun SuperUserScreen(bottomPadding: Dp) {
                         )
                     ) {
                         items(
-                            viewModel.appList.filter { it.packageName != apApp.packageName },
+                            items = appList,
                             key = { it.packageName + it.uid }
                         ) { app ->
-                            AppItem(app)
+                            AppItem(
+                                app = app,
+                                onToggleSu = { granted -> viewModel.toggleSu(app, granted) },
+                                onToggleExclude = { excluded ->
+                                    viewModel.toggleExclude(app, excluded)
+                                }
+                            )
                         }
                     }
                 }
@@ -137,14 +138,13 @@ fun SuperUserScreen(bottomPadding: Dp) {
     }
 }
 
-
 @Composable
 fun SuperTopBar(
     viewModel: SuperUserViewModel,
     backdrop: LayerBackdrop,
     scrollBehavior: ScrollBehavior
 ) {
-    val scope = rememberCoroutineScope()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val appListItemsCount = 2
 
     var expanded by remember { mutableStateOf(false) }
@@ -172,13 +172,13 @@ fun SuperTopBar(
                             optionSize = appListItemsCount,
                             index = 0,
                             onSelectedIndexChange = {
-                                scope.launch { viewModel.fetchAppList() }
+                                viewModel.fetchAppList()
                                 showDropdown.value = false
                             }
                         )
 
                         DropdownItem(
-                            text = if (viewModel.showSystemApps) {
+                            text = if (uiState.showSystemApps) {
                                 stringResource(R.string.su_hide_system_apps)
                             } else {
                                 stringResource(R.string.su_show_system_apps)
@@ -186,7 +186,7 @@ fun SuperTopBar(
                             optionSize = appListItemsCount,
                             index = 1,
                             onSelectedIndexChange = {
-                                viewModel.showSystemApps = !viewModel.showSystemApps
+                                viewModel.toggleSystemApps()
                                 showDropdown.value = false
                             }
                         )
@@ -202,31 +202,33 @@ fun SuperTopBar(
                 .padding(top = 8.dp, bottom = 4.dp),
             inputField = {
                 InputField(
-                    query = viewModel.search,
-                    onQueryChange = { viewModel.search = it },
+                    query = uiState.search,
+                    onQueryChange = { viewModel.updateSearch(it) },
                     onSearch = { expanded = false },
                     expanded = expanded,
                     onExpandedChange = {
                         expanded = it
-                        if (!it) viewModel.search = ""
+                        if (!it) viewModel.updateSearch("")
                     }
                 )
             },
             expanded = expanded,
             onExpandedChange = { expanded = it },
-            content = {
-            }
+            content = { }
         )
     }
 }
 
-
 @Composable
-private fun AppItem(app: SuperUserViewModel.AppInfo) {
-    val config = app.config
-    var showEditProfile by remember { mutableStateOf(false) }
-    var rootGranted by remember { mutableStateOf(config.allow != 0) }
-    var excludeApp by remember { mutableIntStateOf(config.exclude) }
+private fun AppItem(
+    app: AppInfo,
+    onToggleSu: (Boolean) -> Unit,
+    onToggleExclude: (Boolean) -> Unit
+) {
+    var isExpanded by remember { mutableStateOf(false) }
+
+    val isAllowed = app.config.allow != 0
+    val isExcluded = app.config.exclude == 1
 
     Card(
         modifier = Modifier
@@ -237,13 +239,10 @@ private fun AppItem(app: SuperUserViewModel.AppInfo) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    if (!rootGranted) {
-                        showEditProfile = !showEditProfile
+                    if (!isAllowed) {
+                        isExpanded = !isExpanded
                     } else {
-                        rootGranted = false
-                        config.allow = 0
-                        Natives.revokeSu(app.uid)
-                        PkgConfig.changeConfig(config)
+                        onToggleSu(false)
                     }
                 }
                 .padding(horizontal = 12.dp, vertical = 8.dp)
@@ -254,74 +253,54 @@ private fun AppItem(app: SuperUserViewModel.AppInfo) {
                     label = app.label,
                     modifier = Modifier
                         .size(48.dp)
-                        .padding(end = 12.dp)
-                    )
+                        .padding(4.dp)
+                )
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(app.label, fontWeight = FontWeight.Bold)
-                    Text(app.packageName, style = MiuixTheme.textStyles.body2)
-                    FlowRow {
-                        if (excludeApp == 1) {
+                    Text(
+                        text = app.label,
+                        fontWeight = FontWeight.Bold,
+                        color = colorScheme.onSurface,
+                        maxLines = 1
+                    )
+                    Text(
+                        text = app.packageName,
+                        style = MiuixTheme.textStyles.body2,
+                        color = colorScheme.onSurfaceVariantActions,
+                        maxLines = 1
+                    )
+
+                    Row {
+                        if (isExcluded) {
                             LabelText(label = stringResource(R.string.su_pkg_excluded_label))
                         }
-                        if (rootGranted) {
-                            LabelText(label = config.profile.uid.toString())
-                            LabelText(label = config.profile.toUid.toString())
-                            LabelText(
-                                label = config.profile.scontext.ifEmpty { stringResource(R.string.su_selinux_via_hook) }
-                            )
+                        if (isAllowed) {
+                            LabelText(label = "UID: ${app.config.profile.uid}")
+                            val scontext = app.config.profile.scontext.ifEmpty {
+                                stringResource(R.string.su_selinux_via_hook)
+                            }
+                            LabelText(label = scontext)
                         }
                     }
                 }
 
                 Switch(
-                    checked = rootGranted,
-                    onCheckedChange = {
-                        rootGranted = !rootGranted
-                        if (rootGranted) {
-                            excludeApp = 0
-                            config.allow = 1
-                            config.exclude = 0
-                            config.profile.scontext = APApplication.MAGISK_SCONTEXT
-                        } else {
-                            config.allow = 0
-                        }
-                        config.profile.uid = app.uid
-                        PkgConfig.changeConfig(config)
-                        if (config.allow == 1) {
-                            Natives.grantSu(app.uid, 0, config.profile.scontext)
-                            Natives.setUidExclude(app.uid, 0)
-                        } else {
-                            Natives.revokeSu(app.uid)
-                        }
-                    }
+                    checked = app.config.allow != 0,
+                    onCheckedChange = { onToggleSu(it) }
                 )
             }
 
-            AnimatedVisibility(
-                visible = showEditProfile && !rootGranted,
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                SwitchPreference(
-                    modifier = Modifier.fillMaxWidth(),
-                    title = stringResource(R.string.su_pkg_excluded_setting_title),
-                    summary = stringResource(R.string.su_pkg_excluded_setting_summary),
-                    checked = excludeApp == 1,
-                    onCheckedChange = {
-                        if (it) {
-                            excludeApp = 1
-                            config.allow = 0
-                            config.profile.scontext = APApplication.DEFAULT_SCONTEXT
-                            Natives.revokeSu(app.uid)
-                        } else {
-                            excludeApp = 0
-                        }
-                        config.exclude = excludeApp
-                        config.profile.uid = app.uid
-                        PkgConfig.changeConfig(config)
-                        Natives.setUidExclude(app.uid, excludeApp)
-                    }
-                )
+            AnimatedVisibility(visible = isExpanded && !isAllowed) {
+                Column {
+                    Box(modifier = Modifier.size(8.dp))
+                    SwitchPreference(
+                        modifier = Modifier.fillMaxWidth(),
+                        title = stringResource(R.string.su_pkg_excluded_setting_title),
+                        summary = stringResource(R.string.su_pkg_excluded_setting_summary),
+                        checked = isExcluded,
+                        onCheckedChange = { onToggleExclude(it) }
+                    )
+                }
             }
         }
     }

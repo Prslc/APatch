@@ -1,191 +1,140 @@
 package me.bmax.apatch.ui.page.superuser
 
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageInfo
-import android.graphics.drawable.Drawable
-import android.os.IBinder
-import android.os.Parcelable
-import android.util.Log
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.topjohnwu.superuser.Shell
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.parcelize.Parcelize
-import me.bmax.apatch.IAPRootService
+import me.bmax.apatch.APApplication
 import me.bmax.apatch.Natives
 import me.bmax.apatch.apApp
-import me.bmax.apatch.services.RootServices
-import me.bmax.apatch.util.APatchCli
-import me.bmax.apatch.util.HanziToPinyin
+import me.bmax.apatch.data.AppInfo
+import me.bmax.apatch.data.AppRepository
 import me.bmax.apatch.util.PkgConfig
 import java.text.Collator
 import java.util.Locale
-import kotlin.concurrent.thread
-import kotlin.coroutines.resume
 
 class SuperUserViewModel : ViewModel() {
-    companion object {
-        private const val TAG = "SuperUserViewModel"
-        private val appsLock = Any()
-        var apps by mutableStateOf<List<AppInfo>>(emptyList())
 
-        suspend fun fetchAppListIfEmpty(viewModel: SuperUserViewModel) {
-            if (apps.isEmpty()) {
-                viewModel.fetchAppList()
-            }
+    private val _uiState = MutableStateFlow(SuperUserUiState())
+    val uiState = _uiState.asStateFlow()
+
+    private val staticCollator = Collator.getInstance(Locale.getDefault())
+
+    private val appComparator = compareBy<AppInfo> {
+        when {
+            it.config.allow != 0 -> 0
+            it.config.exclude == 1 -> 1
+            else -> 2
         }
-        fun getAppIconDrawable(context: Context, packageName: String): Drawable? {
-            val appList = synchronized(appsLock) { apps }
-            val appDetail = appList.find { it.packageName == packageName }
-            return appDetail?.packageInfo?.applicationInfo?.loadIcon(context.packageManager)
+    }.thenBy(staticCollator) { it.label }
+
+    @OptIn(kotlinx.coroutines.FlowPreview::class)
+    val filteredApps = combine(
+        AppRepository.apps,
+        uiState.map { it.search }.distinctUntilChanged().debounce(200),
+        uiState.map { it.showSystemApps }.distinctUntilChanged()
+    ) { apps, query, showSystem ->
+        withContext(Dispatchers.Default) {
+            val trimmedQuery = query.trim()
+
+            apps.asSequence()
+                .filter { app ->
+                    if (app.packageName == apApp.packageName) return@filter false
+                    val isSystem =
+                        (app.packageInfo.applicationInfo!!.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+                    val matchSystem = showSystem || !isSystem || app.uid == 2000
+                    if (!matchSystem) return@filter false
+
+                    trimmedQuery.isEmpty() ||
+                            app.packageName.contains(trimmedQuery, ignoreCase = true) ||
+                            app.lowercaseLabel.contains(trimmedQuery) ||
+                            app.pinyinLabel.contains(trimmedQuery)
+                }
+                .sortedWith(appComparator)
+                .toList()
         }
-    }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    @Parcelize
-    data class AppInfo(
-        val label: String, val packageInfo: PackageInfo, val config: PkgConfig.Config
-    ) : Parcelable {
-        val packageName: String
-            get() = packageInfo.packageName
-        val uid: Int
-            get() = packageInfo.applicationInfo!!.uid
-    }
-
-    var search by mutableStateOf("")
-    var showSystemApps by mutableStateOf(false)
-    var isRefreshing by mutableStateOf(false)
-        private set
-
-    private val sortedList by derivedStateOf {
-        val comparator = compareBy<AppInfo> {
-            when {
-                it.config.allow != 0 -> 0
-                it.config.exclude == 1 -> 1
-                else -> 2
-            }
-        }.then(compareBy(Collator.getInstance(Locale.getDefault()), AppInfo::label))
-        apps.sortedWith(comparator)
-    }
-
-    val appList by derivedStateOf {
-        sortedList.filter {
-            it.label.lowercase().contains(search.lowercase()) || it.packageName.lowercase()
-                .contains(search.lowercase()) || HanziToPinyin.getInstance()
-                .toPinyinString(it.label).contains(search.lowercase())
-        }.filter {
-            it.uid == 2000 // Always show shell
-                    || showSystemApps || it.packageInfo.applicationInfo!!.flags.and(ApplicationInfo.FLAG_SYSTEM) == 0
-        }
-    }
-
-    private suspend inline fun connectRootService(
-        crossinline onDisconnect: () -> Unit = {}
-    ): Pair<IBinder, ServiceConnection> = suspendCancellableCoroutine { cont ->
-        val connection = object : ServiceConnection {
-            override fun onServiceDisconnected(name: ComponentName?) {
-                onDisconnect()
-            }
-
-            override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
-                cont.resume(binder as IBinder to this)
-            }
-        }
-
-        val intent = Intent(apApp, RootServices::class.java)
-        val task = RootServices.bindOrTask(
-            intent,
-            Shell.EXECUTOR,
-            connection,
-        )
-        val shell = APatchCli.SHELL
-        task?.let { shell.execTask(it) }
-
-        cont.invokeOnCancellation {
+    fun fetchAppList() {
+        viewModelScope.launch {
             try {
-                apApp.unbindService(connection)
+                _uiState.update { it.copy(isRefreshing = true) }
+                AppRepository.fetchAppList()
             } catch (e: Exception) {
-                Log.w("SuperUserViewModel", "unbindService failed", e)
+                e.printStackTrace()
+            } finally {
+                kotlinx.coroutines.delay(100)
+                _uiState.update { it.copy(isRefreshing = false) }
             }
         }
     }
 
-    private fun stopRootService() {
-        val intent = Intent(apApp, RootServices::class.java)
-        RootServices.stop(intent)
+    fun toggleSu(app: AppInfo, granted: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val newConfig = app.config.copy().apply {
+                if (granted) {
+                    allow = 1
+                    exclude = 0
+                    Natives.grantSu(app.uid, 0, profile.scontext)
+                    Natives.setUidExclude(app.uid, 0)
+                } else {
+                    allow = 0
+                    Natives.revokeSu(app.uid)
+                }
+            }
+
+            PkgConfig.changeConfig(newConfig)
+            AppRepository.updateLocalConfig(app.uid, newConfig)
+        }
     }
 
-    suspend fun fetchAppList() {
-        isRefreshing = true
-
-        try {
-            val result = connectRootService {
-                Log.w(TAG, "RootService disconnected")
+    fun toggleExclude(app: AppInfo, excluded: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val newConfig = app.config.copy().apply {
+                if (excluded) {
+                    allow = 0
+                    exclude = 1
+                    profile = profile.copy(
+                        uid = app.uid,
+                        scontext = APApplication.MAGISK_SCONTEXT
+                    )
+                    Natives.revokeSu(app.uid)
+                    Natives.setUidExclude(app.uid, 1)
+                } else {
+                    exclude = 0
+                    Natives.setUidExclude(app.uid, 0)
+                }
+                profile = profile.copy(uid = app.uid)
             }
 
-            withContext(Dispatchers.IO) {
-                val binder = result.first
-                val allPackages = IAPRootService.Stub.asInterface(binder).getPackages(0)
-
-                withContext(Dispatchers.Main) {
-                    stopRootService()
-                }
-                val uids = Natives.suUids().toList()
-                Log.d(TAG, "all allows: $uids")
-
-                var configs: HashMap<Int, PkgConfig.Config> = HashMap()
-                thread {
-                    Natives.su()
-                    configs = PkgConfig.readConfigs()
-                }.join()
-
-                Log.d(TAG, "all configs: $configs")
-
-                val newApps = allPackages.list.map {
-                    val appInfo = it.applicationInfo
-                    val uid = appInfo!!.uid
-                    val actProfile = if (uids.contains(uid)) Natives.suProfile(uid) else null
-                    val config = configs.getOrDefault(
-                        uid,
-                        PkgConfig.Config(
-                            appInfo.packageName,
-                            Natives.isUidExcluded(uid),
-                            0,
-                            Natives.Profile(uid = uid)
-                        )
-                    )
-                    config.allow = 0
-
-                    // from kernel
-                    if (actProfile != null) {
-                        config.allow = 1
-                        config.profile = actProfile
-                    }
-                    AppInfo(
-                        label = appInfo.loadLabel(apApp.packageManager).toString(),
-                        packageInfo = it,
-                        config = config
-                    )
-                }
-
-                withContext(Dispatchers.Main) {
-                    synchronized(appsLock) {
-                        apps = newApps
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to fetch app list", e)
-        } finally {
-            isRefreshing = false
+            PkgConfig.changeConfig(newConfig)
+            AppRepository.updateLocalConfig(app.uid, newConfig)
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelScope.launch(Dispatchers.Main) {
+            AppRepository.stopRootService()
+        }
+    }
+
+    fun updateSearch(query: String) {
+        _uiState.update { it.copy(search = query) }
+    }
+
+    fun toggleSystemApps() {
+        _uiState.update { it.copy(showSystemApps = !it.showSystemApps) }
     }
 }
