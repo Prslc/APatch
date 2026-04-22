@@ -1,6 +1,5 @@
 package me.bmax.apatch.ui.page.apm
 
-import android.os.SystemClock
 import android.util.Log
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -8,13 +7,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.topjohnwu.superuser.io.SuFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import me.bmax.apatch.R
 import me.bmax.apatch.apApp
 import me.bmax.apatch.util.HanziToPinyin
 import me.bmax.apatch.util.listModules
-import okhttp3.Request
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.Collator
@@ -23,103 +24,99 @@ import java.util.Locale
 class APModuleViewModel : ViewModel() {
     companion object {
         private const val TAG = "ModuleViewModel"
-        private var modules by mutableStateOf<List<ModuleInfo>>(emptyList())
     }
 
-    class ModuleInfo(
-        val id: String,
-        val name: String,
-        val author: String,
-        val version: String,
-        val versionCode: Int,
-        val description: String,
-        val enabled: Boolean,
-        val update: Boolean,
-        val remove: Boolean,
-        val updateJson: String,
-        val hasWebUi: Boolean,
-        val hasActionScript: Boolean,
-        val metamodule: Boolean,
-        val actionIconPath: String?,
-        val webUiIconPath: String?,
-    )
-
-    data class ModuleUpdateInfo(
-        val version: String,
-        val versionCode: Int,
-        val zipUrl: String,
-        val changelog: String,
-    )
-
-    var isRefreshing by mutableStateOf(false)
+    var uiState by mutableStateOf(APMUiState())
         private set
 
-    var search by mutableStateOf("")
-
-    val moduleList by derivedStateOf {
+    val filteredModules by derivedStateOf {
         val collator = Collator.getInstance(Locale.getDefault())
         val comparator = compareByDescending<ModuleInfo> { it.metamodule && it.enabled }
             .thenBy(collator) { it.id }
-        modules.filter {
-            it.id.contains(search, true) || it.name.contains(search, true) || HanziToPinyin.getInstance()
-                .toPinyinString(it.name).contains(search, true)
+
+        val query = uiState.search
+        uiState.modules.filter {
+            it.id.contains(query, true) ||
+                    it.name.contains(query, true) ||
+                    it.pinyinName.contains(query, true)
         }.sortedWith(comparator)
     }
 
-    var isNeedRefresh by mutableStateOf(false)
-        private set
+    fun onSearchChange(newSearch: String) {
+        uiState = uiState.copy(search = newSearch)
+    }
 
     fun markNeedRefresh() {
-        isNeedRefresh = true
+        uiState = uiState.copy(isNeedRefresh = true)
+    }
+
+    private suspend fun checkMetaModuleWarning(modules: List<ModuleInfo>) = withContext(Dispatchers.IO) {
+        val needsMountModule = modules.any { module ->
+            val moduleDir = "/data/adb/modules/${module.id}"
+            // Module requires mounting if it has a system dir and no skip_mount file
+            SuFile.open("$moduleDir/system").isDirectory && !SuFile.open("$moduleDir/skip_mount").isFile
+        }
+
+        val warning = if (needsMountModule) {
+            val metaDir = "/data/adb/metamodule"
+            when {
+                !SuFile.open("$metaDir/module.prop").isFile -> apApp.getString(R.string.no_meta_module_installed)
+                SuFile.open("$metaDir/remove").isFile -> apApp.getString(R.string.meta_module_removed)
+                SuFile.open("$metaDir/disable").isFile -> apApp.getString(R.string.meta_module_disabled)
+                else -> null
+            }
+        } else null
+
+        withContext(Dispatchers.Main) {
+            uiState = uiState.copy(metaModuleWarning = warning)
+        }
     }
 
     fun fetchModuleList() {
-        viewModelScope.launch(Dispatchers.IO) {
-            isRefreshing = true
-
-            // Artificial delay to prevent state coalescing in Compose
+        viewModelScope.launch {
+            uiState = uiState.copy(isRefreshing = true)
             delay(50)
 
-            val start = SystemClock.elapsedRealtime()
+            val newList = withContext(Dispatchers.IO) {
+                runCatching {
+                    val result = listModules()
+                    val array = JSONArray(result)
+                    val h2p = HanziToPinyin.getInstance()
 
-            try {
-                val result = listModules()
-                Log.i(TAG, "result: $result")
-
-                val array = JSONArray(result)
-                val newList = (0 until array.length())
-                    .asSequence()
-                    .map { array.getJSONObject(it) }
-                    .map { obj ->
-                        ModuleInfo(
-                            obj.getString("id"),
-                            obj.optString("name"),
-                            obj.optString("author", "Unknown"),
-                            obj.optString("version", "Unknown"),
-                            obj.optInt("versionCode", 0),
-                            obj.optString("description"),
-                            obj.getBoolean("enabled"),
-                            obj.getBoolean("update"),
-                            obj.getBoolean("remove"),
-                            obj.optString("updateJson"),
-                            obj.getBooleanCompat("web"),
-                            obj.getBooleanCompat("action"),
-                            obj.getBooleanCompat("metamodule"),
-                            obj.optString("actionIcon").takeIf { it.isNotBlank() },
-                            obj.optString("webuiIcon").takeIf { it.isNotBlank() }
-                        )
-                    }.toList()
-
-                modules = newList
-                isNeedRefresh = false
-            } catch (e: Exception) {
-                Log.e(TAG, "fetchModuleList failed: ", e)
-            } finally {
-                // Always reset refreshing state here
-                isRefreshing = false
-                Log.i(TAG, "load cost: ${SystemClock.elapsedRealtime() - start}")
+                    (0 until array.length()).map { i ->
+                        parseModuleInfo(array.getJSONObject(i), h2p)
+                    }
+                }.getOrElse {
+                    Log.e(TAG, "fetchModuleList failed", it)
+                    emptyList()
+                }
             }
+
+            uiState = uiState.copy(modules = newList, isNeedRefresh = false, isRefreshing = false)
+            checkMetaModuleWarning(newList)
         }
+    }
+
+    private fun parseModuleInfo(obj: JSONObject, h2p: HanziToPinyin): ModuleInfo {
+        val name = obj.optString("name")
+        return ModuleInfo(
+            id = obj.getString("id"),
+            name = name,
+            pinyinName = h2p.toPinyinString(name).lowercase(Locale.getDefault()),
+            author = obj.optString("author", "Unknown"),
+            version = obj.optString("version", "Unknown"),
+            versionCode = obj.optInt("versionCode", 0),
+            description = obj.optString("description"),
+            enabled = obj.getBoolean("enabled"),
+            update = obj.getBoolean("update"),
+            remove = obj.getBoolean("remove"),
+            updateJson = obj.optString("updateJson"),
+            hasWebUi = obj.getBooleanCompat("web"),
+            hasActionScript = obj.getBooleanCompat("action"),
+            metamodule = obj.getBooleanCompat("metamodule"),
+            actionIconPath = obj.optString("actionIcon").takeIf { it.isNotBlank() },
+            webUiIconPath = obj.optString("webuiIcon").takeIf { it.isNotBlank() }
+        )
     }
 
     private fun sanitizeVersionString(version: String): String {
@@ -132,18 +129,18 @@ class APModuleViewModel : ViewModel() {
             return empty
         }
         // download updateJson
-        val result = runCatching {
+        val result = kotlin.runCatching {
             val url = m.updateJson
             Log.i(TAG, "checkUpdate url: $url")
             val response = apApp.okhttpClient
                 .newCall(
-                    Request.Builder()
+                    okhttp3.Request.Builder()
                         .url(url)
                         .build()
                 ).execute()
             Log.d(TAG, "checkUpdate code: ${response.code}")
             if (response.isSuccessful) {
-                response.body?.string() ?: ""
+                response.body.string()
             } else {
                 ""
             }
@@ -154,7 +151,7 @@ class APModuleViewModel : ViewModel() {
             return empty
         }
 
-        val updateJson = runCatching {
+        val updateJson = kotlin.runCatching {
             JSONObject(result)
         }.getOrNull() ?: return empty
 

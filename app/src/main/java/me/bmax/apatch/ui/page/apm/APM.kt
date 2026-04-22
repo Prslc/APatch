@@ -71,7 +71,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.topjohnwu.superuser.io.SuFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -145,8 +144,11 @@ fun APModuleScreen(bottomPadding: Dp) {
     val context = LocalContext.current
     val snackBarHostState = remember { SnackbarHostState() }
     val scrollBehavior = MiuixScrollBehavior()
-    var expanded by remember { mutableStateOf(false) }
 
+    val viewModel = viewModel<APModuleViewModel>()
+    val uiState = viewModel.uiState
+
+    var expanded by remember { mutableStateOf(false) }
     val backdrop = rememberBlurBackdrop(true)
 
     val state by APApplication.apStateLiveData.observeAsState(APApplication.State.UNKNOWN_STATE)
@@ -161,10 +163,8 @@ fun APModuleScreen(bottomPadding: Dp) {
         return
     }
 
-    val viewModel = viewModel<APModuleViewModel>()
-
-    LaunchedEffect(Unit) {
-        if (viewModel.moduleList.isEmpty() || viewModel.isNeedRefresh) {
+    LaunchedEffect(uiState.isNeedRefresh) {
+        if (uiState.modules.isEmpty() || uiState.isNeedRefresh) {
             viewModel.fetchModuleList()
         }
     }
@@ -192,13 +192,13 @@ fun APModuleScreen(bottomPadding: Dp) {
                         .padding(top = 8.dp, bottom = 4.dp),
                     inputField = {
                         InputField(
-                            query = viewModel.search,
-                            onQueryChange = { viewModel.search = it },
+                            query = uiState.search,
+                            onQueryChange = { viewModel.onSearchChange(it) },
                             onSearch = { expanded = false },
                             expanded = expanded,
                             onExpandedChange = {
                                 expanded = it
-                                if (!it) viewModel.search = ""
+                                if (!it) viewModel.onSearchChange("")
                             }
                         )
                     },
@@ -241,7 +241,7 @@ fun APModuleScreen(bottomPadding: Dp) {
 
         PullToRefresh(
             modifier = Modifier.fillMaxSize(),
-            isRefreshing = viewModel.isRefreshing,
+            isRefreshing = uiState.isRefreshing,
             refreshTexts = listOf(
                 stringResource(R.string.refresh_pulling),
                 stringResource(R.string.refresh_release),
@@ -296,35 +296,6 @@ fun APModuleScreen(bottomPadding: Dp) {
     }
 }
 
-private fun getMetaModuleWarningText(
-    viewModel: APModuleViewModel,
-    context: Context
-): String? {
-    val needsMountModule = viewModel.moduleList.any { module ->
-        val moduleDir = "/data/adb/modules/${module.id}"
-
-        // Module requires mounting if it has a system dir and no skip_mount file
-        val hasSystem = SuFile.open("$moduleDir/system").isDirectory
-        val isSkipped = SuFile.open("$moduleDir/skip_mount").isFile
-
-        hasSystem && !isSkipped
-    }
-
-    if (!needsMountModule) return null
-
-    val metaDir = "/data/adb/metamodule"
-    val metaProp = SuFile.open("$metaDir/module.prop").isFile
-    val metaRemoved = SuFile.open("$metaDir/remove").isFile
-    val metaDisabled = SuFile.open("$metaDir/disable").isFile
-
-    return when {
-        !metaProp -> context.getString(R.string.no_meta_module_installed)
-        metaRemoved -> context.getString(R.string.meta_module_removed)
-        metaDisabled -> context.getString(R.string.meta_module_disabled)
-        else -> null
-    }
-}
-
 @Composable
 private fun MetaModuleWarningCard(
     text: String,
@@ -334,11 +305,6 @@ private fun MetaModuleWarningCard(
         message = text,
         onClose = onClosed
     )
-}
-
-private enum class ShortcutType {
-    Action,
-    WebUI
 }
 
 @Composable
@@ -387,6 +353,9 @@ private fun ModuleList(
     val showShortcutDialog = remember { mutableStateOf(false) }
     var currentModuleHasAction by remember { mutableStateOf(false) }
     var currentModuleHasWebUi by remember { mutableStateOf(false) }
+
+    val uiState = viewModel.uiState
+    val filteredModules = viewModel.filteredModules
 
     fun openShortcutDialogForType(type: ShortcutType) {
         selectedShortcutType = type
@@ -475,7 +444,7 @@ private fun ModuleList(
     }
 
     suspend fun onModuleUpdate(
-        module: APModuleViewModel.ModuleInfo,
+        module: ModuleInfo,
         changelogUrl: String,
         downloadUrl: String,
         fileName: String
@@ -489,7 +458,7 @@ private fun ModuleList(
                                 Request.Builder().url(changelogUrl).build()
                             )
                             .execute()
-                            .use { it.body?.string().orEmpty() }
+                            .use { it.body.string() }
                     } else {
                         changelogUrl
                     }
@@ -667,7 +636,7 @@ private fun ModuleList(
         }
     }
 
-    suspend fun onModuleUninstall(module: APModuleViewModel.ModuleInfo) {
+    suspend fun onModuleUninstall(module: ModuleInfo) {
         val formatter =
             if (module.metamodule) metaModuleUninstallConfirm else moduleUninstallConfirm
         val confirmResult = confirmDialog.awaitConfirm(
@@ -712,7 +681,7 @@ private fun ModuleList(
         }
     }
 
-    suspend fun onModuleUndoUninstall(module: APModuleViewModel.ModuleInfo) {
+    suspend fun onModuleUndoUninstall(module: ModuleInfo) {
         val success = loadingDialog.withLoading {
             withContext(Dispatchers.IO) {
                 undoUninstallModule(module.id)
@@ -743,7 +712,7 @@ private fun ModuleList(
         }
     }
 
-    fun onModuleAddShortcut(module: APModuleViewModel.ModuleInfo) {
+    fun onModuleAddShortcut(module: ModuleInfo) {
         shortcutModuleId = module.id
         shortcutName = module.name
         shortcutIconUri = null
@@ -770,12 +739,6 @@ private fun ModuleList(
 
     var isWarningManuallyClosed by rememberSaveable { mutableStateOf(false) }
 
-    val metaModuleWarningText by produceState<String?>(initialValue = null, viewModel.moduleList) {
-        value = withContext(Dispatchers.IO) {
-            getMetaModuleWarningText(viewModel, context)
-        }
-    }
-
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -793,13 +756,13 @@ private fun ModuleList(
     ) {
         item(key = "meta_module_warning") {
             AnimatedVisibility(
-                visible = metaModuleWarningText != null && !isWarningManuallyClosed,
+                visible = uiState.metaModuleWarning != null && !isWarningManuallyClosed,
                 enter = fadeIn() + expandVertically(),
                 exit = fadeOut() + shrinkVertically()
             ) {
                 Column(modifier = Modifier.padding(top = 8.dp)) {
                     MetaModuleWarningCard(
-                        text = metaModuleWarningText ?: "",
+                        text = uiState.metaModuleWarning ?: "",
                         onClosed = { isWarningManuallyClosed = true }
                     )
                 }
@@ -807,13 +770,13 @@ private fun ModuleList(
         }
 
         when {
-            viewModel.moduleList.isEmpty() -> {
+            filteredModules.isEmpty() -> {
                 item {
                     Box(
                         modifier = Modifier.fillParentMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        if (viewModel.isRefreshing) {
+                        if (uiState.isRefreshing) {
                             LoadingIndicator()
                         } else {
                             Text(
@@ -826,7 +789,7 @@ private fun ModuleList(
             }
 
             else -> {
-                items(viewModel.moduleList) { module ->
+                items(filteredModules) { module ->
                     val scope = rememberCoroutineScope()
                     val updatedModule by produceState(initialValue = Triple("", "", "")) {
                         scope.launch(Dispatchers.IO) {
@@ -900,14 +863,14 @@ private fun ModuleList(
 @Composable
 private fun ModuleItem(
     navigator: Navigator,
-    module: APModuleViewModel.ModuleInfo,
+    module: ModuleInfo,
     updateUrl: String,
-    onUninstall: (APModuleViewModel.ModuleInfo) -> Unit,
-    onUndoUninstall: (APModuleViewModel.ModuleInfo) -> Unit,
+    onUninstall: (ModuleInfo) -> Unit,
+    onUndoUninstall: (ModuleInfo) -> Unit,
     onCheckChanged: (Boolean) -> Unit,
-    onUpdate: (APModuleViewModel.ModuleInfo) -> Unit,
-    onClick: (APModuleViewModel.ModuleInfo) -> Unit,
-    onModuleAddShortcut: (APModuleViewModel.ModuleInfo) -> Unit,
+    onUpdate: (ModuleInfo) -> Unit,
+    onClick: (ModuleInfo) -> Unit,
+    onModuleAddShortcut: (ModuleInfo) -> Unit,
     modifier: Modifier = Modifier,
     alpha: Float = 1f,
 ) {
