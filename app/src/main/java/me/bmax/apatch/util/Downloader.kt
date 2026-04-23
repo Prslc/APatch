@@ -62,7 +62,7 @@ fun checkNewVersion(): LatestVersionInfo {
                 if (!response.isSuccessful) {
                     return defaultValue
                 }
-                val body = response.body?.string() ?: return defaultValue
+                val body = response.body.string()
 
                 val json = org.json.JSONObject(body)
                 val changelog = json.optString("body")
