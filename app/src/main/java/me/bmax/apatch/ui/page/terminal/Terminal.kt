@@ -65,9 +65,7 @@ fun TerminalScreen(
     }
 
     LaunchedEffect(state.logs) {
-        if (scrollState.value < scrollState.maxValue) {
-            scrollState.scrollTo(scrollState.maxValue)
-        }
+        scrollState.animateScrollTo(scrollState.maxValue)
     }
 
     LaunchedEffect(state.isFinished, state.isSuccess) {
@@ -103,8 +101,11 @@ fun TerminalScreen(
                                     "APatch_${taskType.name}_${format.format(Date())}.log"
                                 )
                                 file.writeText(viewModel.getFullLog())
-                                withContext(Dispatchers.Main) {
-                                    Toast.makeText(context, "Log saved to Downloads", Toast.LENGTH_SHORT).show()
+                                withContext(Dispatchers.Main) { Toast.makeText(
+                                    context,
+                                        "Log saved to Downloads",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
                         }

@@ -90,8 +90,7 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val kPatchReady = uiState.kpState != APApplication.State.UNKNOWN_STATE
-    val aPatchReady = uiState.apState != APApplication.State.ANDROIDPATCH_NOT_INSTALLED
-            && uiState.apState != APApplication.State.UNKNOWN_STATE
+    val aPatchReady = uiState.apState == APApplication.State.ANDROIDPATCH_INSTALLED
 
     val availablePages = remember(kPatchReady, aPatchReady) {
         BottomBarDestination.entries.filter { d ->
