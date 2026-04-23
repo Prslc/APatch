@@ -1,5 +1,8 @@
 package me.bmax.apatch.ui.page.settings
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class SettingsUiState(
     val isKpatchReady: Boolean = false,
     val isApatchReady: Boolean = false,

@@ -1,5 +1,6 @@
 package me.bmax.apatch.ui.page.patch
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.page.kpm.KPModel
@@ -12,6 +13,7 @@ enum class PatchMode(val sId: Int) {
     UNPATCH(R.string.patch_mode_uninstall_patch)
 }
 
+@Immutable
 data class PatchUiState(
     val bootSlot: String = "",
     val bootDev: String = "",
