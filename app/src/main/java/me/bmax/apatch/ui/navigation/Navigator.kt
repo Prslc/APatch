@@ -13,7 +13,10 @@ val LocalNavigator = staticCompositionLocalOf<Navigator> {
 }
 
 class Navigator(val navController: NavHostController) {
-    private val intentEvents = MutableSharedFlow<android.content.Intent>(extraBufferCapacity = 1)
+    private val intentEvents = MutableSharedFlow<android.content.Intent>(
+        replay = 1,
+        extraBufferCapacity = 1
+    )
 
     fun onNewIntent(intent: android.content.Intent) {
         intentEvents.tryEmit(intent)
