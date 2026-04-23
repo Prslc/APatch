@@ -74,7 +74,6 @@ import me.bmax.apatch.ui.component.LoadingIndicator
 import me.bmax.apatch.ui.component.SwitchItem
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.Navigator
-import me.bmax.apatch.ui.page.patchmode.selectedBootImage
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
@@ -130,15 +129,16 @@ fun PatchesScreen(mode: PatchesViewModel.PatchMode) {
 
     LaunchedEffect(key1 = mode) {
         viewModel.prepare(mode)
+
+        viewModel.initialUri?.let { uri ->
+            if (mode == PatchesViewModel.PatchMode.PATCH_ONLY) {
+                viewModel.copyAndParseBootimg(uri)
+            }
+        }
+
         snapshotFlow { viewModel.running }
             .filter { !it }
             .first()
-
-        if (mode == PatchesViewModel.PatchMode.PATCH_ONLY &&
-            selectedBootImage != null
-        ) {
-            viewModel.copyAndParseBootimg(selectedBootImage!!)
-        }
     }
 
     LaunchedEffect(Unit) {

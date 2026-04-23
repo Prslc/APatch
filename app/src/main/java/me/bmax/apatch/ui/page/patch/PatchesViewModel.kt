@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.FileProvider
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.topjohnwu.superuser.CallbackList
@@ -43,10 +44,16 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStreamReader
 import java.io.StringReader
+import androidx.core.net.toUri
 
 private const val TAG = "PatchViewModel"
 
-class PatchesViewModel : ViewModel() {
+class PatchesViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+
+    val initialUri: Uri? by mutableStateOf(
+        (savedStateHandle.get<String>("bootImageUri")
+                ?: savedStateHandle.get<String>("imageUri"))?.toUri()
+    )
 
     @Serializable
     enum class PatchMode(val sId: Int) {
@@ -392,11 +399,13 @@ class PatchesViewModel : ViewModel() {
             // adapt for 0.10.7 and lower KP
             var isKpOld = false
 
-            val superkey = if (useKey && this@PatchesViewModel.superkey.isNotEmpty()) this@PatchesViewModel.superkey else "su"
+            val superkey =
+                if (useKey && this@PatchesViewModel.superkey.isNotEmpty()) this@PatchesViewModel.superkey else "su"
 
             if (mode == PatchMode.PATCH_AND_INSTALL || mode == PatchMode.INSTALL_TO_NEXT_SLOT) {
 
-                val KPCheck = shell.newJob().add("truncate ${APApplication.superKey} -Z u:r:magisk:s0 -c whoami").exec()
+                val KPCheck = shell.newJob()
+                    .add("truncate ${APApplication.superKey} -Z u:r:magisk:s0 -c whoami").exec()
 
                 if (KPCheck.isSuccess && !isSuExecutable()) {
                     patchCommand.addAll(

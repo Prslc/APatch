@@ -71,8 +71,8 @@ class Navigator(val navController: NavHostController) {
     fun navigateToModeSelect() = navController.navigate(ModeSelectRoute)
     fun navigateToAbout() = navController.navigate(AboutRoute)
 
-    fun navigateToPatches(mode: PatchesViewModel.PatchMode) {
-        navController.navigate(PatchesRoute(mode))
+    fun navigateToPatches(mode: PatchesViewModel.PatchMode, uri: Uri? = null) {
+        navController.navigate(PatchesRoute(mode, uri?.toString()))
     }
 
     fun navigateToExecuteAction(moduleId: String) {
