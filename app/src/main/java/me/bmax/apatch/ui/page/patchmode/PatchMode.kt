@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.patch.mode
+package me.bmax.apatch.ui.page.patchmode
 
 import android.app.Activity
 import android.content.Intent

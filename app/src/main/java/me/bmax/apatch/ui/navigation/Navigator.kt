@@ -6,7 +6,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.flow.MutableSharedFlow
-import me.bmax.apatch.ui.page.install.MODULE_TYPE
 import me.bmax.apatch.ui.page.patch.PatchesViewModel
 
 val LocalNavigator = staticCompositionLocalOf<Navigator> {
@@ -76,19 +75,26 @@ class Navigator(val navController: NavHostController) {
         navController.navigate(PatchesRoute(mode))
     }
 
-    fun navigateToInstall(uri: Uri, type: MODULE_TYPE) {
-        navController.navigate(
-            InstallRoute(
-                uriString = uri.toString(),
-                type = type
-            )
-        )
-    }
-
     fun navigateToExecuteAction(moduleId: String) {
-        navController.navigate(ExecuteActionRoute(moduleId)) {
+        navController.navigate(
+            TerminalRoute(
+                taskType = TERMINAL_TASK_TYPE.ACTION,
+                targetId = moduleId,
+                moduleType = MODULE_TYPE.APM
+            )
+        ) {
             launchSingleTop = true
         }
+    }
+
+    fun navigateToInstall(uri: Uri, type: MODULE_TYPE = MODULE_TYPE.APM) {
+        navController.navigate(
+            TerminalRoute(
+                taskType = TERMINAL_TASK_TYPE.INSTALL,
+                targetId = uri.toString(),
+                moduleType = type
+            )
+        )
     }
 
     fun popBackStack() = navController.popBackStack()

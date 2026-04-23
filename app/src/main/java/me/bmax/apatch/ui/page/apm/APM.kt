@@ -86,8 +86,8 @@ import me.bmax.apatch.ui.component.WarningCard
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.component.rememberLoadingDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
+import me.bmax.apatch.ui.navigation.MODULE_TYPE
 import me.bmax.apatch.ui.navigation.Navigator
-import me.bmax.apatch.ui.page.install.MODULE_TYPE
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
