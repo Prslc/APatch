@@ -145,12 +145,7 @@ fun KPModuleScreen(bottomPadding: Dp) {
             floatingActionButton = {
                 KPMFloatingActionButton(
                     onLoadModule = { uri ->
-                        scope.launch {
-                            val rc = loadingDialog.withLoading { loadKernelModule(uri, "") }
-                            val text = if (rc == 0) successToastText else "$failToastText: $rc"
-                            Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
-                            viewModel.fetchModuleList()
-                        }
+                        viewModel.loadModule(uri)
                     },
                     onInstallModule = { /*TODO*/ },
                     onNavigateToPatches = {
