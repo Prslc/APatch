@@ -1,7 +1,7 @@
 package me.bmax.apatch.ui.navigation
 
 import kotlinx.serialization.Serializable
-import me.bmax.apatch.ui.page.patch.PatchesViewModel
+import me.bmax.apatch.ui.page.patch.PatchMode
 
 @Serializable
 enum class MODULE_TYPE {
@@ -27,7 +27,7 @@ object AboutRoute
 
 @Serializable
 data class PatchesRoute(
-    val mode: PatchesViewModel.PatchMode,
+    val mode: PatchMode,
     val bootImageUri: String? = null
 )
 

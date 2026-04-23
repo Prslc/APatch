@@ -53,7 +53,7 @@ import me.bmax.apatch.ui.component.LoadingIndicator
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.component.rememberLoadingDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
-import me.bmax.apatch.ui.page.patch.PatchesViewModel
+import me.bmax.apatch.ui.page.patch.PatchMode
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
@@ -154,7 +154,7 @@ fun KPModuleScreen(bottomPadding: Dp) {
                     },
                     onInstallModule = { /*TODO*/ },
                     onNavigateToPatches = {
-                        navigator.navigateToPatches(PatchesViewModel.PatchMode.PATCH_AND_INSTALL)
+                        navigator.navigateToPatches(PatchMode.PATCH_AND_INSTALL)
                     },
                     bottomPadding = bottomPadding
                 )

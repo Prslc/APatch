@@ -6,7 +6,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.flow.MutableSharedFlow
-import me.bmax.apatch.ui.page.patch.PatchesViewModel
+import me.bmax.apatch.ui.page.patch.PatchMode
 
 val LocalNavigator = staticCompositionLocalOf<Navigator> {
     error("NavController not provided")
@@ -71,7 +71,7 @@ class Navigator(val navController: NavHostController) {
     fun navigateToModeSelect() = navController.navigate(ModeSelectRoute)
     fun navigateToAbout() = navController.navigate(AboutRoute)
 
-    fun navigateToPatches(mode: PatchesViewModel.PatchMode, uri: Uri? = null) {
+    fun navigateToPatches(mode: PatchMode, uri: Uri? = null) {
         navController.navigate(PatchesRoute(mode, uri?.toString()))
     }
 
