@@ -22,7 +22,7 @@ import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.WarningCard
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
-import me.bmax.apatch.ui.page.patch.PatchesViewModel
+import me.bmax.apatch.ui.page.patch.PatchMode
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
@@ -52,7 +52,7 @@ fun PatchMode() {
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.data?.let { uri ->
                 viewModel.onFileSelected(uri)
-                navigator.navigateToPatches(PatchesViewModel.PatchMode.PATCH_ONLY, uri)
+                navigator.navigateToPatches(PatchMode.PATCH_ONLY, uri)
             }
         }
     }
@@ -62,7 +62,7 @@ fun PatchMode() {
         stringResource(R.string.mode_select_page_install_inactive_slot_warning)
     val confirmDialog = rememberConfirmDialog(
         onConfirm = {
-            navigator.navigateToPatches(PatchesViewModel.PatchMode.INSTALL_TO_NEXT_SLOT)
+            navigator.navigateToPatches(PatchMode.INSTALL_TO_NEXT_SLOT)
         },
         onDismiss = null
     )
@@ -136,7 +136,7 @@ fun PatchMode() {
                         }
 
                         is InstallMethod.DirectInstall -> {
-                            navigator.navigateToPatches(PatchesViewModel.PatchMode.PATCH_AND_INSTALL)
+                            navigator.navigateToPatches(PatchMode.PATCH_AND_INSTALL)
                         }
 
                         is InstallMethod.DirectInstallToInactiveSlot -> {

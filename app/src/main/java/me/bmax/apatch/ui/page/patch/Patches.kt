@@ -40,13 +40,13 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -62,11 +62,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bmax.apatch.R
@@ -74,11 +73,12 @@ import me.bmax.apatch.ui.component.LoadingIndicator
 import me.bmax.apatch.ui.component.SwitchItem
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.Navigator
+import me.bmax.apatch.ui.page.kpm.KPModel
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
-import me.bmax.apatch.ui.page.kpm.KPModel
 import me.bmax.apatch.util.Version
+import me.bmax.apatch.ui.page.patch.utils.checkSuperKeyValidation
 import me.bmax.apatch.util.reboot
 import top.yukonga.miuix.kmp.basic.Button
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
@@ -106,10 +106,15 @@ import top.yukonga.miuix.kmp.window.WindowDialog
 private const val TAG = "Patches"
 
 @Composable
-fun PatchesScreen(mode: PatchesViewModel.PatchMode) {
+fun PatchesScreen(
+    mode: PatchMode,
+    bootImageUri: Uri? = null
+) {
     val navigator = LocalNavigator.current
     val scrollBehavior = MiuixScrollBehavior()
     val viewModel = viewModel<PatchesViewModel>()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     val context = LocalContext.current
 
     val scrollState = rememberScrollState()
@@ -127,18 +132,12 @@ fun PatchesScreen(mode: PatchesViewModel.PatchMode) {
         }
     }
 
-    LaunchedEffect(key1 = mode) {
+    LaunchedEffect(mode) {
         viewModel.prepare(mode)
-
-        viewModel.initialUri?.let { uri ->
-            if (mode == PatchesViewModel.PatchMode.PATCH_ONLY) {
-                viewModel.copyAndParseBootimg(uri)
-            }
+        Log.d("wtf", bootImageUri.toString())
+        if (mode == PatchMode.PATCH_ONLY && bootImageUri != null) {
+            viewModel.copyAndParseBootimg(bootImageUri)
         }
-
-        snapshotFlow { viewModel.running }
-            .filter { !it }
-            .first()
     }
 
     LaunchedEffect(Unit) {
@@ -160,8 +159,8 @@ fun PatchesScreen(mode: PatchesViewModel.PatchMode) {
         }
     }
 
-    LaunchedEffect(viewModel.patchLog) {
-        if (viewModel.patching) {
+    LaunchedEffect(uiState.patchLog) {
+        if (uiState.isPatching) {
             scrollState.animateScrollTo(scrollState.maxValue)
         }
     }
@@ -176,9 +175,10 @@ fun PatchesScreen(mode: PatchesViewModel.PatchMode) {
             )
         },
         bottomBar = {
-            if (!viewModel.running) {
+            if (!uiState.isRunning) {
                 BottomButtons(
                     viewModel = viewModel,
+                    uiState = uiState,
                     mode = mode,
                     needKey = needKey,
                     navigator = navigator,
@@ -204,34 +204,32 @@ fun PatchesScreen(mode: PatchesViewModel.PatchMode) {
             )
 
             // error info
-            if (viewModel.error.isNotEmpty()) {
-                ErrorView(viewModel.error)
+            if (uiState.error.isNotEmpty()) {
+                ErrorView(uiState.error)
             }
 
             // kpming info
-            if (viewModel.kpimgInfo.version.isNotEmpty()) {
-                KernelPatchImageView(viewModel.kpimgInfo)
+            if (uiState.kpimgInfo.version.isNotEmpty()) {
+                KernelPatchImageView(uiState.kpimgInfo)
             }
 
             // slot info
-            if (viewModel.bootSlot.isNotEmpty()
-                || viewModel.bootDev.isNotEmpty()
+            if (uiState.bootSlot.isNotEmpty()
+                || uiState.bootDev.isNotEmpty()
             ) {
                 BootimgView(
-                    slot = viewModel.bootSlot,
-                    boot = viewModel.bootDev
+                    slot = uiState.bootSlot,
+                    boot = uiState.bootDev
                 )
             }
 
             // Kernel image
-            if (viewModel.kimgInfo.banner.isNotEmpty()) {
-                KernelImageView(viewModel.kimgInfo)
+            if (uiState.kimgInfo.banner.isNotEmpty()) {
+                KernelImageView(uiState.kimgInfo)
             }
 
             // Superkey view
-            if (mode != PatchesViewModel.PatchMode.UNPATCH &&
-                viewModel.kimgInfo.banner.isNotEmpty()
-            ) {
+            if (mode != PatchMode.UNPATCH && uiState.kimgInfo.banner.isNotEmpty()) {
                 Card {
                     SwitchItem(
                         icon = Icons.Default.Key,
@@ -250,39 +248,37 @@ fun PatchesScreen(mode: PatchesViewModel.PatchMode) {
                 ) {
                     Column {
                         Spacer(modifier = Modifier.height(8.dp))
-                        SetSuperKeyView(viewModel)
+                        SetSuperKeyView(viewModel, uiState)
                     }
                 }
             }
 
             // Select slot
-            if (mode != PatchesViewModel.PatchMode.UNPATCH) {
-                viewModel.existedExtras.toList().forEach { extra ->
+            if (mode != PatchMode.UNPATCH) {
+                uiState.existedExtras.toList().forEach { extra ->
                     ExtraItem(
                         extra = extra,
                         existed = true,
                         onDelete = {
-                            viewModel.existedExtras.remove(extra)
+                            viewModel.removeExistedExtra(extra)
                         }
                     )
                 }
 
                 // KPM item
-                viewModel.newExtras.toList().forEach { extra ->
+                uiState.newExtras.toList().forEach { extra ->
                     ExtraItem(
                         extra = extra,
                         existed = false,
                         onDelete = {
-                            val idx =
-                                viewModel.newExtras.indexOf(extra)
-                            viewModel.newExtras.remove(extra)
-                            viewModel.newExtrasFileName.removeAt(idx)
+                            val idx = uiState.newExtras.indexOf(extra)
+                            viewModel.removeNewExtra(idx)
                         }
                     )
                 }
 
                 // Add KPM module
-                if (!viewModel.patching && !viewModel.patchdone) {
+                if (!uiState.isPatching && !uiState.isPatchDone) {
                     AddKpmItem { uri ->
                         viewModel.embedKPM(uri)
                     }
@@ -291,7 +287,7 @@ fun PatchesScreen(mode: PatchesViewModel.PatchMode) {
 
             // Patch log
             AnimatedVisibility(
-                visible = viewModel.patching || viewModel.patchdone
+                visible = uiState.isPatching || uiState.isPatchDone
             ) {
                 Card(Modifier.fillMaxWidth()) {
                     SelectionContainer {
@@ -299,7 +295,7 @@ fun PatchesScreen(mode: PatchesViewModel.PatchMode) {
                             modifier = Modifier
                                 .padding(12.dp)
                                 .fillMaxWidth(),
-                            text = viewModel.patchLog,
+                            text = uiState.patchLog,
                             fontSize = 11.sp,
                             fontFamily = FontFamily.Monospace,
                             lineHeight = 16.sp
@@ -309,7 +305,7 @@ fun PatchesScreen(mode: PatchesViewModel.PatchMode) {
             }
         }
     }
-    if (viewModel.running) {
+    if (uiState.isRunning) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -324,7 +320,8 @@ fun PatchesScreen(mode: PatchesViewModel.PatchMode) {
 @Composable
 private fun BottomButtons(
     viewModel: PatchesViewModel,
-    mode: PatchesViewModel.PatchMode,
+    uiState: PatchUiState,
+    mode: PatchMode,
     needKey: Boolean,
     navigator: Navigator,
     selectFileLauncher: ActivityResultLauncher<Intent>,
@@ -339,7 +336,7 @@ private fun BottomButtons(
     ) {
 
         when {
-            viewModel.patching -> {
+            uiState.isPatching -> {
                 Button(
                     enabled = false,
                     onClick = {},
@@ -355,7 +352,7 @@ private fun BottomButtons(
                 }
             }
 
-            viewModel.needReboot -> {
+            uiState.needReboot -> {
                 TextButton(
                     text = stringResource(R.string.reboot),
                     modifier = Modifier
@@ -370,7 +367,7 @@ private fun BottomButtons(
                 )
             }
 
-            viewModel.patchdone -> {
+            uiState.isPatchDone -> {
                 TextButton(
                     text = stringResource(android.R.string.ok),
                     modifier = Modifier
@@ -381,8 +378,7 @@ private fun BottomButtons(
                 )
             }
 
-            mode == PatchesViewModel.PatchMode.PATCH_ONLY &&
-                    viewModel.kimgInfo.banner.isEmpty() -> {
+            mode == PatchMode.PATCH_ONLY && uiState.kimgInfo.banner.isEmpty() -> {
 
                 TextButton(
                     text = stringResource(R.string.patch_select_bootimg_btn),
@@ -398,21 +394,29 @@ private fun BottomButtons(
             }
 
             else -> {
-                val isUnpatch = mode == PatchesViewModel.PatchMode.UNPATCH
-                val isSecurityReady = !needKey || viewModel.superkey.isNotEmpty()
+                val isUnpatch = mode == PatchMode.UNPATCH
+                val isSecurityReady = !needKey || uiState.superkey.isNotEmpty()
 
-                val shouldShow = if (isUnpatch) viewModel.kimgInfo.banner.isNotEmpty() else true
+                val shouldShow = if (isUnpatch) uiState.kimgInfo.banner.isNotEmpty() else true
                 val isEnabled = !isUnpatch && isSecurityReady || isUnpatch
 
-                val btnText = stringResource(if (isUnpatch) R.string.patch_start_unpatch_btn else R.string.patch_start_patch_btn)
+                val btnText =
+                    stringResource(if (isUnpatch) R.string.patch_start_unpatch_btn else R.string.patch_start_patch_btn)
 
                 if (shouldShow) {
                     TextButton(
                         text = btnText,
                         enabled = isEnabled,
-                        modifier = Modifier.fillMaxWidth().height(52.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
                         colors = ButtonDefaults.textButtonColorsPrimary(),
-                        onClick = { if (isUnpatch) viewModel.doUnpatch() else viewModel.doPatch(mode, needKey) }
+                        onClick = {
+                            if (isUnpatch) viewModel.doUnpatch() else viewModel.doPatch(
+                                mode,
+                                needKey
+                            )
+                        }
                     )
                 }
             }
@@ -592,10 +596,12 @@ private fun AddKpmItem(onSelected: (Uri) -> Unit) {
 }
 
 @Composable
-private fun SetSuperKeyView(viewModel: PatchesViewModel) {
-    var skey by remember { mutableStateOf(viewModel.superkey) }
-    var showWarn by remember { mutableStateOf(!viewModel.checkSuperKeyValidation(skey)) }
+private fun SetSuperKeyView(viewModel: PatchesViewModel, uiState: PatchUiState) {
+    var skey by remember { mutableStateOf(uiState.superkey) }
     var keyVisible by remember { mutableStateOf(false) }
+    val showWarn by remember(skey) {
+        derivedStateOf { !checkSuperKeyValidation(skey) }
+    }
 
     Card {
         Column(
@@ -630,13 +636,7 @@ private fun SetSuperKeyView(viewModel: PatchesViewModel) {
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     onValueChange = {
                         skey = it
-                        if (viewModel.checkSuperKeyValidation(it)) {
-                            viewModel.superkey = it
-                            showWarn = false
-                        } else {
-                            viewModel.superkey = ""
-                            showWarn = true
-                        }
+                        viewModel.setSuperKey(it)
                     },
                 )
                 IconButton(

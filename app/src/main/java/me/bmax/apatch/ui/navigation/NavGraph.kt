@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.core.net.toUri
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -78,7 +79,13 @@ fun NavGraph() {
 
         composable<PatchesRoute> { backStackEntry ->
             val args = backStackEntry.toRoute<PatchesRoute>()
-            PatchesScreen(mode = args.mode)
+            val uri = remember(args.bootImageUri) {
+                args.bootImageUri?.toUri()
+            }
+            PatchesScreen(
+                mode = args.mode,
+                bootImageUri = uri
+            )
         }
 
         composable<TerminalRoute> { backStackEntry ->

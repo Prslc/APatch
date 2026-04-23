@@ -38,8 +38,8 @@ import androidx.compose.ui.unit.sp
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.navigation.LocalNavigator
+import me.bmax.apatch.ui.page.patch.PatchMode
 import me.bmax.apatch.ui.theme.isInDarkTheme
-import me.bmax.apatch.ui.page.patch.PatchesViewModel
 import me.bmax.apatch.util.Version
 import me.bmax.apatch.util.Version.getManagerVersion
 import me.bmax.apatch.util.reboot
@@ -242,7 +242,7 @@ fun KStatusCard(
             KPatchAction.UNKNOWN_STATE -> navigator.navigateToModeSelect()
             KPatchAction.UPDATE -> {
                 if (Version.installedKPVUInt() < 0x900u) {
-                    navigator.navigateToPatches(PatchesViewModel.PatchMode.PATCH_ONLY)
+                    navigator.navigateToPatches(PatchMode.PATCH_ONLY)
                 } else {
                     navigator.navigateToModeSelect()
                 }
@@ -255,7 +255,7 @@ fun KStatusCard(
                 ) {
                     showUninstallDialog.value = true
                 } else {
-                    navigator.navigateToPatches(PatchesViewModel.PatchMode.UNPATCH)
+                    navigator.navigateToPatches(PatchMode.UNPATCH)
                 }
             }
 
