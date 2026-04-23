@@ -16,11 +16,13 @@ import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
 import com.topjohnwu.superuser.internal.MainShell
 import com.topjohnwu.superuser.io.SuFile
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.APApplication.Companion.SUPERCMD
 import me.bmax.apatch.BuildConfig
 import me.bmax.apatch.apApp
-import me.bmax.apatch.ui.page.install.MODULE_TYPE
+import me.bmax.apatch.ui.navigation.MODULE_TYPE
 import org.json.JSONArray
 import java.io.File
 import java.security.MessageDigest
@@ -269,70 +271,62 @@ fun undoUninstallModule(id: String): Boolean {
     return result
 }
 
-fun installModule(
-    uri: Uri, type: MODULE_TYPE, onFinish: (Boolean) -> Unit, onStdout: (String) -> Unit, onStderr: (String) -> Unit
-): Boolean {
+suspend fun installModule(
+    uri: Uri,
+    type: MODULE_TYPE,
+    onStdout: (String) -> Unit,
+    onStderr: (String) -> Unit
+): Boolean = withContext(Dispatchers.IO) {
     val resolver = apApp.contentResolver
-    with(resolver.openInputStream(uri)) {
-        val file = File(apApp.cacheDir, "module_$type.zip")
+    val file = File(apApp.cacheDir, "module_${type}_${System.currentTimeMillis()}.zip")
+
+    resolver.openInputStream(uri)?.use { input ->
         file.outputStream().use { output ->
-            this?.copyTo(output)
+            input.copyTo(output)
         }
-
-        val stdoutCallback: CallbackList<String?> = object : CallbackList<String?>() {
-            override fun onAddElement(s: String?) {
-                onStdout(s ?: "")
-            }
-        }
-
-        val stderrCallback: CallbackList<String?> = object : CallbackList<String?>() {
-            override fun onAddElement(s: String?) {
-                onStderr(s ?: "")
-            }
-        }
-
-        val shell = getRootShell()
-
-        var result = false
-        if(type == MODULE_TYPE.APM) {
-            val cmd = "${APApplication.APD_PATH} module install ${file.absolutePath}"
-            result = shell.newJob().add(cmd).to(stdoutCallback, stderrCallback)
-                    .exec().isSuccess
-        } else {
-//            ZipUtils.
-        }
-
-        Log.i(TAG, "install $type module $uri result: $result")
-
-        file.delete()
-
-        onFinish(result)
-        return result
     }
+
+    val stdoutCallback = object : CallbackList<String?>() {
+        override fun onAddElement(s: String?) { onStdout(s ?: "") }
+    }
+    val stderrCallback = object : CallbackList<String?>() {
+        override fun onAddElement(s: String?) { onStderr(s ?: "") }
+    }
+
+    val result = withNewRootShell {
+        val cmd = "${APApplication.APD_PATH} module install \"${file.absolutePath}\""
+        newJob().add(cmd).to(stdoutCallback, stderrCallback).exec()
+    }
+
+    Log.i(TAG, "install $type module result: ${result.isSuccess}")
+
+    if (file.exists()) file.delete()
+
+    result.isSuccess
 }
 
-fun runAPModuleAction(
-    moduleId: String, onStdout: (String) -> Unit, onStderr: (String) -> Unit
-): Boolean {
-    val stdoutCallback: CallbackList<String?> = object : CallbackList<String?>() {
-        override fun onAddElement(s: String?) {
-            onStdout(s ?: "")
-        }
+suspend fun runAPModuleAction(
+    moduleId: String,
+    onStdout: (String) -> Unit,
+    onStderr: (String) -> Unit
+): Boolean = withContext(Dispatchers.IO) {
+    val stdoutCallback = object : CallbackList<String?>() {
+        override fun onAddElement(s: String?) { onStdout(s ?: "") }
     }
 
-    val stderrCallback: CallbackList<String?> = object : CallbackList<String?>() {
-        override fun onAddElement(s: String?) {
-            onStderr(s ?: "")
-        }
+    val stderrCallback = object : CallbackList<String?>() {
+        override fun onAddElement(s: String?) { onStderr(s ?: "") }
     }
 
-    val result = withNewRootShell{ 
-        newJob().add("${APApplication.APD_PATH} module action $moduleId")
-        .to(stdoutCallback, stderrCallback).exec()
+    val result = withNewRootShell {
+        newJob().add("${APApplication.APD_PATH} module action \"$moduleId\"")
+            .to(stdoutCallback, stderrCallback)
+            .exec()
     }
-    Log.i(TAG, "APModule runAction result: $result")
 
-    return result.isSuccess
+    Log.i(TAG, "APModule runAction $moduleId result: ${result.isSuccess}")
+
+    result.isSuccess
 }
 
 fun reboot(reason: String = "") {

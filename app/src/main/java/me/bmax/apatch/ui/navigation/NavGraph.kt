@@ -13,11 +13,9 @@ import androidx.navigation.toRoute
 import me.bmax.apatch.ui.MainScreen
 import me.bmax.apatch.ui.component.ModuleInstallDialog
 import me.bmax.apatch.ui.page.about.AboutScreen
-import me.bmax.apatch.ui.page.apm.ExecuteAPMActionScreen
-import me.bmax.apatch.ui.page.install.InstallScreen
-import me.bmax.apatch.ui.page.install.MODULE_TYPE
-import me.bmax.apatch.ui.page.patch.mode.PatchMode
 import me.bmax.apatch.ui.page.patch.PatchesScreen
+import me.bmax.apatch.ui.page.patchmode.PatchMode
+import me.bmax.apatch.ui.page.terminal.TerminalScreen
 
 @Composable
 fun NavGraph() {
@@ -54,14 +52,14 @@ fun NavGraph() {
     ) {
         dialog<InstallPreviewRoute> { backStackEntry ->
             val args = backStackEntry.toRoute<InstallPreviewRoute>()
+            val previewUri = args.uriString.toUri()
+
             ModuleInstallDialog(
-                uri = args.uriString.toUri(),
+                uri = previewUri,
                 onDismiss = { navigator.navController.popBackStack() },
-                onConfirm = { uri ->
+                onConfirm = { confirmedUri ->
                     navigator.navController.popBackStack()
-                    navigator.navController.navigate(
-                        InstallRoute(uriString = uri.toString(), type = MODULE_TYPE.APM)
-                    )
+                    navigator.navigateToInstall(confirmedUri)
                 }
             )
         }
@@ -83,17 +81,13 @@ fun NavGraph() {
             PatchesScreen(mode = args.mode)
         }
 
-        composable<ExecuteActionRoute> { backStackEntry ->
-            val args = backStackEntry.toRoute<ExecuteActionRoute>()
-            ExecuteAPMActionScreen(moduleId = args.moduleId)
-        }
-
-        composable<InstallRoute> { backStackEntry ->
-            val args = backStackEntry.toRoute<InstallRoute>()
-            val uri = args.uriString.toUri()
-            InstallScreen(
-                uri = uri,
-                type = args.type
+        composable<TerminalRoute> { backStackEntry ->
+            val args = backStackEntry.toRoute<TerminalRoute>()
+            TerminalScreen(
+                taskType = args.taskType,
+                targetId = args.targetId,
+                moduleType = args.moduleType,
+                onBack = { navigator.popBackStack() }
             )
         }
     }
