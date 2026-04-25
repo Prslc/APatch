@@ -42,7 +42,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
+
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -742,7 +742,11 @@ private fun ModuleList(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .then(backdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier)
+            .then(
+                remember(backdrop) {
+                    backdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier
+                }
+            )
             .overScrollVertical()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         state = state,
@@ -789,13 +793,9 @@ private fun ModuleList(
             }
 
             else -> {
-                items(filteredModules) { module ->
+                items(filteredModules, key = { it.id }) { module ->
                     val scope = rememberCoroutineScope()
-                    val updatedModule by produceState(initialValue = Triple("", "", "")) {
-                        scope.launch(Dispatchers.IO) {
-                            value = viewModel.checkUpdate(module)
-                        }
-                    }
+                    val updatedModule = viewModel.uiState.updateResults[module.id] ?: Triple("", "", "")
 
                     ModuleItem(
                         navigator,

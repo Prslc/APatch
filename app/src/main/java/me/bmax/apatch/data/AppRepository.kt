@@ -5,7 +5,9 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.Parcelable
 import android.util.Log
 import com.topjohnwu.superuser.Shell
@@ -129,7 +131,9 @@ object AppRepository {
             if (task != null) {
                 APatchCli.SHELL.execTask(task)
             } else {
-                if (cont.isActive) cont.resume(null)
+                Handler(Looper.getMainLooper()).post {
+                    if (cont.isActive) cont.resume(null)
+                }
             }
 
             cont.invokeOnCancellation {

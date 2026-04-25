@@ -27,13 +27,17 @@ class PatchesViewModel : ViewModel() {
     private val actionMutex = Mutex()
 
     private val patchEngine by lazy {
+        val logBuilder = StringBuilder()
+        val errorBuilder = StringBuilder()
         PatchEngine(
             shell = createRootShell(),
             onLog = { logMsg ->
-                _uiState.update { it.copy(patchLog = it.patchLog + logMsg + "\n") }
+                logBuilder.append(logMsg).append("\n")
+                _uiState.update { it.copy(patchLog = logBuilder.toString()) }
             },
             onError = { errMsg ->
-                _uiState.update { it.copy(error = it.error + errMsg) }
+                errorBuilder.append(errMsg)
+                _uiState.update { it.copy(error = errorBuilder.toString()) }
             },
             onStateUpdate = { updateBlock -> _uiState.update(updateBlock) }
         )

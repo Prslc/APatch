@@ -43,10 +43,8 @@ import me.bmax.apatch.APApplication
 import me.bmax.apatch.Natives
 import me.bmax.apatch.R
 import me.bmax.apatch.apApp
-import me.bmax.apatch.ui.component.AStatusCard
 import me.bmax.apatch.ui.component.BottomBarDestination
 import me.bmax.apatch.ui.component.DropdownItem
-import me.bmax.apatch.ui.component.KStatusCard
 import me.bmax.apatch.ui.component.WarningCard
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
@@ -119,7 +117,11 @@ fun HomeScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .then(backdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier)
+                .then(
+                    remember(backdrop) {
+                        backdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier
+                    }
+                )
                 .padding(horizontal = 16.dp)
                 .overScrollVertical()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),

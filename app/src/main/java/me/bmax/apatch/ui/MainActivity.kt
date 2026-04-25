@@ -1,5 +1,6 @@
 package me.bmax.apatch.ui
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
@@ -51,6 +52,11 @@ class MainActivity : ComponentActivity() {
 
     private var isLoading = true
     private var navigatorInstance: Navigator? = null
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        navigatorInstance?.onNewIntent(intent)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().setKeepOnScreenCondition { isLoading }
@@ -106,16 +112,14 @@ class MainActivity : ComponentActivity() {
             APatchTheme(colorMode = colorMode, keyColor = keyColor) {
                 CompositionLocalProvider(LocalNavigator provides navigator) {
                     NavGraph()
+
+                    LaunchedEffect(Unit) {
+                        navigator.onNewIntent(intent)
+                    }
                 }
             }
         }
         isLoading = false
-    }
-
-    override fun onNewIntent(intent: android.content.Intent) {
-        super.onNewIntent(intent)
-        setIntent(intent)
-        navigatorInstance?.onNewIntent(intent)
     }
 }
 
@@ -163,7 +167,7 @@ fun MainScreen() {
                     .fillMaxSize()
                     .layerBackdrop(backdrop),
                 state = pagerState,
-                beyondViewportPageCount = availablePages.size,
+                beyondViewportPageCount = 1,
                 userScrollEnabled = aPatchReady,
             ) { pageIndex ->
                 val bottomPadding = innerPadding.calculateBottomPadding()

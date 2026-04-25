@@ -58,7 +58,6 @@ import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.util.controlKernelModule
-import me.bmax.apatch.util.loadKernelModule
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.FloatingActionButton
@@ -74,7 +73,7 @@ import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.TopAppBar
-import top.yukonga.miuix.kmp.basic.rememberPullToRefreshState
+
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
 import top.yukonga.miuix.kmp.blur.layerBackdrop
 import top.yukonga.miuix.kmp.icon.MiuixIcons
@@ -93,10 +92,7 @@ private const val TAG = "KernelPatchModule"
 fun KPModuleScreen(bottomPadding: Dp) {
     val viewModel = viewModel<KPModuleViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val loadingDialog = rememberLoadingDialog()
 
     val confirmDialog = rememberConfirmDialog()
 
@@ -110,8 +106,6 @@ fun KPModuleScreen(bottomPadding: Dp) {
     val moduleUninstallConfirm = stringResource(id = R.string.kpm_unload_confirm)
     val unloadText = stringResource(R.string.kpm_unload)
     val cancelText = stringResource(android.R.string.cancel)
-    val successToastText = stringResource(id = R.string.kpm_load_toast_succ)
-    val failToastText = stringResource(id = R.string.kpm_load_toast_failed)
 
     val state by APApplication.apStateLiveData.observeAsState(APApplication.State.UNKNOWN_STATE)
     if (state == APApplication.State.UNKNOWN_STATE) {
@@ -354,12 +348,9 @@ private fun KPModuleList(
     bottomPadding: Dp,
     scaffoldPadding: PaddingValues = PaddingValues(),
 ) {
-    val pullToRefreshState = rememberPullToRefreshState()
-
     Box(modifier = Modifier.padding(scaffoldPadding)) {
         PullToRefresh(
             isRefreshing = uiState.isRefreshing,
-            pullToRefreshState = pullToRefreshState,
             contentPadding = contentPadding,
             refreshTexts = listOf(
                 stringResource(R.string.refresh_pulling),
@@ -372,7 +363,11 @@ private fun KPModuleList(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .then(backdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier)
+                    .then(
+                        remember(backdrop) {
+                            backdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier
+                        }
+                    )
                     .overScrollVertical()
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
                 state = state,
@@ -404,7 +399,7 @@ private fun KPModuleList(
                     }
 
                     else -> {
-                        items(uiState.modules) { module ->
+                        items(uiState.modules, key = { it.name }) { module ->
                             KPModuleItem(
                                 module,
                                 onUninstall = { onUninstall(module) },

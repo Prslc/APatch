@@ -1,5 +1,6 @@
-package me.bmax.apatch.ui.component
+package me.bmax.apatch.ui.page.home
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
+import me.bmax.apatch.ui.component.UninstallDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.page.patch.PatchMode
 import me.bmax.apatch.ui.theme.isInDarkTheme
@@ -59,6 +61,7 @@ private val managerVersion = getManagerVersion()
 /**
  * KernelPatch status card state
  */
+@Immutable
 data class KPatchCardState(
     val icon: ImageVector,
     val iconDesc: String,
@@ -81,6 +84,7 @@ enum class KPatchAction {
 /**
  * AndroidPatch status card state
  */
+@Immutable
 data class APatchCardState(
     val icon: ImageVector,
     val iconDesc: String,
@@ -300,9 +304,9 @@ fun KStatusCard(
                     ) {
                         Icon(
                             modifier = Modifier.size(170.dp),
-                            imageVector = when {
-                                cardState.buttonAction == KPatchAction.UPDATE -> Icons.Rounded.ErrorOutline
-                                cardState.buttonAction == KPatchAction.UNKNOWN_STATE -> Icons.AutoMirrored.Outlined.HelpOutline
+                            imageVector = when (cardState.buttonAction) {
+                                KPatchAction.UPDATE -> Icons.Rounded.ErrorOutline
+                                KPatchAction.UNKNOWN_STATE -> Icons.AutoMirrored.Outlined.HelpOutline
                                 else -> Icons.Rounded.CheckCircleOutline
                             },
                             tint = when {

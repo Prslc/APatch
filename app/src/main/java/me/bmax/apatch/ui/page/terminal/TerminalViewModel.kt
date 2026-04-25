@@ -19,6 +19,8 @@ class TerminalViewModel : ViewModel() {
 
     private val fullLog = StringBuilder()
 
+    private val clearScreenSequence = "\u001B[H\u001B[J"
+
     fun executeTask(
         taskType: TERMINAL_TASK_TYPE,
         targetId: String,
@@ -39,6 +41,7 @@ class TerminalViewModel : ViewModel() {
                         onStderr = { appendLog(it) }
                     )
                 }
+
                 TERMINAL_TASK_TYPE.ACTION -> {
                     runAPModuleAction(
                         moduleId = targetId,
@@ -58,8 +61,15 @@ class TerminalViewModel : ViewModel() {
 
     private fun appendLog(line: String) {
         synchronized(fullLog) {
-            if (line.startsWith("[H[J")) fullLog.clear()  // // clear command
-            fullLog.append(line).append("\n")
+            if (line.startsWith(clearScreenSequence)) {     //  clear command
+                fullLog.clear()
+                val rest = line.removePrefix(clearScreenSequence)
+                if (rest.isNotEmpty()) {
+                    fullLog.append(rest).append("\n")
+                }
+            } else {
+                fullLog.append(line).append("\n")
+            }
             uiState = uiState.copy(logs = fullLog.toString())
         }
     }

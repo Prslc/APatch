@@ -14,14 +14,14 @@ private const val TAG = "KernelPatchModuleCli"
 
 fun getKernelModuleCount(): Int = Natives.kernelPatchModuleNum().toInt().coerceAtLeast(0)
 
-fun listKernelModules(): List<KPModel.KPMInfo> {
+suspend fun listKernelModules(): List<KPModel.KPMInfo> = withContext(Dispatchers.IO) {
     val count = Natives.kernelPatchModuleNum()
-    if (count <= 0) return emptyList()
+    if (count <= 0) return@withContext emptyList()
 
     val names = Natives.kernelPatchModuleList()
-    if (names.isBlank()) return emptyList()
+    if (names.isBlank()) return@withContext emptyList()
 
-    return names.split('\n')
+    names.split('\n')
         .filter { it.isNotBlank() }
         .map { id ->
             val infoLine = Natives.kernelPatchModuleInfo(id)
@@ -43,7 +43,7 @@ fun listKernelModules(): List<KPModel.KPMInfo> {
         }
 }
 
-suspend fun loadKernelModule(uri: Uri, args: String): Int = withContext(Dispatchers.IO) {
+fun loadKernelModule(uri: Uri, args: String): Int {
     val kpmDir = FileSystemManager.getLocal().getFile(apApp.filesDir.parent, "kpm")
     kpmDir.deleteRecursively()
     kpmDir.mkdirs()
@@ -51,7 +51,7 @@ suspend fun loadKernelModule(uri: Uri, args: String): Int = withContext(Dispatch
     val rand = (1..4).map { ('a'..'z').random() }.joinToString("")
     val kpmFile = kpmDir.getChildFile("${rand}.kpm")
 
-    try {
+    return try {
         uri.inputStream().buffered().use { input ->
             kpmFile.newOutputStream().use { output ->
                 input.copyTo(output)
@@ -64,10 +64,10 @@ suspend fun loadKernelModule(uri: Uri, args: String): Int = withContext(Dispatch
     }
 }
 
-suspend fun controlKernelModule(name: String, param: String): Natives.KPMCtlRes = withContext(Dispatchers.IO) {
-    Natives.kernelPatchModuleControl(name, param)
+fun controlKernelModule(name: String, param: String): Natives.KPMCtlRes {
+    return Natives.kernelPatchModuleControl(name, param)
 }
 
-suspend fun unloadKernelModule(name: String): Boolean = withContext(Dispatchers.IO) {
-    Natives.unloadKernelPatchModule(name) == 0L
+fun unloadKernelModule(name: String): Boolean {
+    return Natives.unloadKernelPatchModule(name) == 0L
 }

@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
@@ -131,7 +132,11 @@ fun TerminalScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .then(backdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier)
+                .then(
+                    remember(backdrop) {
+                        backdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier
+                    }
+                )
                 .padding(innerPadding)
                 .verticalScroll(scrollState),
         ) {
