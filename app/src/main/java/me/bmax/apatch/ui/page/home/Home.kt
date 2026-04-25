@@ -78,12 +78,13 @@ import top.yukonga.miuix.kmp.window.WindowListPopup
 @Composable
 fun HomeScreen(
     bottomPadding: Dp,
+    isCurrentPage: Boolean = true,
     viewModel: HomeViewModel = viewModel()
 ) {
     val navigator = LocalNavigator.current
 
     val scrollBehavior = MiuixScrollBehavior()
-    val backdrop = rememberBlurBackdrop(true)
+    val backdrop = if (isCurrentPage) rememberBlurBackdrop(true) else null
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -96,9 +97,11 @@ fun HomeScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        if (APApplication.sharedPreferences.getBoolean("check_update", true)) {
-            viewModel.checkUpdate()
+    if (isCurrentPage) {
+        LaunchedEffect(Unit) {
+            if (APApplication.sharedPreferences.getBoolean("check_update", true)) {
+                viewModel.checkUpdate()
+            }
         }
     }
 

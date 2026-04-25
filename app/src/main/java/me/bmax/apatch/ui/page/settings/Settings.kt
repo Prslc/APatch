@@ -83,14 +83,14 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun SettingScreen(bottomPadding: Dp) {
+fun SettingScreen(bottomPadding: Dp, isCurrentPage: Boolean = true) {
     val viewModel: SettingsViewModel = viewModel()
     val uiState = viewModel.uiState
     val context = LocalContext.current
 
     val navigator = LocalNavigator.current
     val scrollBehavior = MiuixScrollBehavior()
-    val backdrop = rememberBlurBackdrop(true)
+    val backdrop = if (isCurrentPage) rememberBlurBackdrop(true) else null
 
     Scaffold(
         topBar = {

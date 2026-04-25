@@ -21,7 +21,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -141,6 +143,8 @@ fun MainScreen() {
 
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { availablePages.size })
     val backdrop = rememberLayerBackdrop()
+    val contentReady = rememberContentReady()
+    val settledPage by remember { derivedStateOf { pagerState.settledPage } }
 
     LaunchedEffect(pagerState) {
         navigator.bindPager { page ->
@@ -167,19 +171,31 @@ fun MainScreen() {
                     .fillMaxSize()
                     .layerBackdrop(backdrop),
                 state = pagerState,
-                beyondViewportPageCount = 1,
+                beyondViewportPageCount = if (contentReady) availablePages.size - 1 else 0,
                 userScrollEnabled = aPatchReady,
             ) { pageIndex ->
                 val bottomPadding = innerPadding.calculateBottomPadding()
+                val isCurrentPage = pageIndex == settledPage
 
-                when (availablePages[pageIndex]) {
-                    BottomBarDestination.Home -> HomeScreen(bottomPadding)
-                    BottomBarDestination.KModule -> KPModuleScreen(bottomPadding)
-                    BottomBarDestination.SuperUser -> SuperUserScreen(bottomPadding)
-                    BottomBarDestination.AModule -> APModuleScreen(bottomPadding)
-                    BottomBarDestination.Settings -> SettingScreen(bottomPadding)
+                if (isCurrentPage || contentReady) {
+                    when (availablePages[pageIndex]) {
+                        BottomBarDestination.Home -> HomeScreen(bottomPadding, isCurrentPage = isCurrentPage)
+                        BottomBarDestination.KModule -> KPModuleScreen(bottomPadding, isCurrentPage = isCurrentPage)
+                        BottomBarDestination.SuperUser -> SuperUserScreen(bottomPadding, isCurrentPage = isCurrentPage)
+                        BottomBarDestination.AModule -> APModuleScreen(bottomPadding, isCurrentPage = isCurrentPage)
+                        BottomBarDestination.Settings -> SettingScreen(bottomPadding, isCurrentPage = isCurrentPage)
+                    }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun rememberContentReady(): Boolean {
+    var ready by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        ready = true
+    }
+    return ready
 }

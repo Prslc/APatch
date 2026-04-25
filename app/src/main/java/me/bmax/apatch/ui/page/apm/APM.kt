@@ -139,7 +139,7 @@ import top.yukonga.miuix.kmp.utils.overScrollVertical
 import top.yukonga.miuix.kmp.window.WindowDialog
 
 @Composable
-fun APModuleScreen(bottomPadding: Dp) {
+fun APModuleScreen(bottomPadding: Dp, isCurrentPage: Boolean = true) {
     val navigator = LocalNavigator.current
     val context = LocalContext.current
     val snackBarHostState = remember { SnackbarHostState() }
@@ -149,7 +149,7 @@ fun APModuleScreen(bottomPadding: Dp) {
     val uiState = viewModel.uiState
 
     var expanded by remember { mutableStateOf(false) }
-    val backdrop = rememberBlurBackdrop(true)
+    val backdrop = if (isCurrentPage) rememberBlurBackdrop(true) else null
 
     val state by APApplication.apStateLiveData.observeAsState(APApplication.State.UNKNOWN_STATE)
 
@@ -163,9 +163,11 @@ fun APModuleScreen(bottomPadding: Dp) {
         return
     }
 
-    LaunchedEffect(uiState.isNeedRefresh) {
-        if (uiState.modules.isEmpty() || uiState.isNeedRefresh) {
-            viewModel.fetchModuleList()
+    if (isCurrentPage) {
+        LaunchedEffect(uiState.isNeedRefresh) {
+            if (uiState.modules.isEmpty() || uiState.isNeedRefresh) {
+                viewModel.fetchModuleList()
+            }
         }
     }
 
@@ -175,7 +177,7 @@ fun APModuleScreen(bottomPadding: Dp) {
         }
 
     val hasMagisk = hasMagisk()
-    val moduleListState = rememberLazyListState()
+    val moduleListState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
