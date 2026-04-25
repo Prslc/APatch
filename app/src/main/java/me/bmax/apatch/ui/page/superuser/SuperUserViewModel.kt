@@ -4,7 +4,6 @@ import android.content.pm.ApplicationInfo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +14,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.Natives
 import me.bmax.apatch.apApp
@@ -46,25 +45,23 @@ class SuperUserViewModel : ViewModel() {
         uiState.map { it.search }.distinctUntilChanged().debounce(200),
         uiState.map { it.showSystemApps }.distinctUntilChanged()
     ) { apps, query, showSystem ->
-        withContext(Dispatchers.Default) {
-            val trimmedQuery = query.trim()
+        val trimmedQuery = query.trim()
 
-            apps.asSequence()
-                .filter { app ->
-                    if (app.packageName == apApp.packageName) return@filter false
-                    val isSystem =
-                        (app.packageInfo.applicationInfo!!.flags and ApplicationInfo.FLAG_SYSTEM) != 0
-                    val matchSystem = showSystem || !isSystem || app.uid == 2000
-                    if (!matchSystem) return@filter false
+        apps.asSequence()
+            .filter { app ->
+                if (app.packageName == apApp.packageName) return@filter false
+                val isSystem =
+                    (app.packageInfo.applicationInfo!!.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+                val matchSystem = showSystem || !isSystem || app.uid == 2000
+                if (!matchSystem) return@filter false
 
-                    trimmedQuery.isEmpty() ||
-                            app.packageName.contains(trimmedQuery, ignoreCase = true) ||
-                            app.lowercaseLabel.contains(trimmedQuery) ||
-                            app.pinyinLabel.contains(trimmedQuery)
-                }
-                .sortedWith(appComparator)
-                .toList()
-        }
+                trimmedQuery.isEmpty() ||
+                        app.packageName.contains(trimmedQuery, ignoreCase = true) ||
+                        app.lowercaseLabel.contains(trimmedQuery) ||
+                        app.pinyinLabel.contains(trimmedQuery)
+            }
+            .sortedWith(appComparator)
+            .toList()
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun fetchAppList() {
@@ -75,7 +72,6 @@ class SuperUserViewModel : ViewModel() {
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
-                delay(50)
                 _uiState.update { it.copy(isRefreshing = false) }
             }
         }

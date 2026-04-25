@@ -5,8 +5,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -27,36 +27,46 @@ class KPModuleViewModel : ViewModel() {
     }
 
     fun fetchModuleList() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true) }
-            delay(50)
             try {
-                rawModules = listKernelModules()
-                sortAndEmit(rawModules)
-            } catch (e: Exception) {
-                Log.e("KPM", "Fetch failed", e)
+                withContext(Dispatchers.IO) { refreshModuleList() }
             } finally {
                 _uiState.update { it.copy(isRefreshing = false, isNeedRefresh = false) }
             }
         }
     }
 
+    private suspend fun refreshModuleList() {
+        rawModules = listKernelModules()
+        sortAndEmit(rawModules)
+    }
+
     fun loadModule(uri: Uri) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true) }
-            val rc = loadKernelModule(uri, "")
-            _uiState.update { it.copy(isRefreshing = false) }
-            fetchModuleList()
+            try {
+                withContext(Dispatchers.IO) {
+                    loadKernelModule(uri, "")
+                    refreshModuleList()
+                }
+            } catch (e: Exception) {
+                Log.e("KPM", "Load failed", e)
+            } finally {
+                _uiState.update { it.copy(isRefreshing = false, isNeedRefresh = false) }
+            }
         }
     }
 
     fun uninstallModule(moduleName: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true) }
             try {
-                val success = unloadKernelModule(moduleName)
-                if (success) {
-                    fetchModuleList()
+                withContext(Dispatchers.IO) {
+                    val success = unloadKernelModule(moduleName)
+                    if (success) {
+                        refreshModuleList()
+                    }
                 }
             } catch (e: Exception) {
                 Log.e("KPM", "Unload failed", e)
@@ -77,9 +87,5 @@ class KPModuleViewModel : ViewModel() {
 
     fun closeControlDialog() {
         _uiState.update { it.copy(showControlDialog = false) }
-    }
-
-    fun markNeedRefresh() {
-        _uiState.update { it.copy(isNeedRefresh = true) }
     }
 }

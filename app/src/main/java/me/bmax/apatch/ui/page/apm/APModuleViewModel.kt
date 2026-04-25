@@ -9,7 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.topjohnwu.superuser.io.SuFile
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bmax.apatch.R
@@ -75,8 +76,6 @@ class APModuleViewModel : ViewModel() {
     fun fetchModuleList() {
         viewModelScope.launch {
             uiState = uiState.copy(isRefreshing = true)
-            delay(50)
-
             val newList = withContext(Dispatchers.IO) {
                 runCatching {
                     val result = listModules()
@@ -94,6 +93,14 @@ class APModuleViewModel : ViewModel() {
 
             uiState = uiState.copy(modules = newList, isNeedRefresh = false, isRefreshing = false)
             checkMetaModuleWarning(newList)
+            launch {
+                val results = withContext(Dispatchers.IO) {
+                    newList.map { module ->
+                        async { module.id to checkUpdate(module) }
+                    }.awaitAll().toMap()
+                }
+                uiState = uiState.copy(updateResults = results)
+            }
         }
     }
 

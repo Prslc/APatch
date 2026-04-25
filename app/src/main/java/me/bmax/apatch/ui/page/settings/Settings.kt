@@ -110,7 +110,11 @@ fun SettingScreen(bottomPadding: Dp) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .then(backdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier)
+                .then(
+                    remember(backdrop) {
+                        backdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier
+                    }
+                )
                 .overScrollVertical()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             contentPadding = PaddingValues(

@@ -1,5 +1,6 @@
 package me.bmax.apatch.ui.navigation
 
+import android.content.Intent
 import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -13,12 +14,9 @@ val LocalNavigator = staticCompositionLocalOf<Navigator> {
 }
 
 class Navigator(val navController: NavHostController) {
-    private val intentEvents = MutableSharedFlow<android.content.Intent>(
-        replay = 1,
-        extraBufferCapacity = 1
-    )
+    private val intentEvents = MutableSharedFlow<Intent>(extraBufferCapacity = 64)
 
-    fun onNewIntent(intent: android.content.Intent) {
+    fun onNewIntent(intent: Intent) {
         intentEvents.tryEmit(intent)
     }
 
@@ -31,7 +29,7 @@ class Navigator(val navController: NavHostController) {
         }
     }
 
-    private fun performNavigation(intent: android.content.Intent) {
+    private fun performNavigation(intent: Intent) {
         val type = intent.getStringExtra("shortcut_type")
 
         val uri: Uri? = intent.data
