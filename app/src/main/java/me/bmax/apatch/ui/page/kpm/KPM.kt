@@ -20,7 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -89,7 +89,7 @@ import top.yukonga.miuix.kmp.window.WindowListPopup
 private const val TAG = "KernelPatchModule"
 
 @Composable
-fun KPModuleScreen(bottomPadding: Dp) {
+fun KPModuleScreen(bottomPadding: Dp, isCurrentPage: Boolean = true) {
     val viewModel = viewModel<KPModuleViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
@@ -97,10 +97,10 @@ fun KPModuleScreen(bottomPadding: Dp) {
     val confirmDialog = rememberConfirmDialog()
 
     val scrollBehavior = MiuixScrollBehavior()
-    val kpModuleListState = rememberLazyListState()
+    val kpModuleListState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
 
     val navigator = LocalNavigator.current
-    val backdrop = rememberBlurBackdrop(true)
+    val backdrop = if (isCurrentPage) rememberBlurBackdrop(true) else null
 
     val moduleStr = stringResource(id = R.string.kpm)
     val moduleUninstallConfirm = stringResource(id = R.string.kpm_unload_confirm)
