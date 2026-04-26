@@ -2,10 +2,16 @@ package me.bmax.apatch.ui.navigation
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,85 +23,90 @@ import me.bmax.apatch.ui.page.about.AboutScreen
 import me.bmax.apatch.ui.page.patch.PatchesScreen
 import me.bmax.apatch.ui.page.patchmode.PatchMode
 import me.bmax.apatch.ui.page.terminal.TerminalScreen
+import top.yukonga.miuix.kmp.basic.Surface
+import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 @Composable
 fun NavGraph() {
     val navigator = LocalNavigator.current
     navigator.HandleGlobalIntents()
 
-    NavHost(
-        navController = navigator.navController,
-        startDestination = MainRoute,
-        enterTransition = {
-            slideInHorizontally(
-                initialOffsetX = { it },
-                animationSpec = tween(500, easing = FastOutSlowInEasing)
-            )
-        },
-        exitTransition = {
-            slideOutHorizontally(
-                targetOffsetX = { -it / 5 },
-                animationSpec = tween(500, easing = FastOutSlowInEasing)
-            )
-        },
-        popEnterTransition = {
-            slideInHorizontally(
-                initialOffsetX = { -it / 5 },
-                animationSpec = tween(500, easing = FastOutSlowInEasing)
-            )
-        },
-        popExitTransition = {
-            slideOutHorizontally(
-                targetOffsetX = { it },
-                animationSpec = tween(500, easing = FastOutSlowInEasing)
-            )
-        }
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MiuixTheme.colorScheme.background
     ) {
-        dialog<InstallPreviewRoute> { backStackEntry ->
-            val args = backStackEntry.toRoute<InstallPreviewRoute>()
-            val previewUri = args.uriString.toUri()
-
-            ModuleInstallDialog(
-                uri = previewUri,
-                onDismiss = { navigator.navController.popBackStack() },
-                onConfirm = { confirmedUri ->
-                    navigator.navController.popBackStack()
-                    navigator.navigateToInstall(confirmedUri)
-                }
-            )
-        }
-
-        composable<MainRoute> {
-            MainScreen()
-        }
-
-        composable<ModeSelectRoute> {
-            PatchMode()
-        }
-
-        composable<AboutRoute> {
-            AboutScreen()
-        }
-
-        composable<PatchesRoute> { backStackEntry ->
-            val args = backStackEntry.toRoute<PatchesRoute>()
-            val uri = remember(args.bootImageUri) {
-                args.bootImageUri?.toUri()
+        NavHost(
+            navController = navigator.navController,
+            startDestination = MainRoute,
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(500, easing = FastOutSlowInEasing)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(targetOffsetX = { -it / 5 }, animationSpec = tween(500)) +
+                        scaleOut(targetScale = 0.92f, animationSpec = tween(500)) +
+                        fadeOut(targetAlpha = 0f, animationSpec = tween(500))
+            },
+            popEnterTransition = {
+                slideInHorizontally(initialOffsetX = { -it / 5 }, animationSpec = tween(500)) +
+                        scaleIn(initialScale = 0.92f, animationSpec = tween(500)) +
+                        fadeIn(initialAlpha = 0f, animationSpec = tween(500))
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(500, easing = FastOutSlowInEasing)
+                )
             }
-            PatchesScreen(
-                mode = args.mode,
-                bootImageUri = uri
-            )
-        }
+        ) {
+            dialog<InstallPreviewRoute> { backStackEntry ->
+                val args = backStackEntry.toRoute<InstallPreviewRoute>()
+                val previewUri = args.uriString.toUri()
 
-        composable<TerminalRoute> { backStackEntry ->
-            val args = backStackEntry.toRoute<TerminalRoute>()
-            TerminalScreen(
-                taskType = args.taskType,
-                targetId = args.targetId,
-                moduleType = args.moduleType,
-                onBack = { navigator.popBackStack() }
-            )
+                ModuleInstallDialog(
+                    uri = previewUri,
+                    onDismiss = { navigator.navController.popBackStack() },
+                    onConfirm = { confirmedUri ->
+                        navigator.navController.popBackStack()
+                        navigator.navigateToInstall(confirmedUri)
+                    }
+                )
+            }
+
+            composable<MainRoute> {
+                MainScreen()
+            }
+
+            composable<ModeSelectRoute> {
+                PatchMode()
+            }
+
+            composable<AboutRoute> {
+                AboutScreen()
+            }
+
+            composable<PatchesRoute> { backStackEntry ->
+                val args = backStackEntry.toRoute<PatchesRoute>()
+                val uri = remember(args.bootImageUri) {
+                    args.bootImageUri?.toUri()
+                }
+                PatchesScreen(
+                    mode = args.mode,
+                    bootImageUri = uri
+                )
+            }
+
+            composable<TerminalRoute> { backStackEntry ->
+                val args = backStackEntry.toRoute<TerminalRoute>()
+                TerminalScreen(
+                    taskType = args.taskType,
+                    targetId = args.targetId,
+                    moduleType = args.moduleType,
+                    onBack = { navigator.popBackStack() }
+                )
+            }
         }
     }
 }
