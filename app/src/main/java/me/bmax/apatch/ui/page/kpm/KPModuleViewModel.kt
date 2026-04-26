@@ -5,11 +5,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.bmax.apatch.util.listKernelModules
 import me.bmax.apatch.util.loadKernelModule
 import me.bmax.apatch.util.unloadKernelModule
@@ -32,6 +33,7 @@ class KPModuleViewModel : ViewModel() {
             try {
                 withContext(Dispatchers.IO) { refreshModuleList() }
             } finally {
+                delay(50)
                 _uiState.update { it.copy(isRefreshing = false, isNeedRefresh = false) }
             }
         }

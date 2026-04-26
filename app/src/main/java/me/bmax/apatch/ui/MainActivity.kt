@@ -74,9 +74,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        pendingIntent?.let { intent ->
+        pendingIntent?.let {
             pendingIntent = null
-            navigatorInstance?.onNewIntent(intent)
+            navigatorInstance?.onNewIntent(it)
         }
     }
 
