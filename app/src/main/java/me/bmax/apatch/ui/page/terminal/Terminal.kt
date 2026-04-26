@@ -42,6 +42,7 @@ import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.SmallTopAppBar
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.blur.layerBackdrop
+import top.yukonga.miuix.kmp.theme.MiuixTheme
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -102,8 +103,9 @@ fun TerminalScreen(
                                     "APatch_${taskType.name}_${format.format(Date())}.log"
                                 )
                                 file.writeText(viewModel.getFullLog())
-                                withContext(Dispatchers.Main) { Toast.makeText(
-                                    context,
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
                                         "Log saved to Downloads",
                                         Toast.LENGTH_SHORT
                                     ).show()
@@ -122,7 +124,11 @@ fun TerminalScreen(
                     modifier = Modifier.padding(bottom = 30.dp),
                     onClick = { scope.launch(Dispatchers.IO) { reboot() } }
                 ) {
-                    Icon(Icons.Filled.Refresh, contentDescription = "Reboot")
+                    Icon(
+                        imageVector = Icons.Filled.Refresh,
+                        tint = MiuixTheme.colorScheme.onPrimary,
+                        contentDescription = "Reboot"
+                    )
                 }
             }
         }
