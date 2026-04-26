@@ -30,19 +30,18 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 @Composable
 fun WarningCard(
     message: String,
-    color: Color? = null,
+    containerColor: Color = MiuixTheme.colorScheme.errorContainer,
+    contentColor: Color = MiuixTheme.colorScheme.onErrorContainer,
     onClick: (() -> Unit)? = null,
     onClose: (() -> Unit)? = null,
     icon: (@Composable () -> Unit)? = null
 ) {
     val cardColors = CardDefaults.defaultColors(
-        color = color ?: MiuixTheme.colorScheme.error,
-        contentColor = MiuixTheme.colorScheme.onError
+        color = containerColor,
+        contentColor = contentColor
     )
 
-    Card(
-        colors = cardColors,
-    ) {
+    Card(colors = cardColors) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -59,7 +58,7 @@ fun WarningCard(
                     Icon(
                         imageVector = Icons.Default.Error,
                         contentDescription = null,
-                        tint = MiuixTheme.colorScheme.onErrorContainer,
+                        tint = contentColor,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -69,7 +68,7 @@ fun WarningCard(
                 Text(
                     text = message,
                     style = MiuixTheme.textStyles.body2,
-                    color = MiuixTheme.colorScheme.onErrorContainer,
+                    color = cardColors.contentColor,
                     modifier = Modifier.wrapContentHeight(Alignment.CenterVertically)
                 )
             }
@@ -79,7 +78,7 @@ fun WarningCard(
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = stringResource(android.R.string.cancel),
-                    tint = MiuixTheme.colorScheme.onErrorContainer,
+                    tint = contentColor,
                     modifier = Modifier.clickable {
                         onClose()
                     }.size(18.dp).align(Alignment.TopEnd)
@@ -96,8 +95,14 @@ private fun WarningCardPreview() {
         WarningCard(message = "Warning message")
         WarningCard(message = "Warning message", onClose = {})
         WarningCard(
-            message = "Warning message ",
-            color = MiuixTheme.colorScheme.outline,
+            message = "Warning message",
+            containerColor = MiuixTheme.colorScheme.error,
+            contentColor = MiuixTheme.colorScheme.onError
+        )
+        WarningCard(
+            message = "Warning message",
+            containerColor = MiuixTheme.colorScheme.outline,
+            contentColor = MiuixTheme.colorScheme.onSurface
         )
     }
 }
