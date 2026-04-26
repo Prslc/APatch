@@ -83,6 +83,10 @@ class SuperUserViewModel : ViewModel() {
                 if (granted) {
                     allow = 1
                     exclude = 0
+                    profile = profile.copy(
+                        uid = app.uid,
+                        scontext = APApplication.MAGISK_SCONTEXT
+                    )
                     Natives.grantSu(app.uid, 0, profile.scontext)
                     Natives.setUidExclude(app.uid, 0)
                 } else {
@@ -102,17 +106,16 @@ class SuperUserViewModel : ViewModel() {
                 if (excluded) {
                     allow = 0
                     exclude = 1
-                    profile = profile.copy(
-                        uid = app.uid,
-                        scontext = APApplication.MAGISK_SCONTEXT
-                    )
                     Natives.revokeSu(app.uid)
                     Natives.setUidExclude(app.uid, 1)
                 } else {
                     exclude = 0
                     Natives.setUidExclude(app.uid, 0)
                 }
-                profile = profile.copy(uid = app.uid)
+                profile = profile.copy(
+                    uid = app.uid,
+                    scontext = if (excluded) APApplication.DEFAULT_SCONTEXT else APApplication.MAGISK_SCONTEXT
+                )
             }
 
             PkgConfig.changeConfig(newConfig)

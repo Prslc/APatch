@@ -36,7 +36,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.bmax.apatch.APApplication
-import me.bmax.apatch.Natives
 import me.bmax.apatch.R
 import me.bmax.apatch.apApp
 import me.bmax.apatch.ui.component.BottomBarDestination
@@ -295,7 +294,7 @@ private fun InfoCard(state: HomeUiState) {
             if (state.kpState != APApplication.State.UNKNOWN_STATE) {
                 InfoText(
                     title = stringResource(R.string.home_su_path),
-                    content = Natives.suPath()
+                    content = state.suPath
                 )
             }
             InfoText(
