@@ -33,7 +33,7 @@ fun NavGraph() {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MiuixTheme.colorScheme.background
+        color = MiuixTheme.colorScheme.surface
     ) {
         NavHost(
             navController = navigator.navController,
