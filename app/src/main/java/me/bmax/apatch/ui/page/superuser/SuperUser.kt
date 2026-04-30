@@ -66,8 +66,12 @@ import top.yukonga.miuix.kmp.utils.overScrollVertical
 import top.yukonga.miuix.kmp.window.WindowListPopup
 
 @Composable
-fun SuperUserScreen(bottomPadding: Dp, isCurrentPage: Boolean = true) {
-    val viewModel = viewModel<SuperUserViewModel>()
+fun SuperUserScreen(
+    bottomPadding: Dp,
+    modifier: Modifier = Modifier,
+    isCurrentPage: Boolean = true,
+    viewModel: SuperUserViewModel = viewModel()
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val appList by viewModel.filteredApps.collectAsStateWithLifecycle()
 
@@ -83,7 +87,7 @@ fun SuperUserScreen(bottomPadding: Dp, isCurrentPage: Boolean = true) {
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         topBar = {
             SuperTopBar(
                 viewModel = viewModel,

@@ -53,8 +53,8 @@ fun TerminalScreen(
     targetId: String,
     moduleType: MODULE_TYPE,
     onBack: () -> Unit,
+    viewModel: TerminalViewModel = viewModel()
 ) {
-    val viewModel: TerminalViewModel = viewModel()
     val state = viewModel.uiState
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()

@@ -108,11 +108,11 @@ private const val TAG = "Patches"
 @Composable
 fun PatchesScreen(
     mode: PatchMode,
-    bootImageUri: Uri? = null
+    bootImageUri: Uri? = null,
+    viewModel: PatchesViewModel = viewModel()
 ) {
     val navigator = LocalNavigator.current
     val scrollBehavior = MiuixScrollBehavior()
-    val viewModel = viewModel<PatchesViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val context = LocalContext.current

@@ -40,9 +40,8 @@ import top.yukonga.miuix.kmp.icon.extended.Back
 import top.yukonga.miuix.kmp.preference.CheckboxPreference
 
 @Composable
-fun PatchMode() {
+fun PatchMode(viewModel: PatchModeViewModel = viewModel()) {
     val navigator = LocalNavigator.current
-    val viewModel: PatchModeViewModel = viewModel()
     val state = viewModel.uiState
     val backdrop = rememberBlurBackdrop(true)
 

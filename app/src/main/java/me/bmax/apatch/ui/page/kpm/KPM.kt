@@ -88,8 +88,12 @@ import top.yukonga.miuix.kmp.window.WindowListPopup
 private const val TAG = "KernelPatchModule"
 
 @Composable
-fun KPModuleScreen(bottomPadding: Dp, isCurrentPage: Boolean = true) {
-    val viewModel = viewModel<KPModuleViewModel>()
+fun KPModuleScreen(
+    modifier: Modifier,
+    bottomPadding: Dp,
+    isCurrentPage: Boolean = true,
+    viewModel: KPModuleViewModel = viewModel()
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
@@ -125,61 +129,60 @@ fun KPModuleScreen(bottomPadding: Dp, isCurrentPage: Boolean = true) {
         return
     }
 
-    Box {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    modifier = Modifier.blurEffect(backdrop),
-                    color = backdrop.getAppBarColor(),
-                    title = stringResource(R.string.kpm),
-                    scrollBehavior = scrollBehavior,
-                )
-            },
-            floatingActionButton = {
-                KPMFloatingActionButton(
-                    onLoadModule = { uri ->
-                        viewModel.loadModule(uri)
-                    },
-                    onInstallModule = { /*TODO*/ },
-                    onNavigateToPatches = {
-                        navigator.navigateToPatches(PatchMode.PATCH_AND_INSTALL)
-                    },
-                    bottomPadding = bottomPadding
-                )
-            }
-        ) { innerPadding ->
-            KPModuleList(
-                uiState = uiState,
-                onRefresh = { viewModel.fetchModuleList() },
-                onUninstall = { module ->
-                    scope.launch {
-                        val result = confirmDialog.awaitConfirm(
-                            title = moduleStr,
-                            content = moduleUninstallConfirm.format(module.name),
-                            confirm = unloadText,
-                            dismiss = cancelText
-                        )
-                        if (result == ConfirmResult.Confirmed) {
-                            viewModel.uninstallModule(module.name)
-                        }
-                    }
-                },
-                onControl = { module ->
-                    viewModel.openControlDialog(module)
-                },
-                backdrop = backdrop,
-                state = kpModuleListState,
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                modifier = Modifier.blurEffect(backdrop),
+                color = backdrop.getAppBarColor(),
+                title = stringResource(R.string.kpm),
                 scrollBehavior = scrollBehavior,
-                contentPadding = innerPadding,
+            )
+        },
+        floatingActionButton = {
+            KPMFloatingActionButton(
+                onLoadModule = { uri ->
+                    viewModel.loadModule(uri)
+                },
+                onInstallModule = { /*TODO*/ },
+                onNavigateToPatches = {
+                    navigator.navigateToPatches(PatchMode.PATCH_AND_INSTALL)
+                },
                 bottomPadding = bottomPadding
             )
         }
-        if (uiState.showControlDialog && uiState.controlTarget != null) {
-            KPMControlDialog(
-                module = uiState.controlTarget!!,
-                onDismiss = { viewModel.closeControlDialog() }
-            )
-        }
+    ) { innerPadding ->
+        KPModuleList(
+            uiState = uiState,
+            onRefresh = { viewModel.fetchModuleList() },
+            onUninstall = { module ->
+                scope.launch {
+                    val result = confirmDialog.awaitConfirm(
+                        title = moduleStr,
+                        content = moduleUninstallConfirm.format(module.name),
+                        confirm = unloadText,
+                        dismiss = cancelText
+                    )
+                    if (result == ConfirmResult.Confirmed) {
+                        viewModel.uninstallModule(module.name)
+                    }
+                }
+            },
+            onControl = { module ->
+                viewModel.openControlDialog(module)
+            },
+            backdrop = backdrop,
+            state = kpModuleListState,
+            scrollBehavior = scrollBehavior,
+            contentPadding = innerPadding,
+            bottomPadding = bottomPadding
+        )
+    }
+    if (uiState.showControlDialog && uiState.controlTarget != null) {
+        KPMControlDialog(
+            module = uiState.controlTarget!!,
+            onDismiss = { viewModel.closeControlDialog() }
+        )
     }
 }
 
@@ -219,7 +222,11 @@ fun KPMFloatingActionButton(
             containerColor = colorScheme.primary,
             modifier = Modifier.padding(bottom = bottomPadding + 16.dp)
         ) {
-            Icon(imageVector = MiuixIcons.Add, contentDescription = null, tint = colorScheme.onPrimary)
+            Icon(
+                imageVector = MiuixIcons.Add,
+                contentDescription = null,
+                tint = colorScheme.onPrimary
+            )
         }
 
         WindowListPopup(
@@ -237,12 +244,15 @@ fun KPMFloatingActionButton(
                             when (label) {
                                 moduleEmbed -> onNavigateToPatches()
                                 moduleInstall -> {
-                                    Toast.makeText(context, "Under development", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Under development", Toast.LENGTH_SHORT)
+                                        .show()
                                     // val intent = Intent(Intent.ACTION_GET_CONTENT).apply { type = "application/zip" }
                                     // selectZipLauncher.launch(intent)
                                 }
+
                                 moduleLoad -> {
-                                    val intent = Intent(Intent.ACTION_GET_CONTENT).apply { type = "*/*" }
+                                    val intent =
+                                        Intent(Intent.ACTION_GET_CONTENT).apply { type = "*/*" }
                                     selectKpmLauncher.launch(intent)
                                 }
                             }

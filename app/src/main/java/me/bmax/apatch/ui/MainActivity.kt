@@ -36,6 +36,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineScope
@@ -54,8 +56,8 @@ import me.bmax.apatch.ui.page.kpm.KPModuleScreen
 import me.bmax.apatch.ui.page.settings.SettingScreen
 import me.bmax.apatch.ui.page.superuser.SuperUserScreen
 import me.bmax.apatch.ui.theme.APatchTheme
+import me.bmax.apatch.ui.theme.withBackdrop
 import top.yukonga.miuix.kmp.basic.Scaffold
-import top.yukonga.miuix.kmp.blur.layerBackdrop
 import top.yukonga.miuix.kmp.blur.rememberLayerBackdrop
 import kotlin.math.abs
 
@@ -198,38 +200,49 @@ fun MainScreen() {
             HorizontalPager(
                 modifier = Modifier
                     .fillMaxSize()
-                    .layerBackdrop(backdrop),
+                    .withBackdrop(backdrop),
                 state = mainPagerState.pagerState,
                 beyondViewportPageCount = if (contentReady) availablePages.size - 1 else 0,
                 userScrollEnabled = aPatchReady,
             ) { pageIndex ->
+                val pageModifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        compositingStrategy = CompositingStrategy.Auto
+                    }
+
                 val bottomPadding = innerPadding.calculateBottomPadding()
                 val isCurrentPage = pageIndex == settledPage
 
                 if (isCurrentPage || contentReady) {
                     when (availablePages[pageIndex]) {
                         BottomBarDestination.Home -> HomeScreen(
-                            bottomPadding,
+                            modifier = pageModifier,
+                            bottomPadding =  bottomPadding,
                             isCurrentPage = isCurrentPage
                         )
 
                         BottomBarDestination.KModule -> KPModuleScreen(
-                            bottomPadding,
+                            modifier = pageModifier,
+                            bottomPadding = bottomPadding,
                             isCurrentPage = isCurrentPage
                         )
 
                         BottomBarDestination.SuperUser -> SuperUserScreen(
-                            bottomPadding,
+                            modifier = pageModifier,
+                            bottomPadding = bottomPadding,
                             isCurrentPage = isCurrentPage
                         )
 
                         BottomBarDestination.AModule -> APModuleScreen(
-                            bottomPadding,
+                            modifier = pageModifier,
+                            bottomPadding = bottomPadding,
                             isCurrentPage = isCurrentPage
                         )
 
                         BottomBarDestination.Settings -> SettingScreen(
-                            bottomPadding,
+                            modifier = pageModifier,
+                            bottomPadding = bottomPadding,
                             isCurrentPage = isCurrentPage
                         )
                     }

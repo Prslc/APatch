@@ -83,8 +83,12 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun SettingScreen(bottomPadding: Dp, isCurrentPage: Boolean = true) {
-    val viewModel: SettingsViewModel = viewModel()
+fun SettingScreen(
+    modifier: Modifier,
+    bottomPadding: Dp,
+    isCurrentPage: Boolean = true,
+    viewModel: SettingsViewModel = viewModel()
+) {
     val uiState = viewModel.uiState
     val context = LocalContext.current
 
@@ -93,6 +97,7 @@ fun SettingScreen(bottomPadding: Dp, isCurrentPage: Boolean = true) {
     val backdrop = if (isCurrentPage) rememberBlurBackdrop(true) else null
 
     Scaffold(
+        modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 modifier = Modifier.blurEffect(backdrop),

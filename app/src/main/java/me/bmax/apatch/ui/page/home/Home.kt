@@ -71,9 +71,10 @@ import top.yukonga.miuix.kmp.window.WindowListPopup
 
 @Composable
 fun HomeScreen(
+    modifier: Modifier,
     bottomPadding: Dp,
     isCurrentPage: Boolean = true,
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = viewModel(),
 ) {
     val navigator = LocalNavigator.current
 
@@ -100,7 +101,7 @@ fun HomeScreen(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         topBar = {
             TopBar(
                 backdrop = backdrop,

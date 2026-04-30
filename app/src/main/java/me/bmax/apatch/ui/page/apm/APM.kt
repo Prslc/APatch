@@ -137,14 +137,18 @@ import top.yukonga.miuix.kmp.utils.overScrollVertical
 import top.yukonga.miuix.kmp.window.WindowDialog
 
 @Composable
-fun APModuleScreen(bottomPadding: Dp, isCurrentPage: Boolean = true) {
+fun APModuleScreen(
+    modifier: Modifier,
+    bottomPadding: Dp,
+    isCurrentPage: Boolean = true,
+    viewModel: APModuleViewModel = viewModel()
+) {
+    val uiState = viewModel.uiState
+
     val navigator = LocalNavigator.current
     val context = LocalContext.current
     val snackBarHostState = remember { SnackbarHostState() }
     val scrollBehavior = MiuixScrollBehavior()
-
-    val viewModel = viewModel<APModuleViewModel>()
-    val uiState = viewModel.uiState
 
     var expanded by remember { mutableStateOf(false) }
     val backdrop = if (isCurrentPage) rememberBlurBackdrop(true) else null
@@ -178,7 +182,7 @@ fun APModuleScreen(bottomPadding: Dp, isCurrentPage: Boolean = true) {
     val moduleListState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 modifier = Modifier.blurEffect(backdrop),
