@@ -26,6 +26,7 @@ import me.bmax.apatch.ui.page.patch.PatchMode
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
+import me.bmax.apatch.ui.theme.withBackdrop
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
@@ -34,7 +35,6 @@ import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.SmallTopAppBar
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
-import top.yukonga.miuix.kmp.blur.layerBackdrop
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.Back
 import top.yukonga.miuix.kmp.preference.CheckboxPreference
@@ -79,7 +79,7 @@ fun PatchMode() {
     ) { paddingValues ->
         Column(
             modifier = Modifier
-                .then(backdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier)
+                .withBackdrop(backdrop)
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {

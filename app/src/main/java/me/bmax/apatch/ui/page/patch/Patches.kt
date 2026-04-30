@@ -74,11 +74,12 @@ import me.bmax.apatch.ui.component.SwitchItem
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.page.kpm.KPModel
+import me.bmax.apatch.ui.page.patch.utils.checkSuperKeyValidation
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
+import me.bmax.apatch.ui.theme.withBackdrop
 import me.bmax.apatch.util.Version
-import me.bmax.apatch.ui.page.patch.utils.checkSuperKeyValidation
 import me.bmax.apatch.util.reboot
 import top.yukonga.miuix.kmp.basic.Button
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
@@ -94,7 +95,6 @@ import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
-import top.yukonga.miuix.kmp.blur.layerBackdrop
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.Add
 import top.yukonga.miuix.kmp.icon.extended.Back
@@ -190,7 +190,7 @@ fun PatchesScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .then(backdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier)
+                .withBackdrop(backdrop)
                 .verticalScroll(scrollState)
                 .overScrollVertical()
                 .padding(innerPadding)

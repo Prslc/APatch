@@ -1,6 +1,6 @@
 // This file includes code derived from https://github.com/wxxsfxyzm/InstallerX-Revived
 // Copyright (C) 2026 InstallerX Revived contributors
-// Modified: Removed Material Design 3 dependencies and adapted for Miuix surface logic.
+// Modified: Adapted for Miuix surface logic and implemented safe backdrop capturing wrappers.
 
 package me.bmax.apatch.ui.theme
 
@@ -13,6 +13,7 @@ import top.yukonga.miuix.kmp.blur.BlendColorEntry
 import top.yukonga.miuix.kmp.blur.BlurColors
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
 import top.yukonga.miuix.kmp.blur.isRenderEffectSupported
+import top.yukonga.miuix.kmp.blur.layerBackdrop
 import top.yukonga.miuix.kmp.blur.rememberLayerBackdrop
 import top.yukonga.miuix.kmp.blur.textureBlur
 import top.yukonga.miuix.kmp.theme.MiuixTheme
@@ -39,6 +40,17 @@ fun rememberBlurBackdrop(enableBlur: Boolean): LayerBackdrop? {
 @Composable
 fun LayerBackdrop?.getAppBarColor(): Color =
     this?.let { Color.Transparent } ?: MiuixTheme.colorScheme.surface
+
+/**
+ * Captures the content of this composable into the given [LayerBackdrop].
+ *
+ * If [backdrop] is null (e.g., when blur is disabled or not supported),
+ * this modifier does nothing and returns the original [Modifier].
+ *
+ * @param backdrop The [LayerBackdrop] used to record the content.
+ */
+fun Modifier.withBackdrop(backdrop: LayerBackdrop?): Modifier =
+    backdrop?.let { this.layerBackdrop(it) } ?: this
 
 /**
  * Apply a standard glassmorphism blur effect using Miuix Backdrop.

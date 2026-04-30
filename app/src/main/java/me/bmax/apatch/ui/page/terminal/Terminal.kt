@@ -13,7 +13,6 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
@@ -34,6 +33,7 @@ import me.bmax.apatch.ui.navigation.TERMINAL_TASK_TYPE
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
+import me.bmax.apatch.ui.theme.withBackdrop
 import me.bmax.apatch.util.reboot
 import top.yukonga.miuix.kmp.basic.FloatingActionButton
 import top.yukonga.miuix.kmp.basic.Icon
@@ -41,7 +41,6 @@ import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.SmallTopAppBar
 import top.yukonga.miuix.kmp.basic.Text
-import top.yukonga.miuix.kmp.blur.layerBackdrop
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import java.io.File
 import java.text.SimpleDateFormat
@@ -138,11 +137,7 @@ fun TerminalScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .then(
-                    remember(backdrop) {
-                        backdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier
-                    }
-                )
+                .withBackdrop(backdrop)
                 .padding(innerPadding)
                 .verticalScroll(scrollState),
         ) {

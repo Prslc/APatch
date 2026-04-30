@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -29,6 +28,7 @@ import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
+import me.bmax.apatch.ui.theme.withBackdrop
 import me.bmax.apatch.util.Version
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
@@ -38,7 +38,6 @@ import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.Surface
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TopAppBar
-import top.yukonga.miuix.kmp.blur.layerBackdrop
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.Back
 import top.yukonga.miuix.kmp.preference.ArrowPreference
@@ -51,14 +50,14 @@ fun AboutScreen() {
     val scrollBehavior = MiuixScrollBehavior()
     val uriHandler = LocalUriHandler.current
 
-    val topBarBackdrop = rememberBlurBackdrop(true)
+    val backdrop = rememberBlurBackdrop(true)
 
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.blurEffect(topBarBackdrop),
+                modifier = Modifier.blurEffect(backdrop),
                 title = stringResource(R.string.about),
-                color = topBarBackdrop.getAppBarColor(),
+                color = backdrop.getAppBarColor(),
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = {navigator.popBackStack()}) {
@@ -70,12 +69,8 @@ fun AboutScreen() {
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
-                .then(
-                    remember(topBarBackdrop) {
-                        topBarBackdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier
-                    }
-                )
                 .fillMaxSize()
+                .withBackdrop(backdrop)
                 .overScrollVertical()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             contentPadding = innerPadding,

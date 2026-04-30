@@ -35,14 +35,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
-
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -91,6 +89,7 @@ import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
+import me.bmax.apatch.ui.theme.withBackdrop
 import me.bmax.apatch.util.DownloadListener
 import me.bmax.apatch.util.Shortcut
 import me.bmax.apatch.util.download
@@ -124,7 +123,6 @@ import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
-import top.yukonga.miuix.kmp.blur.layerBackdrop
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.Add
 import top.yukonga.miuix.kmp.icon.extended.Delete
@@ -744,11 +742,7 @@ private fun ModuleList(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .then(
-                remember(backdrop) {
-                    backdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier
-                }
-            )
+            .withBackdrop(backdrop)
             .overScrollVertical()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         state = state,

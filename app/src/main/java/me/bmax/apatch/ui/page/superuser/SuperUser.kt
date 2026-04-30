@@ -43,6 +43,7 @@ import me.bmax.apatch.ui.component.DropdownItem
 import me.bmax.apatch.ui.component.LoadingIndicator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
+import me.bmax.apatch.ui.theme.withBackdrop
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.IconButton
@@ -57,7 +58,6 @@ import top.yukonga.miuix.kmp.basic.Switch
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
-import top.yukonga.miuix.kmp.blur.layerBackdrop
 import top.yukonga.miuix.kmp.blur.rememberLayerBackdrop
 import top.yukonga.miuix.kmp.preference.SwitchPreference
 import top.yukonga.miuix.kmp.theme.MiuixTheme
@@ -111,7 +111,7 @@ fun SuperUserScreen(bottomPadding: Dp, isCurrentPage: Boolean = true) {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
-                            .then(backdrop.let { Modifier.layerBackdrop(it) })
+                            .withBackdrop(backdrop)
                             .overScrollVertical()
                             .nestedScroll(scrollBehavior.nestedScrollConnection),
                         contentPadding = PaddingValues(

@@ -47,6 +47,7 @@ import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
+import me.bmax.apatch.ui.theme.withBackdrop
 import me.bmax.apatch.util.Version.getManagerVersion
 import me.bmax.apatch.util.reboot
 import top.yukonga.miuix.kmp.basic.BasicComponent
@@ -61,7 +62,6 @@ import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
-import top.yukonga.miuix.kmp.blur.layerBackdrop
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.Link
 import top.yukonga.miuix.kmp.theme.MiuixTheme
@@ -114,17 +114,14 @@ fun HomeScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .then(
-                    remember(backdrop) {
-                        backdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier
-                    }
-                )
-                .padding(horizontal = 16.dp)
+                .withBackdrop(backdrop)
                 .overScrollVertical()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             contentPadding = PaddingValues(
                 top = innerPadding.calculateTopPadding() + 12.dp,
-                bottom = innerPadding.calculateBottomPadding()
+                bottom = innerPadding.calculateBottomPadding() + 16.dp,
+                start = 16.dp,
+                end = 16.dp
             )
         ) {
             item {

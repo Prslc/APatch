@@ -63,6 +63,7 @@ import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
+import me.bmax.apatch.ui.theme.withBackdrop
 import me.bmax.apatch.util.clearAppCache
 import me.bmax.apatch.util.formatSize
 import me.bmax.apatch.util.getBugreportFile
@@ -76,7 +77,6 @@ import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.TopAppBar
-import top.yukonga.miuix.kmp.blur.layerBackdrop
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import top.yukonga.miuix.kmp.window.WindowDialog
 import java.time.LocalDateTime
@@ -110,11 +110,7 @@ fun SettingScreen(bottomPadding: Dp, isCurrentPage: Boolean = true) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .then(
-                    remember(backdrop) {
-                        backdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier
-                    }
-                )
+                .withBackdrop(backdrop)
                 .overScrollVertical()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             contentPadding = PaddingValues(
