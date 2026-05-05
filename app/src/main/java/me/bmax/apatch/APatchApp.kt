@@ -47,9 +47,6 @@ class APApplication : Application(), Thread.UncaughtExceptionHandler {
 
     companion object {
         const val APD_PATH = "/data/adb/apd"
-
-        @Deprecated("No more KPatch ELF from 0.11.0-dev")
-        const val KPATCH_PATH = "/data/adb/kpatch"
         const val APATCH_FOLDER = "/data/adb/ap/"
         private const val APATCH_BIN_FOLDER = APATCH_FOLDER + "bin/"
         private const val APATCH_LOG_FOLDER = APATCH_FOLDER + "log/"
@@ -98,7 +95,6 @@ class APApplication : Application(), Thread.UncaughtExceptionHandler {
 
             val cmds = arrayOf(
                 "rm -f $APD_PATH",
-                "rm -f $KPATCH_PATH",
                 "rm -rf $APATCH_BIN_FOLDER",
                 "rm -rf $APATCH_LOG_FOLDER",
                 "rm -rf $APATCH_VERSION_PATH",

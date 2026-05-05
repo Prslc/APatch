@@ -31,10 +31,6 @@ private const val TAG = "APatchCli"
 val dataDir: String
     get() = Environment.getDataDirectory().absolutePath
 
-private fun getKPatchPath(): String {
-    return apApp.applicationInfo.nativeLibraryDir + File.separator + "libkpatch.so"
-}
-
 class RootShellInitializer : Shell.Initializer() {
     override fun onInit(context: Context, shell: Shell): Boolean {
         shell.newJob().add("""export PATH=${'$'}PATH:/system_ext/bin:/vendor/bin""").exec()
@@ -61,25 +57,8 @@ private fun createShell(globalMnt: Boolean, asMain: Boolean): Shell {
         builder.build()
     } catch (e: Throwable) {
         Log.e(TAG, "su failed: ", e)
-        try {
-            val cmds = if (globalMnt) {
-                arrayOf(
-                    getKPatchPath(), APApplication.superKey, "su", "-Z",
-                    APApplication.MAGISK_SCONTEXT, "--mount-master"
-                )
-            } else {
-                arrayOf(
-                    getKPatchPath(), APApplication.superKey, "su", "-Z",
-                    APApplication.MAGISK_SCONTEXT
-                )
-            }
-            builder.setCommands(*cmds)
-            builder.build()
-        } catch (e: Throwable) {
-            Log.e(TAG, "retry kpatch su failed: ", e)
-            builder.setCommands("sh")
-            builder.build()
-        }
+        builder.setCommands("sh")
+        builder.build()
     }
 
     if (asMain) MainShell.setBuilder(builder)
