@@ -51,23 +51,22 @@ class APModuleViewModel : ViewModel() {
         uiState = uiState.copy(isNeedRefresh = true)
     }
 
-    private suspend fun checkMetaModuleWarning(modules: List<ModuleInfo>) {
-        val warning = runCatching {
-            val needsMountModule = modules.any { module ->
-                val moduleDir = "/data/adb/modules/${module.id}"
-                SuFile.open("$moduleDir/system").isDirectory && !SuFile.open("$moduleDir/skip_mount").isFile
-            }
+    private suspend fun checkMetaModuleWarning(modules: List<ModuleInfo>) = withContext(Dispatchers.IO) {
+        val needsMountModule = modules.any { module ->
+            val moduleDir = "/data/adb/modules/${module.id}"
+            // Module requires mounting if it has a system dir and no skip_mount file
+            SuFile.open("$moduleDir/system").isDirectory && !SuFile.open("$moduleDir/skip_mount").isFile
+        }
 
-            if (needsMountModule) {
-                val metaDir = "/data/adb/metamodule"
-                when {
-                    !SuFile.open("$metaDir/module.prop").isFile -> apApp.getString(R.string.no_meta_module_installed)
-                    SuFile.open("$metaDir/remove").isFile -> apApp.getString(R.string.meta_module_removed)
-                    SuFile.open("$metaDir/disable").isFile -> apApp.getString(R.string.meta_module_disabled)
-                    else -> null
-                }
-            } else null
-        }.getOrNull()
+        val warning = if (needsMountModule) {
+            val metaDir = "/data/adb/metamodule"
+            when {
+                !SuFile.open("$metaDir/module.prop").isFile -> apApp.getString(R.string.no_meta_module_installed)
+                SuFile.open("$metaDir/remove").isFile -> apApp.getString(R.string.meta_module_removed)
+                SuFile.open("$metaDir/disable").isFile -> apApp.getString(R.string.meta_module_disabled)
+                else -> null
+            }
+        } else null
 
         withContext(Dispatchers.Main) {
             uiState = uiState.copy(metaModuleWarning = warning)
