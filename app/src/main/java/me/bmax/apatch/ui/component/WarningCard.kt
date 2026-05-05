@@ -30,8 +30,8 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 @Composable
 fun WarningCard(
     message: String,
-    containerColor: Color = MiuixTheme.colorScheme.errorContainer,
-    contentColor: Color = MiuixTheme.colorScheme.onErrorContainer,
+    containerColor: Color = MiuixTheme.colorScheme.error,
+    contentColor: Color = MiuixTheme.colorScheme.onError,
     onClick: (() -> Unit)? = null,
     onClose: (() -> Unit)? = null,
     icon: (@Composable () -> Unit)? = null
