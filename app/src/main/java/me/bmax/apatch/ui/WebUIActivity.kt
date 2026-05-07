@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.graphics.Color
+import androidx.compose.ui.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -58,7 +58,6 @@ class WebUIActivity : ComponentActivity() {
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         enableEdgeToEdge()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             window.isNavigationBarContrastEnforced = false
@@ -78,7 +77,12 @@ class WebUIActivity : ComponentActivity() {
         })
 
         setContent {
-            APatchTheme {
+            val prefs = getSharedPreferences("config", MODE_PRIVATE)
+            val colorMode = prefs.getInt("color_mode", 0)
+            val keyColorInt = prefs.getInt("key_color", 0)
+            val keyColor = if (keyColorInt == 0) null else Color(keyColorInt)
+
+            APatchTheme(colorMode = colorMode, keyColor = keyColor) {
                 Box(
                     modifier = Modifier.fillMaxSize().background(MiuixTheme.colorScheme.background),
                     contentAlignment = Alignment.Center
@@ -139,7 +143,7 @@ class WebUIActivity : ComponentActivity() {
         }
 
         this.webView = WebView(this).apply {
-            setBackgroundColor(Color.TRANSPARENT)
+            setBackgroundColor(0)
         }
 
         val density = resources.displayMetrics.density

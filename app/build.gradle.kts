@@ -327,7 +327,7 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.core)
 
-    implementation(libs.me.zhanghai.android.appiconloader.coil)
+    implementation(libs.me.zhanghai.android.appiconloader)
 
     implementation(libs.markdown)
 
