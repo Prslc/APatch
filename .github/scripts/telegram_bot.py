@@ -65,9 +65,9 @@ def send_to_telegram(chat_id, file_path):
         summary = summary[:600] + "..."
 
     caption = (
-        f"<b>Branch:</b> <code>{branch}</code>\n\n"
+        f"<b>Branch:</b> <code>{branch}</code>\n"
         f"<b>Manager:</b> <code>v{version}</code>\n"
-        f"<b>KernelPatch:</b> <code>{kp_hash}</code>\n"
+        f"<b>KernelPatch:</b> <code>{kp_hash}</code>\n\n"
         f"<blockquote>{summary}</blockquote>\n\n"
         f"<a href=\"{compare_url}\">{compare_label}</a> | "
         f"<a href=\"{run_url}\">Workflow</a>"

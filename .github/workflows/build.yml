@@ -91,7 +91,6 @@ jobs:
           name: "mappings"
           path: "app/build/outputs/mapping/release/"
 
-
       - name: Get KernelPatch Hash
         id: kp_hash
         run: |

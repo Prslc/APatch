@@ -39,7 +39,6 @@ class RootShellInitializer : Shell.Initializer() {
 }
 
 /**
- * Core shell creation logic (nested version).
  * @param globalMnt Whether to use global mount namespace.
  * @param asMain Whether to register as the global main shell.
  */
