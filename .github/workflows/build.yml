@@ -91,12 +91,20 @@ jobs:
           name: "mappings"
           path: "app/build/outputs/mapping/release/"
 
+
+      - name: Get KernelPatch Hash
+        id: kp_hash
+        run: |
+          HASH=$(git ls-remote https://github.com/bmax121/KernelPatch.git HEAD | awk '{print substr($1,1,7)}')
+          echo "KP_HASH=$HASH" >> $GITHUB_OUTPUT
+
       - name: Post to Telegram
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           GITHUB_EVENT_PATH: ${{ github.event_path }}
-          VERSION: "${{ steps.parse_version.outputs.VERSION }}"
           BRANCH: ${{ github.ref_name }}
+          VERSION: "${{ steps.parse_version.outputs.VERSION }}"
+          KP_HASH: "${{ steps.kp_hash.outputs.KP_HASH }}"
           RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         run: |
           APK_PATH=$(ls app/build/outputs/apk/release/*.apk | head -n 1)

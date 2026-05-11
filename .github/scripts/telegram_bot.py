@@ -40,8 +40,9 @@ def get_commit_summary():
 
 def send_to_telegram(chat_id, file_path):
     token = os.environ.get("BOT_TOKEN")
-    version = html.escape(os.environ.get("VERSION", "0"))
     branch = html.escape(os.environ.get("BRANCH", "main"))
+    version = html.escape(os.environ.get("VERSION", "0"))
+    kp_hash = html.escape(os.environ.get("KP_HASH", "unknown"))
     run_url = os.environ.get("RUN_URL", "#")
 
     try:
@@ -60,18 +61,27 @@ def send_to_telegram(chat_id, file_path):
 
     summary = get_commit_summary()
 
+    if len(summary) > 600:
+        summary = summary[:600] + "..."
+
     caption = (
-        f"<b>Manager:</b> <code>v{version}</code>\n"
         f"<b>Branch:</b> <code>{branch}</code>\n\n"
+        f"<b>Manager:</b> <code>v{version}</code>\n"
+        f"<b>KernelPatch:</b> <code>{kp_hash}</code>\n"
         f"<blockquote>{summary}</blockquote>\n\n"
         f"<a href=\"{compare_url}\">{compare_label}</a> | "
         f"<a href=\"{run_url}\">Workflow</a>"
     )
 
+    full_caption = caption
+
+    if len(full_caption) > 1024:
+        full_caption = caption[:950] + "...</blockquote>"
+
     media_payload = json.dumps([{
         "type": "document",
         "media": "attach://apk_file",
-        "caption": caption[:1024], 
+        "caption": full_caption[:1024],
         "parse_mode": "HTML"
     }])
 
