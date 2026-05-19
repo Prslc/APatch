@@ -125,16 +125,12 @@ class SettingsViewModel : ViewModel() {
         uiState = uiState.copy(keyColor = color)
     }
 
-    fun setShowResetSuDialog(show: Boolean) {
-        uiState = uiState.copy(showResetSuPathDialog = show)
+    fun showDialog(dialogType: SettingDialogType) {
+        uiState = uiState.copy(currentDialog = dialogType)
     }
 
-    fun setShowClearDialog(show: Boolean) {
-        uiState = uiState.copy(showClearDialog = show)
-    }
-
-    fun setShowLogDialog(show: Boolean) {
-        uiState = uiState.copy(showLogDialog = show)
+    fun dismissDialog() {
+        uiState = uiState.copy(currentDialog = SettingDialogType.NONE)
     }
 
     fun resetSuPath(newPath: String, onResult: (Boolean) -> Unit) {

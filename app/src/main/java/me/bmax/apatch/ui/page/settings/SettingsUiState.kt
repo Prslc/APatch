@@ -2,6 +2,13 @@ package me.bmax.apatch.ui.page.settings
 
 import androidx.compose.runtime.Immutable
 
+enum class SettingDialogType {
+    NONE,
+    RESET_SU_PATH,
+    SEND_LOG,
+    CLEAR_CACHE
+}
+
 @Immutable
 data class SettingsUiState(
     val isKpatchReady: Boolean = false,
@@ -13,7 +20,5 @@ data class SettingsUiState(
     val keyColor: Int = 0,
     val cacheSize: Long = 0L,
     val currentLanguageIndex: Int = 0,
-    val showResetSuPathDialog: Boolean = false,
-    val showLogDialog: Boolean = false,
-    val showClearDialog: Boolean = false
+    val currentDialog: SettingDialogType = SettingDialogType.NONE
 )

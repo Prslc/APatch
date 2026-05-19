@@ -1,23 +1,11 @@
 package me.bmax.apatch.ui.page.settings
 
-import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BugReport
@@ -26,61 +14,34 @@ import androidx.compose.material.icons.filled.Commit
 import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.Engineering
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Save
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.rounded.Colorize
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import me.bmax.apatch.BuildConfig
-import me.bmax.apatch.Natives
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.ArrowItem
 import me.bmax.apatch.ui.component.DropdownItem
 import me.bmax.apatch.ui.component.SwitchItem
-import me.bmax.apatch.ui.component.rememberLoadingDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
-import me.bmax.apatch.util.clearAppCache
 import me.bmax.apatch.util.formatSize
-import me.bmax.apatch.util.getBugreportFile
-import me.bmax.apatch.util.outputStream
-import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
-import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
-import top.yukonga.miuix.kmp.basic.Text
-import top.yukonga.miuix.kmp.basic.TextButton
-import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.utils.overScrollVertical
-import top.yukonga.miuix.kmp.window.WindowDialog
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun SettingScreen(
@@ -107,11 +68,7 @@ fun SettingScreen(
             )
         }
     ) { paddingValues ->
-
-        ResetSUPathDialog()
-        ClearDialog()
-        LogDialog()
-
+        SettingsDialogOverlay(uiState, viewModel)
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -223,9 +180,7 @@ fun SettingScreen(
                             summary = stringResource(R.string.setting_reset_su_path_summary),
                             icon = Icons.Filled.Commit,
                             contentDescription = stringResource(R.string.setting_reset_su_path),
-                            onClick = {
-                                viewModel.setShowResetSuDialog(true)
-                            }
+                            onClick = { viewModel.showDialog(SettingDialogType.RESET_SU_PATH) }
                         )
                     }
 
@@ -234,7 +189,7 @@ fun SettingScreen(
                         title = stringResource(R.string.send_log),
                         summary = stringResource(R.string.send_log_summary),
                         icon = Icons.Filled.BugReport,
-                        onClick = { viewModel.setShowLogDialog(true) }
+                        onClick = { viewModel.showDialog(SettingDialogType.SEND_LOG) }
                     )
 
                     // clean cache
@@ -244,7 +199,7 @@ fun SettingScreen(
                         icon = Icons.Filled.CleaningServices,
                         onClick = {
                             if (uiState.cacheSize > 0L) {
-                                viewModel.setShowClearDialog(true)
+                                viewModel.showDialog(SettingDialogType.CLEAR_CACHE)
                             } else {
                                 Toast.makeText(context, R.string.no_cache_to_clear, Toast.LENGTH_SHORT).show()
                             }
@@ -261,205 +216,6 @@ fun SettingScreen(
                 }
                 Spacer(Modifier.height(bottomPadding))
             }
-        }
-    }
-}
-
-@Composable
-fun LogDialog() {
-    val viewModel: SettingsViewModel = viewModel()
-    val uiState = viewModel.uiState
-
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val loadingDialog = rememberLoadingDialog()
-    val logSavedMessage = stringResource(R.string.log_saved)
-
-    val exportBugreportLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.CreateDocument("application/gzip")
-    ) { uri: Uri? ->
-        if (uri != null) {
-            scope.launch(Dispatchers.IO) {
-                loadingDialog.show()
-                runCatching {
-                    uri.outputStream().use { output ->
-                        getBugreportFile(context).inputStream().use { it.copyTo(output) }
-                    }
-                }.onSuccess {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, logSavedMessage, Toast.LENGTH_LONG).show()
-                    }
-                }
-                loadingDialog.hide()
-            }
-        }
-    }
-
-    WindowDialog(
-        show = uiState.showLogDialog,
-        title = stringResource(R.string.send_log),
-        onDismissRequest = { viewModel.setShowLogDialog(false) }
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            // save log
-            LogActionItem(
-                icon = Icons.Default.Save,
-                label = stringResource(R.string.save_log),
-                onClick = {
-                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH_mm")
-                    val current = LocalDateTime.now().format(formatter)
-                    exportBugreportLauncher.launch("APatch_bugreport_${current}.tar.gz")
-                    viewModel.setShowLogDialog(false)
-                }
-            )
-
-            // share log
-            LogActionItem(
-                icon = Icons.Default.Share,
-                label = stringResource(R.string.send_log),
-                onClick = {
-                    scope.launch {
-                        val bugreport = loadingDialog.withLoading {
-                            withContext(Dispatchers.IO) { getBugreportFile(context) }
-                        }
-                        val uri: Uri = FileProvider.getUriForFile(
-                            context,
-                            "${BuildConfig.APPLICATION_ID}.fileprovider",
-                            bugreport
-                        )
-                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                            putExtra(Intent.EXTRA_STREAM, uri)
-                            setDataAndType(uri, "application/gzip")
-                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        }
-                        context.startActivity(Intent.createChooser(shareIntent, logSavedMessage))
-                        viewModel.setShowLogDialog(false)
-                    }
-                }
-            )
-        }
-    }
-}
-
-@Composable
-private fun LogActionItem(
-    icon: ImageVector,
-    label: String,
-    onClick: () -> Unit
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .padding(16.dp)
-    ) {
-        Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(30.dp))
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(label)
-    }
-}
-
-@Composable
-fun ResetSUPathDialog() {
-    val viewModel: SettingsViewModel = viewModel()
-    val uiState = viewModel.uiState
-    val context = LocalContext.current
-
-    var suPath by remember(uiState.showResetSuPathDialog) {
-        mutableStateOf(Natives.suPath())
-    }
-
-    val isPathValid = suPath.startsWith("/") && suPath.trim().length > 1
-
-    WindowDialog(
-        show = uiState.showResetSuPathDialog,
-        title = stringResource(R.string.setting_reset_su_path),
-        onDismissRequest = { viewModel.setShowResetSuDialog(false) }
-    ) {
-        TextField(
-            value = suPath,
-            onValueChange = { suPath = it },
-            label = stringResource(R.string.setting_reset_su_new_path),
-        )
-
-        Spacer(Modifier.height(12.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            TextButton(
-                stringResource(android.R.string.cancel),
-                onClick = { viewModel.setShowResetSuDialog(false) },
-                modifier = Modifier.weight(1f),
-            )
-
-            Spacer(Modifier.width(20.dp))
-
-            TextButton(
-                stringResource(android.R.string.ok),
-                onClick = {
-                    viewModel.resetSuPath(suPath) { success ->
-                        Toast.makeText(
-                            context,
-                            if (success) R.string.success else R.string.failure,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        viewModel.setShowResetSuDialog(false)
-                    }
-                },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.textButtonColorsPrimary(),
-                enabled = isPathValid
-            )
-        }
-    }
-}
-
-@Composable
-fun ClearDialog() {
-    val viewModel: SettingsViewModel = viewModel()
-    val uiState = viewModel.uiState
-
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val loading = rememberLoadingDialog()
-
-    WindowDialog(
-        show = uiState.showClearDialog,
-        title = stringResource(R.string.clear_cache_title),
-        summary = stringResource(R.string.clear_cache_message, formatSize(uiState.cacheSize)),
-        onDismissRequest = { viewModel.setShowClearDialog(false) }
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            TextButton(
-                stringResource(android.R.string.cancel),
-                onClick = { viewModel.setShowClearDialog(false) },
-                modifier = Modifier.weight(1f),
-            )
-
-            Spacer(Modifier.width(20.dp))
-
-            TextButton(
-                stringResource(android.R.string.ok),
-                onClick = {
-                    viewModel.setShowClearDialog(false)
-                    scope.launch {
-                        loading.withLoading {
-                            clearAppCache(context)
-                            viewModel.refreshCacheSize()
-                        }
-                    }
-                },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.textButtonColorsPrimary(),
-            )
         }
     }
 }
