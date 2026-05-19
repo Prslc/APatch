@@ -58,7 +58,7 @@ fun TerminalScreen(
     val state = viewModel.uiState
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
-    val backdrop = rememberBlurBackdrop(true)
+    val backdrop = rememberBlurBackdrop()
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {

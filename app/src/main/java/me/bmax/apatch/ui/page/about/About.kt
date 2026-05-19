@@ -50,7 +50,7 @@ fun AboutScreen() {
     val scrollBehavior = MiuixScrollBehavior()
     val uriHandler = LocalUriHandler.current
 
-    val backdrop = rememberBlurBackdrop(true)
+    val backdrop = rememberBlurBackdrop()
 
     Scaffold(
         topBar = {

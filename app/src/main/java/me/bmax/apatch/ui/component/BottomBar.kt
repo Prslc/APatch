@@ -30,7 +30,7 @@ import top.yukonga.miuix.kmp.basic.NavigationBarItem
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
 
 @Composable
-fun BottomBar(backdrop: LayerBackdrop) {
+fun BottomBar(backdrop: LayerBackdrop?) {
     val navigator = LocalNavigator.current
     val selectedPage = LocalSelectedPage.current
 

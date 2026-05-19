@@ -103,7 +103,7 @@ fun KPModuleScreen(
     val kpModuleListState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
 
     val navigator = LocalNavigator.current
-    val backdrop = if (isCurrentPage) rememberBlurBackdrop(true) else null
+    val backdrop = if (isCurrentPage) rememberBlurBackdrop() else null
 
     val moduleStr = stringResource(id = R.string.kpm)
     val moduleUninstallConfirm = stringResource(id = R.string.kpm_unload_confirm)

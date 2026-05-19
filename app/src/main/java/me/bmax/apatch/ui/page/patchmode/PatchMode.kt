@@ -43,7 +43,7 @@ import top.yukonga.miuix.kmp.preference.CheckboxPreference
 fun PatchMode(viewModel: PatchModeViewModel = viewModel()) {
     val navigator = LocalNavigator.current
     val state = viewModel.uiState
-    val backdrop = rememberBlurBackdrop(true)
+    val backdrop = rememberBlurBackdrop()
 
     val selectImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()

@@ -43,6 +43,7 @@ import me.bmax.apatch.ui.component.DropdownItem
 import me.bmax.apatch.ui.component.LoadingIndicator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
+import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
@@ -58,7 +59,6 @@ import top.yukonga.miuix.kmp.basic.Switch
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
-import top.yukonga.miuix.kmp.blur.rememberLayerBackdrop
 import top.yukonga.miuix.kmp.preference.SwitchPreference
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
@@ -76,7 +76,7 @@ fun SuperUserScreen(
     val appList by viewModel.filteredApps.collectAsStateWithLifecycle()
 
     val scrollBehavior = MiuixScrollBehavior()
-    val backdrop = rememberLayerBackdrop()
+    val backdrop = rememberBlurBackdrop()
 
     if (isCurrentPage) {
         LaunchedEffect(Unit) {
@@ -147,7 +147,7 @@ fun SuperUserScreen(
 @Composable
 fun SuperTopBar(
     viewModel: SuperUserViewModel,
-    backdrop: LayerBackdrop,
+    backdrop: LayerBackdrop?,
     scrollBehavior: ScrollBehavior
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

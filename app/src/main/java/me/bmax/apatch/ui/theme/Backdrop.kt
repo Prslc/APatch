@@ -5,6 +5,7 @@
 package me.bmax.apatch.ui.theme
 
 import androidx.compose.runtime.Composable
+import me.bmax.apatch.APApplication
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
@@ -31,6 +32,16 @@ fun rememberBlurBackdrop(enableBlur: Boolean): LayerBackdrop? {
         drawRect(surfaceColor)
         drawContent()
     }
+}
+
+/**
+ * Remember a LayerBackdrop controlled by the user's blur preference.
+ * @return A LayerBackdrop instance if enabled and supported, null otherwise.
+ */
+@Composable
+fun rememberBlurBackdrop(): LayerBackdrop? {
+    val prefs = APApplication.sharedPreferences
+    return rememberBlurBackdrop(prefs.getBoolean("blur_enabled", true))
 }
 
 /**

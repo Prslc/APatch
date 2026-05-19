@@ -60,6 +60,7 @@ class SettingsViewModel : ViewModel() {
         uiState = uiState.copy(
             enableWebDebugging = prefs.getBoolean("enable_web_debugging", false),
             checkUpdate = prefs.getBoolean("check_update", true),
+            blurEnabled = prefs.getBoolean("blur_enabled", true),
             themeMode = prefs.getInt("color_mode", 0),
             keyColor = prefs.getInt("key_color", 0),
             currentLanguageIndex = languagesValues.indexOf(tag).coerceAtLeast(0)
@@ -112,6 +113,11 @@ class SettingsViewModel : ViewModel() {
     fun setCheckUpdate(enabled: Boolean) {
         prefs.edit { putBoolean("check_update", enabled) }
         uiState = uiState.copy(checkUpdate = enabled)
+    }
+
+    fun setBlurEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean("blur_enabled", enabled) }
+        uiState = uiState.copy(blurEnabled = enabled)
     }
 
     fun setThemeMode(index: Int) {

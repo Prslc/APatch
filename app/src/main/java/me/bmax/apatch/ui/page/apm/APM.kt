@@ -151,7 +151,7 @@ fun APModuleScreen(
     val scrollBehavior = MiuixScrollBehavior()
 
     var expanded by remember { mutableStateOf(false) }
-    val backdrop = if (isCurrentPage) rememberBlurBackdrop(true) else null
+    val backdrop = if (isCurrentPage) rememberBlurBackdrop() else null
 
     val state by APApplication.apStateLiveData.observeAsState(APApplication.State.UNKNOWN_STATE)
 

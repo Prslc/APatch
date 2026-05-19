@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BlurOn
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.Commit
@@ -55,7 +56,7 @@ fun SettingScreen(
 
     val navigator = LocalNavigator.current
     val scrollBehavior = MiuixScrollBehavior()
-    val backdrop = if (isCurrentPage) rememberBlurBackdrop(true) else null
+    val backdrop = if (isCurrentPage) rememberBlurBackdrop() else null
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -105,7 +106,6 @@ fun SettingScreen(
                             onCheckedChange = { viewModel.setWebDebugging(it) }
                         )
                     }
-
                     // Check Update
                     SwitchItem(
                         title = stringResource(R.string.settings_check_update),
@@ -118,6 +118,14 @@ fun SettingScreen(
                         }
                     )
 
+                    // Blur Effects
+                    SwitchItem(
+                        title = stringResource(R.string.settings_blur_enabled),
+                        summary = stringResource(R.string.settings_blur_enabled_summary),
+                        icon = Icons.Filled.BlurOn,
+                        checked = uiState.blurEnabled,
+                        onCheckedChange = { viewModel.setBlurEnabled(it) }
+                    )
                     // Theme System
                     DropdownItem(
                         title = stringResource(R.string.settings_theme),

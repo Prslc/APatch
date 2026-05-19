@@ -56,9 +56,9 @@ import me.bmax.apatch.ui.page.kpm.KPModuleScreen
 import me.bmax.apatch.ui.page.settings.SettingScreen
 import me.bmax.apatch.ui.page.superuser.SuperUserScreen
 import me.bmax.apatch.ui.theme.APatchTheme
+import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
 import top.yukonga.miuix.kmp.basic.Scaffold
-import top.yukonga.miuix.kmp.blur.rememberLayerBackdrop
 import kotlin.math.abs
 
 val LocalSelectedPage = compositionLocalOf { 0 }
@@ -168,7 +168,7 @@ fun MainScreen() {
         )
     }
 
-    val backdrop = rememberLayerBackdrop()
+    val backdrop = rememberBlurBackdrop()
     val contentReady = rememberContentReady()
     val settledPage by remember { derivedStateOf { mainPagerState.pagerState.settledPage } }
 

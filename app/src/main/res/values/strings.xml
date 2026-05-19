@@ -223,6 +223,8 @@
     <string name="apm_action">Action</string>
     <string name="enable_web_debugging">Enable WebView debugging</string>
     <string name="enable_web_debugging_summary">Can be used to debug WebUI. Please enable only when needed</string>
+    <string name="settings_blur_enabled">Enable blur effects</string>
+    <string name="settings_blur_enabled_summary">Apply background blur for visual style</string>
 
     <string name="apm_shortcut_title">Create shortcut</string>
     <string name="apm_shortcut_name_label">Shortcut name</string>

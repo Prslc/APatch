@@ -79,7 +79,7 @@ fun HomeScreen(
     val navigator = LocalNavigator.current
 
     val scrollBehavior = MiuixScrollBehavior()
-    val backdrop = if (isCurrentPage) rememberBlurBackdrop(true) else null
+    val backdrop = if (isCurrentPage) rememberBlurBackdrop() else null
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 

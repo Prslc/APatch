@@ -118,7 +118,7 @@ fun PatchesScreen(
     val context = LocalContext.current
 
     val scrollState = rememberScrollState()
-    val backdrop = rememberBlurBackdrop(true)
+    val backdrop = rememberBlurBackdrop()
 
     var needKey by rememberSaveable { mutableStateOf(false) }
 
