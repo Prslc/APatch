@@ -60,6 +60,7 @@ fun SettingsDialogOverlay(uiState: SettingsUiState, viewModel: SettingsViewModel
             viewModel = viewModel
         )
         SettingDialogType.SEND_LOG -> LogDialog(viewModel)
+        SettingDialogType.PAGE_SCALE -> PageScaleDialog(viewModel)
         SettingDialogType.NONE -> { /* None */ }
     }
 }
@@ -250,3 +251,57 @@ private fun ClearDialog(cacheSize: Long, viewModel: SettingsViewModel) {
         }
     }
 }
+
+@Composable
+private fun PageScaleDialog(viewModel: SettingsViewModel) {
+    var text by remember { mutableStateOf((pageScale * 100).toInt().toString()) }
+
+    WindowDialog(
+        show = true,
+        title = stringResource(R.string.settings_page_scale),
+        summary = "80% - 110%",
+        onDismissRequest = { viewModel.dismissDialog() }
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            TextField(
+                modifier = Modifier.padding(bottom = 16.dp),
+                value = text,
+                maxLines = 1,
+                trailingIcon = {
+                    Text(
+                        text = "%",
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme.onSurfaceVariantActions,
+                    )
+                },
+                onValueChange = { newValue ->
+                    if (newValue.isEmpty()) {
+                        text = ""
+                    } else if (newValue.all { it.isDigit() }) {
+                        text = newValue
+                    }
+                },
+            )
+            Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                TextButton(
+                    text = stringResource(android.R.string.cancel),
+                    onClick = { viewModel.dismissDialog() },
+                    modifier = Modifier.weight(1f),
+                )
+                Spacer(Modifier.width(20.dp))
+                TextButton(
+                    text = stringResource(android.R.string.ok),
+                    onClick = {
+                        val parsed = text.toIntOrNull()
+                        val clamped = parsed?.coerceIn(80, 110) ?: (pageScale * 100).toInt()
+                        viewModel.setPageScale(clamped / 100f)
+                        viewModel.dismissDialog()
+                    },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.textButtonColorsPrimary(),
+                )
+            }
+        }
+    }
+}
+

@@ -6,7 +6,8 @@ enum class SettingDialogType {
     NONE,
     RESET_SU_PATH,
     SEND_LOG,
-    CLEAR_CACHE
+    CLEAR_CACHE,
+    PAGE_SCALE
 }
 
 @Immutable

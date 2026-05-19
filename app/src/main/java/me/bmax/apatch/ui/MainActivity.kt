@@ -46,6 +46,7 @@ import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.ui.component.BottomBar
+import me.bmax.apatch.ui.page.settings.pageScale
 import me.bmax.apatch.ui.component.BottomBarDestination
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.NavGraph
@@ -59,6 +60,8 @@ import me.bmax.apatch.ui.theme.APatchTheme
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
 import top.yukonga.miuix.kmp.basic.Scaffold
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import kotlin.math.abs
 
 val LocalSelectedPage = compositionLocalOf { 0 }
@@ -191,7 +194,13 @@ fun MainScreen() {
         }
     }
 
+    val density = LocalDensity.current
+    val scaledDensity = remember(density, pageScale) {
+        Density(density.density * pageScale, density.fontScale)
+    }
+
     CompositionLocalProvider(
+        LocalDensity provides scaledDensity,
         LocalSelectedPage provides mainPagerState.selectedPage
     ) {
         Scaffold(

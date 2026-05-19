@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BlurOn
@@ -17,9 +18,15 @@ import androidx.compose.material.icons.filled.Engineering
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.Update
+import androidx.compose.material.icons.filled.ZoomIn
 import androidx.compose.material.icons.rounded.Colorize
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -39,9 +46,14 @@ import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
 import me.bmax.apatch.util.formatSize
 import top.yukonga.miuix.kmp.basic.Card
+import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
+import top.yukonga.miuix.kmp.basic.Slider
+import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TopAppBar
+import top.yukonga.miuix.kmp.preference.ArrowPreference
+import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 
 @Composable
@@ -125,6 +137,40 @@ fun SettingScreen(
                         icon = Icons.Filled.BlurOn,
                         checked = uiState.blurEnabled,
                         onCheckedChange = { viewModel.setBlurEnabled(it) }
+                    )
+                    // Page Scale
+                    var showScaleSlider by remember { mutableStateOf(false) }
+                    var sliderValue by remember(pageScale) { mutableFloatStateOf(pageScale) }
+                    ArrowPreference(
+                        title = stringResource(R.string.settings_page_scale),
+                        summary = stringResource(R.string.settings_page_scale_summary),
+                        startAction = {
+                            Icon(
+                                Icons.Filled.ZoomIn,
+                                modifier = Modifier.padding(end = 6.dp),
+                                contentDescription = stringResource(R.string.settings_page_scale),
+                                tint = colorScheme.onBackground
+                            )
+                        },
+                        endActions = {
+                            Text(
+                                text = "${(pageScale * 100).toInt()}%",
+                                color = colorScheme.onSurfaceVariantActions
+                            )
+                        },
+                        onClick = { viewModel.showDialog(SettingDialogType.PAGE_SCALE) },
+                        holdDownState = showScaleSlider,
+                        bottomAction = {
+                            Slider(
+                                value = sliderValue,
+                                onValueChange = { sliderValue = it },
+                                onValueChangeFinished = { viewModel.setPageScale(sliderValue) },
+                                valueRange = 0.8f..1.1f,
+                                showKeyPoints = true,
+                                keyPoints = listOf(0.8f, 0.9f, 1.0f, 1.1f),
+                                magnetThreshold = 0.05f
+                            )
+                        },
                     )
                     // Theme System
                     DropdownItem(

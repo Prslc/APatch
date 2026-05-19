@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Build
 import android.os.LocaleList
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
@@ -26,6 +27,8 @@ import me.bmax.apatch.util.calculateCacheSize
 import me.bmax.apatch.util.isGlobalNamespaceEnabled
 import me.bmax.apatch.util.rootShellForResult
 import me.bmax.apatch.util.setGlobalNamespaceEnabled
+
+var pageScale: Float by mutableFloatStateOf(1.0f)
 
 class SettingsViewModel : ViewModel() {
     private val prefs = APApplication.sharedPreferences
@@ -65,6 +68,7 @@ class SettingsViewModel : ViewModel() {
             keyColor = prefs.getInt("key_color", 0),
             currentLanguageIndex = languagesValues.indexOf(tag).coerceAtLeast(0)
         )
+        pageScale = prefs.getFloat("page_scale", 1.0f)
     }
 
     private fun observeApatchState() {
@@ -118,6 +122,12 @@ class SettingsViewModel : ViewModel() {
     fun setBlurEnabled(enabled: Boolean) {
         prefs.edit { putBoolean("blur_enabled", enabled) }
         uiState = uiState.copy(blurEnabled = enabled)
+    }
+
+    fun setPageScale(scale: Float) {
+        val clamped = scale.coerceIn(0.8f, 1.1f)
+        prefs.edit { putFloat("page_scale", clamped) }
+        pageScale = clamped
     }
 
     fun setThemeMode(index: Int) {
