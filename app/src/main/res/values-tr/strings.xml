@@ -7,7 +7,6 @@
     <string name="apm_uninstall_success">\"%s\" kaldırıldı</string>
     <string name="send_log">Günlükleri gönder</string>
     <string name="apm_install">Kur</string>
-    <string name="home_auth_key_desc">Sertifikasyondan sonra başlar</string>
     <string name="kpatch_version">Sürüm: %s</string>
     <string name="apm_uinstall">Kaldır</string>
     <string name="patch_warnning">Kurulum işlemi risklidir. Lütfen verilerinizi yedeklediğinizden emin olun.</string>
@@ -68,12 +67,11 @@
     <string name="home_selinux_status_disabled">Devredışı</string>
     <string name="settings">Ayarlar</string>
     <string name="apm_new_version_available">Yeni %s sürümü mevcut, yükseltmek için tıklayın.</string>
-    <string name="apatch_version_update">Sürüm: %s -&gt; %s</string>
+    <string name="apatch_version_update" formatted="false">Sürüm: %s -&gt; %s</string>
     <string name="home_working">Çalışıyor 😋</string>
     <string name="apm_empty">Hiç modül kurulmadı</string>
     <string name="kpm_load">Yükle</string>
     <string name="home_patch_next_step">Sonraki adım</string>
-    <string name="home_auth_key_title">Süper Anahtarı girin</string>
     <string name="apm_update">Güncelle</string>
     <string name="home_kernel">Kernel versiyon</string>
     <string name="home_not_installed">Kurulu değil</string>
@@ -87,7 +85,6 @@
     <string name="kpm_load_toast_succ">Başarıyla yüklendi</string>
     <string name="apm_author">Geliştirici</string>
     <string name="patch_title">Yamala</string>
-    <string name="clear_super_key">Süper Anahtarı Sil</string>
     <string name="apm_not_installed">AndroidPatch kurulu değil</string>
     <string name="settings_app_language">Dil</string>
     <string name="system_default">Sistem varsayılanı</string>
@@ -95,7 +92,7 @@
     <string name="settings_global_namespace_mode">Küresel ad alanı modu</string>
     <string name="settings_global_namespace_mode_summary">Tüm root oturumları global bağlama ad alanını kullanır</string>
     <string name="settings_clear_super_key_dialog">Gerçekten devam etmek istiyor musunuz?</string>
-    <string name="kpatch_version_update">Sürüm: %s -&gt; %s</string>
+    <string name="kpatch_version_update" formatted="false">Sürüm: %s -&gt; %s</string>
     <string name="kpatch_shadow_path_title">kpatch</string>
     <string name="home_ap_cando_reboot">Yeniden başlat</string>
     <string name="patch_config_title">Yamalar</string>
@@ -144,7 +141,6 @@
     <string name="patch_mode_install_to_next_slot">Mod: Aktif olmayan yuvaya kur (OTA\'dan sonra)</string>
     <string name="mode_select_page_patch_and_install">Yama ve Kur</string>
     <string name="mode_select_page_select_file">Yama yapılacak bir boot (önyükleme) imajı seçin.</string>
-    <string name="home_dialog_auth_fail_title">Kimlik doğrulama başarısız</string>
     <string name="home_more_menu_feedback_or_suggestion">Geri bildirim veya öneri</string>
     <string name="home_more_menu_about">Hakkında</string>
     <string name="mode_select_page_title">Kur</string>
@@ -152,13 +148,10 @@
     <string name="mode_select_page_install_inactive_slot_warning">Aygıtınız yeniden başlatıldıktan sonra geçerli etkin olmayan yuvaya önyükleme yapmaya **ZORLANACAK**!
 \nBu seçeneği yalnızca OTA tamamlandıktan sonra kullanın.
 \nDevam edilsin mi?</string>
-    <string name="home_dialog_auth_fail_content">SuperKey doğrulanamadığından APatch düzgün çalışamıyor.\nDoğrulama başarısızlığının bazı olası nedenleri şunlardır:\n1. boot.img dosyasını KernelPatch ile yamalamadınız.\n2. Yamalı boot.img dosyası yazılmadı.\n3. SuperKey hatalı ya da özel karakterler içeriyor.\n4. Cihazınız APatch ve KernelPatch desteklemiyor.\n\nLütfen bu maddeleri gözden geçirin ve tekrar deneyin. Hala sorun varsa, resmi deponun sorunlar sayfasından her zaman soru sorabilirsiniz.</string>
     <string name="settings_check_update_summary">Uygulama açıldığında güncellemeleri otomatik olarak denetle</string>
     <string name="apm_webui_open">Aç</string>
     <string name="enable_web_debugging">Web Görünümü Hata Ayıklamayı Etkinleştir</string>
-    <string name="settings_donot_store_superkey_summary">SuperKey her zaman yönetici başlar</string>
     <string name="enable_web_debugging_summary">Web arayüzünde hata ayıklamak için kullanılabilir, lütfen yalnızca gerektiğinde etkinleştirin.</string>
-    <string name="settings_donot_store_superkey">Süper anahtarı yerel olarak saklama</string>
     <string name="home_system_version">Sistem sürümü</string>
     <string name="home_dialog_uninstall_all">Hepsini kaldır</string>
     <string name="home_install_unknown_summary">Kurmak için tıklayın</string>

@@ -15,10 +15,9 @@
     <string name="home_install_unknown">ইনস্টল করা বা অনুমদিত করা নেই</string>
     <string name="home_working">কাজ করতেছে 🤭</string>
     <string name="apatch_version">সংস্করণ %s</string>
-    <string name="apatch_version_update">সংস্করণ %s → %s</string>
+    <string name="apatch_version_update" formatted="false">সংস্করণ %s → %s</string>
     <string name="home_su_path">এক্সিকিউটেবল su</string>
     <string name="home_apatch_version">APatch সংস্করণ</string>
-    <string name="home_auth_key_title">সুপারকি প্রবেশ করুন</string>
     <string name="home_ap_cando_update">হালনাগাদ</string>
     <string name="home_ap_cando_uninstall">আনইনস্টল করুন</string>
     <string name="patch_warnning">ইনস্টলেশন ঝুঁকিপূর্ণ, অনুগ্রহ করে নিশ্চিত করুন যে আপনার ডেটা ব্যাকআপ করা আছে।</string>
@@ -31,7 +30,6 @@
     <string name="patch_set_superkey">সুপারকি সেট করুন</string>
     <string name="home_patch_next_step">পরবর্তী ধাপ</string>
     <string name="home_click_to_install">ইনস্টল করতে ক্লিক করুন</string>
-    <string name="home_auth_key_desc">প্রত্যয়িতকরণের পরে কাজ শুরু করুন</string>
     <string name="home_installing">ইনস্টলরত</string>
     <string name="home_need_update">নতুন সংস্করণ উপলভ্য</string>
     <string name="kpatch_version">সংস্করণ : %s</string>
@@ -95,8 +93,7 @@
     <string name="settings_check_update">হালনাগাদ চেক করুন</string>
     <string name="settings_check_update_summary">অ্যাপ খোলার সময় স্বয়ংক্রিয়ভাবে হালনাগাদ চেক করুন</string>
     <string name="kpatch_shadow_path_title">কেপ্যাচ</string>
-    <string name="kpatch_version_update">সংস্করণ %s → %s</string>
-    <string name="clear_super_key">সুপার_কি মুছুন</string>
+    <string name="kpatch_version_update" formatted="false">সংস্করণ %s → %s</string>
     <string name="home_install_unknown_summary">ইন্সটল করতে ক্লিক করুন</string>
     <string name="home_kpatch_info_title">তথ্য</string>
     <string name="patch_config_title">প্যাচসমূহ</string>
@@ -140,13 +137,10 @@
     <string name="enable_web_debugging">ওয়েবভিউ ডিবাগিং চালু করুন</string>
     <string name="mode_select_page_title">ইন্সটল</string>
     <string name="mode_select_page_patch_and_install">প্যাচ এবং ইন্সটল</string>
-    <string name="settings_donot_store_superkey_summary">প্রতিবার ম্যানেজার চালু করার সময় সুপার কি দিন</string>
     <string name="home_new_apatch_found">আপডেট সংস্করণ এসে গেছে %s, আপগ্রেড করতে এখানে ক্লিক করুন।</string>
     <string name="mode_select_page_install_inactive_slot">নিষ্ক্রিয় স্লটে ইনস্টল করুন (OTA এর পরে)</string>
-    <string name="home_dialog_auth_fail_title">প্রমান করতে ব্যর্থ হয়েছে</string>
     <string name="enable_web_debugging_summary">WebUI ডিবাগ করতে ব্যবহার করা যেতে পারে, অনুগ্রহ করে শুধুমাত্র প্রয়োজন হলেই চালু করুন।</string>
     <string name="home_more_menu_feedback_or_suggestion">ফিডব্যাক অথবা পরামর্শ</string>
-    <string name="settings_donot_store_superkey">ফোন এর সিষ্টেমে সুপার কী সংরক্ষণ করবেন না</string>
     <string name="home_dialog_uninstall_ap_only">এন্ড্রয়েডপ্যাচ দূর করুন</string>
     <string name="apm_action">ব্যবস্থা</string>
     <string name="home_dialog_uninstall_all">সকল কিছু আনইন্সটল করুন</string>
@@ -179,7 +173,6 @@
     <string name="about_telegram_group">টেলিগ্রাম গ্রুপ</string>
     <string name="about_powered_by">দ্বারা চালিত %1$s</string>
     <string name="about_app_desc">Kernel রুট সমাধান যা শুধু একটা খোলা Kernel image, যা সিস্টেম মডিউলকে মাউন্ট এবং Kernel ফাংশনকে হুক করার সক্ষমতা প্রদান করে।</string>
-    <string name="home_dialog_auth_fail_content">সুপার কি যাচাই করা যায়নি,তাই Apatch সঠিক ভাবে কাজ করতে পারবেনা\nযেইসব কারনে এই সমস্যা হতে পারে:\n১. আপনি boot.img কে KernelPatch দিয়ে Patch করেননি\n২.Patch করা Boot.img ফ্লাশ করা হয়নি\n৩.ভুল সুপার কি ব্যাবহার করেছেন বা সুপার কি এর মধ্যে অক্ষর ছাড়াও অন্য বিশেষ ক্যারেক্টার ছিলো\n৪.আপনার ডিভাইস Apatch এবং KernelPatch সাপোর্ট করেনা\n\nদয়া করে আবার সব কিছু চেক করুন, যদি এর পরও সমস্যা হয়, আপনি সব সময় অফিশিয়াল রিপোজিটোরি পেইজে প্রশ্ন করতে পারবেন।</string>
     <string name="crash_handle_copied">ক্রাশ লগ ক্লিপ বোর্ডে কপি হয়েছে।</string>
     <string name="crash_handle_title">এপ ক্রাশ করেছে…</string>
     <string name="mode_select_page_install_inactive_slot_warning">আপনার ডিভাইস একটি রিবুট এর পর বর্তমান নিষ্ক্রিয় সল্ট এ খুলে যাবে\nএই অপশনটি শুধু ব্যাবহার করুন OTA আপডেট হয়ে গেলে\nচালিয়ে যান?</string>

@@ -30,10 +30,8 @@
     <string name="home_installing">Menginstal</string>
     <string name="apatch_version">Versi: %s</string>
     <string name="home_need_update">Versi terbaru tersedia</string>
-    <string name="apatch_version_update">Versi: %s -&gt; %s</string>
-    <string name="home_auth_key_title">Masukkan SuperKey</string>
+    <string name="apatch_version_update" formatted="false">Versi: %s -&gt; %s</string>
     <string name="reboot_download">Reboot ke Download</string>
-    <string name="home_auth_key_desc">Mulai setelah sertifikasi</string>
     <string name="home_ap_cando_update">Perbarui</string>
     <string name="home_ap_cando_uninstall">Hapus</string>
     <string name="home_ap_cando_install">Instal</string>
@@ -87,7 +85,6 @@
     <string name="kpm_unload">Lepas</string>
     <string name="kpm_args">Argu</string>
     <string name="home_fingerprint">Identitas</string>
-    <string name="clear_super_key">Hapus SuperKey</string>
     <string name="apm_not_installed">AndroidPatch tidak terinstal</string>
     <string name="settings_app_language">Bahasa</string>
     <string name="system_default">Bawaan sistem</string>
@@ -95,7 +92,7 @@
     <string name="settings_global_namespace_mode_summary">Gunakan universal namespace ke semua root sesi</string>
     <string name="settings_global_namespace_mode">Mode universal namespace</string>
     <string name="settings_clear_super_key_dialog">Anda yakin untuk melanjutkan?</string>
-    <string name="kpatch_version_update">Versi: %s -&gt; %s</string>
+    <string name="kpatch_version_update" formatted="false">Versi: %s -&gt; %s</string>
     <string name="home_kpatch_info_title">Info</string>
     <string name="home_ap_cando_reboot">Reboot</string>
     <string name="patch_config_title">Patch</string>
@@ -142,7 +139,6 @@
     <string name="patch_mode_install_to_next_slot">Mode: Instal ke slot nonaktif (Setelah OTA)</string>
     <string name="settings_check_update_summary">Otomatis memeriksa pembaruan saat membuka manajer</string>
     <string name="apm_webui_open">Buka</string>
-    <string name="home_dialog_auth_fail_title">Gagal mengautentikasi</string>
     <string name="home_more_menu_about">Tentang</string>
     <string name="mode_select_page_patch_and_install">Patch dan pasang</string>
     <string name="mode_select_page_select_file">Pilih Boot Image</string>
@@ -159,10 +155,7 @@
     <string name="home_install_unknown_summary">Klik untuk menginstal</string>
     <string name="home_device_info">Perangkat</string>
     <string name="home_system_version">Versi Sistem</string>
-    <string name="home_dialog_auth_fail_content">Gagal mengautentikasi SuperKey, APatch tidak dapat berfungsi normal.\nHal ini dapat disebabkan oleh:\n1. Boot.img tidak di-patch dengan KernelPatch.\n2. Tidak menginstal/pasang boot.img yang sudah di-patch.\n3. Salah memasukkan atau terdapat karakter spesial pada SuperKey.\n4. Perangkat tidak mendukung APatch dan KernelPatch.\n\nCek dan coba kembali. Jika tetap gagal, dapat menanyakan pada laman permasalahan di repositori resmi kami.</string>
     <string name="enable_web_debugging_summary">Dapat digunakan untuk men-debug WebUI. Harap aktifkan hanya bila diperlukan.</string>
-    <string name="settings_donot_store_superkey_summary">Autentikasi SuperKey setiap kali membuka manajer</string>
-    <string name="settings_donot_store_superkey">Jangan simpan SuperKey secara lokal</string>
     <string name="home_new_apatch_found">Versi terbaru %s tersedia, klik untuk memperbarui.</string>
     <string name="kpm_control_failed">Operasi gagal!</string>
     <string name="settings_night_mode_follow_sys_summary">Beralih secara otomatis ke tema gelap berdasarkan bawaan sistem</string>

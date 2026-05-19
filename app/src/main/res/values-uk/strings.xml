@@ -13,7 +13,6 @@
     <string name="home_learn_apatch">Дізнайтеся більше про APatch</string>
     <string name="safe_mode">Безпечний режим</string>
     <string name="super_key">СуперКлюч</string>
-    <string name="clear_super_key">Очистити SuperKey</string>
     <string name="patch_set_superkey">Встановити SuperKey</string>
     <string name="home_patch_set_key_desc">Пароль для KernelPatch</string>
     <string name="home_patch_next_step">Наступний крок</string>
@@ -25,7 +24,6 @@
     <string name="kpatch_version">Версія: %s</string>
     <string name="apatch_version">Версія: %s</string>
     <string name="home_su_path">Виконуваний файл su</string>
-    <string name="home_auth_key_title">Введіть SuperKey</string>
     <string name="home_ap_cando_update">Оновити</string>
     <string name="patch_title">Залатати</string>
     <string name="home_manager_version">Версія менеджера</string>
@@ -59,10 +57,9 @@
     <string name="home_click_to_learn_apatch">Дізнайтеся більше про можливості APatch і про його використання</string>
     <string name="about_source_code"><![CDATA[<p> Перегляньте вихідний код на %1$s<p/> Приєднуйтеся до нашого каналу %2$s<p/> Приєднуйтеся до нашої групи %3$s]]></string>
     <string name="send_log">Надіслати журнали</string>
-    <string name="apatch_version_update">Версія: %s → %s</string>
+    <string name="apatch_version_update" formatted="false">Версія: %s → %s</string>
     <string name="home_apatch_version">Версія APatch</string>
     <string name="home_need_update">Доступне оновлення</string>
-    <string name="home_auth_key_desc">Почати після сертифікації</string>
     <string name="home_ap_cando_uninstall">Видалити</string>
     <string name="home_ap_cando_install">Встановити</string>
     <string name="home_kernel">Версія ядра</string>
@@ -125,13 +122,12 @@
     <string name="patch_item_set_skey_label">SuperKey має містити 8-63 символи та містити цифри та літери, але без спеціальних символів.</string>
     <string name="patch_item_skey">СуперКлюч</string>
     <string name="settings_clear_super_key_dialog">Ви дійсно хочете продовжити?</string>
-    <string name="kpatch_version_update">Версія: %s -&gt; %s</string>
+    <string name="kpatch_version_update" formatted="false">Версія: %s -&gt; %s</string>
     <string name="home_kpatch_info_title">Інфо</string>
     <string name="settings_check_update_summary">Автоматично перевіряти оновлення при відкритті застосунку</string>
     <string name="success">Успішно</string>
     <string name="failure">Помилка</string>
     <string name="settings_check_update">Перевірити наявність оновлень</string>
-    <string name="settings_donot_store_superkey">Не зберігайте SuperKey локально</string>
     <string name="patch_mode_install_to_next_slot">Режим: встановлення в неактивний слот (після OTA)</string>
     <string name="hide_apatch_manager_summary">Встановіть проксі-додаток із випадковим ідентифікатором пакета та власною міткою додатка</string>
     <string name="enable_web_debugging_summary">Можна використовувати для налагодження WebUI. Увімкніть лише за потреби.</string>
@@ -145,7 +141,6 @@
     <string name="hide_apatch_dialog_summary">Воно буде використовуватися як нове ім\'я застосунку, яке відображатиметься на робочому столі</string>
     <string name="hide_apatch_manager_failure">Не вдалося сховатися. Будь ласка, повідомте про помилку!</string>
     <string name="enable_web_debugging">Увімкнути налагодження WebView</string>
-    <string name="settings_donot_store_superkey_summary">Під час кожного запуску диспетчера перевіряйте автентичність SuperKey</string>
     <string name="setting_reset_su_path">Скинути шлях до файлу su</string>
     <string name="setting_reset_su_new_path">Новий повний шлях</string>
     <string name="apm_webui_open">Відкрити</string>
@@ -163,9 +158,7 @@
     <string name="mode_select_page_install_inactive_slot_warning">Ваш пристрій буде **ПРИМУШЕНО** завантажитися в поточний неактивний слот після перезавантаження!
 \nВикористовуйте цей параметр лише після завершення OTA.
 \nПродовжити?</string>
-    <string name="home_dialog_auth_fail_content">Неможливо автентифікувати SuperKey, тому APatch не може працювати належним чином. \nНижче наведено кілька можливих причин помилки автентифікації. \n1. Ви не виправили boot.img за допомогою KernelPatch. \n2. Виправлений boot.img не був прошитий. \n3. SuperKey неправильний або містить спеціальні символи. \n4. Ваш пристрій не підтримує APatch і KernelPatch. \n\nПеревірте та повторіть спробу. Якщо проблеми все ще є, ви завжди можете поставити запитання на сторінці проблем офіційного репозиторію.</string>
     <string name="home_more_menu_feedback_or_suggestion">Зворотній зв\'язок</string>
-    <string name="home_dialog_auth_fail_title">Помилка авторизації</string>
     <string name="kpm_control_dialog_content">Введіть параметри контролю:</string>
     <string name="kpm_control_outMsg">Повідомлення</string>
     <string name="kpm_control_ok">Операцію виконано успішно!</string>

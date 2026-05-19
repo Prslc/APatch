@@ -23,8 +23,7 @@
     <string name="home_patch_set_key_desc">Nur Anmeldedaten für KernelPatch</string>
     <string name="home_patch_next_step">Nächster Schritt</string>
     <string name="kpatch_version">Version: %s</string>
-    <string name="apatch_version_update">Version: %s -&gt; %s</string>
-    <string name="home_auth_key_desc">Start nach Zertifizierung</string>
+    <string name="apatch_version_update" formatted="false">Version: %s -&gt; %s</string>
     <string name="home_manager_version">Manager Version</string>
     <string name="su_pkg_excluded_setting_summary">Durch Aktivierung dieser Option kann APatch alle von den Modulen dieser App geänderten Dateien wiederherstellen.</string>
     <string name="apm_failed_to_disable">Das Modul \"%s\" konnte nicht deaktiviert werden</string>
@@ -50,10 +49,8 @@
     <string name="home_selinux_status_enforcing">Erzwingt</string>
     <string name="home_selinux_status_permissive">Zulässig</string>
     <string name="super_key">SuperKey</string>
-    <string name="clear_super_key">Superschlüssel löschen</string>
     <string name="patch_set_superkey">Superschlüssel festlegen</string>
     <string name="home_installing">Installiert</string>
-    <string name="home_auth_key_title">Superschlüssel eingeben</string>
     <string name="kpm">KPModule</string>
     <string name="home_selinux_status_unknown">Unbekannt</string>
     <string name="kpm_kp_not_installed">KernelPatch nicht installiert</string>
@@ -97,7 +94,7 @@
     <string name="kpatch_shadow_path_title">kpatch</string>
     <string name="home_kpatch_info_title">Info</string>
     <string name="settings_clear_super_key_dialog">Wollen Sie wirklich fortfahren?</string>
-    <string name="kpatch_version_update">Version: %s -&gt; %s</string>
+    <string name="kpatch_version_update" formatted="false">Version: %s -&gt; %s</string>
     <string name="patch_config_title">Korrekturen</string>
     <string name="patch_mode_bootimg_patch">Modus: Korrektur</string>
     <string name="patch_mode_uninstall_patch">Modus: EntKorrektur</string>
@@ -150,7 +147,6 @@
     <string name="mode_select_page_patch_and_install">Patchen und installieren</string>
     <string name="mode_select_page_title">Installieren</string>
     <string name="mode_select_page_select_file">Wählen Sie ein Boot-Image zum Patchen aus</string>
-    <string name="home_dialog_auth_fail_title">Authentifizierung fehlgeschlagen</string>
     <string name="home_more_menu_feedback_or_suggestion">Rückmeldung oder Anregung</string>
     <string name="home_more_menu_about">Über</string>
     <string name="home_dialog_uninstall_title">Deinstallieren</string>
@@ -168,12 +164,10 @@
     <string name="patch_mode_install_to_next_slot">Modus: In inaktivem Slot installieren (Nach OTA)</string>
     <string name="setting_reset_su_path">su-Pfad zurücksetzen</string>
     <string name="hide_apatch_manager_failure">Verstecken fehlgeschlagen. Bitte melde den Fehler!</string>
-    <string name="settings_donot_store_superkey">Superschlüssel nicht lokal speichern</string>
     <string name="home_new_apatch_found">Eine neue Version %s ist verfügbar, klicken Sie hier, um zu aktualisieren.</string>
     <string name="mode_select_page_install_inactive_slot">Auf inaktiven Slot installieren (Nach OTA)</string>
     <string name="hide_apatch_manager_summary">Installieren Sie eine Proxy-App mit einer zufälligen Paket-ID und einer benutzerdefinierten App-Bezeichnung</string>
     <string name="hide_apatch_dialog_summary">Wird als App-Bezeichnung auf dem Home-Screen genutzt</string>
-    <string name="settings_donot_store_superkey_summary">Authentifiziere den SuperKey jedes Mal, wenn der Manager gestartet wird.</string>
     <string name="kpm_control_dialog_content">Eingabekontrollparameter:</string>
     <string name="mode_select_page_install_inactive_slot_warning">Dein Gerät wird **GEZWUNGEN**, nach dem Neustart den inaktiven Slot zu nutzen!
 \nNutze diese Funktion ausschließlich, wenn ein OTA-Update durchgeführt wurde.
@@ -182,7 +176,6 @@
     <string name="about_powered_by">Unterstützt durch %1$s</string>
     <string name="about_app_desc">Kernel-Root-Lösung mit nur einem gestrippten Kernel-Image, das die Möglichkeit bietet, Systemmodule zu mounten und Kernel-Funktionen einzuhängen.</string>
     <string name="settings_use_system_color_theme_summary">Verwende ein Farbthema, das basierend aus dem aktuellen Hintergrund vom System erzeugt wird</string>
-    <string name="home_dialog_auth_fail_content">Superschlüssel kann nicht authentifiziert werden, daher kann APatch nicht richtig funktionieren. \nMögliche Gründe für Authentifizierungsfehler können sein: \n1. Das boot.img wurde nicht mit dem KernelPatch gepatcht. \n2. Das gepatchte boot.img wurde nicht geflasht. \n3. Superschlüssel ist falsch, oder enthält Sonderzeichen. \n4. Ihr Gerät unterstützt APatch und KernelPatch nicht. \n \nBitte überprüfen und nochmal versuchen. Wenn weiterhin Probleme auftreten, können Fragen auf der offiziellen Issues-Seite des Repository gestellt werden.</string>
     <string name="save_log">Logs speichern</string>
     <string name="apm_action">Aktion</string>
     <string name="log_saved">Protokoll gespeichert</string>

@@ -23,10 +23,9 @@
     <string name="home_patch_next_step">Suivant</string>
     <string name="home_install_unknown">Non installé ou authentifié</string>
     <string name="kpatch_version">Version : %s</string>
-    <string name="clear_super_key">Effacer la clé</string>
     <string name="home_su_path">Exécutable su</string>
     <string name="home_apatch_version">Version d\'APatch</string>
-    <string name="apatch_version_update">Version : %s -&gt; %s</string>
+    <string name="apatch_version_update" formatted="false">Version : %s -&gt; %s</string>
     <string name="about_source_code"><![CDATA[<p>Voir le code source sur %1$s<p/>Rejoindre notre canal %2$s<p/>Rejoindre notre groupe %3$s]]></string>
     <string name="patch_set_superkey">Initialiser la clé</string>
     <string name="send_log">Envoyer le log</string>
@@ -35,7 +34,6 @@
     <string name="apm_version">Version</string>
     <string name="home_working">Fonctionnel 😋</string>
     <string name="home_patch_set_key_desc">Authentification unique pour KernelPatch</string>
-    <string name="home_auth_key_title">Renseigner la clé</string>
     <string name="home_ap_cando_install">Installer</string>
     <string name="home_ap_cando_update">Mettre à jour</string>
     <string name="home_ap_cando_uninstall">Désinstaller</string>
@@ -63,7 +61,6 @@
     <string name="apm_update">Mettre à jour</string>
     <string name="apm_start_downloading">Téléchargement de %s démarré</string>
     <string name="home_selinux_status_disabled">Inactif</string>
-    <string name="home_auth_key_desc">Démarrage après certification</string>
     <string name="kpm_unload_confirm">Décharger le module \"%s\" ?</string>
     <string name="apm_not_installed">AndroidPatch n\'est pas installé</string>
     <string name="apm_failed_to_disable">Impossible de désactiver le module \"%s\"</string>
@@ -95,7 +92,7 @@
     <string name="settings_global_namespace_mode">Mode espace de nommage global</string>
     <string name="settings_global_namespace_mode_summary">Toutes les sessions root utilisent l\'espace de nommage global</string>
     <string name="settings_clear_super_key_dialog">Voulez-vous vraiment continuer ?</string>
-    <string name="kpatch_version_update">Version : %s -&gt; %s</string>
+    <string name="kpatch_version_update" formatted="false">Version : %s -&gt; %s</string>
     <string name="home_kpatch_info_title">Info</string>
     <string name="home_ap_cando_reboot">Redémarrer</string>
     <string name="patch_config_title">Patchs</string>
@@ -138,7 +135,6 @@
     <string name="hide_apatch_manager">Masquer le gestionnaire APatch</string>
     <string name="setting_reset_su_new_path">nouveau chemin complet</string>
     <string name="patch_item_existed_extra_kpm">Existait</string>
-    <string name="settings_donot_store_superkey_summary">Authentifier la clé à chaque démarrage du gestionnaire</string>
     <string name="mode_select_page_select_file">Sélectionner une image boot à patcher</string>
     <string name="mode_select_page_patch_and_install">Patcher et installer</string>
     <string name="settings_check_update">Vérifier les mises à jour</string>
@@ -150,7 +146,6 @@
     <string name="home_kpatch_version">Version de KernelPatch</string>
     <string name="enable_web_debugging_summary">Peut être utilisé pour déboguer l\'interface web, n\'activer cette option qu\'en cas de besoin.</string>
     <string name="home_new_apatch_found">Nouvelle version disponible : %s, Cliquer pour mettre à jour.</string>
-    <string name="home_dialog_auth_fail_title">Echec de l\'authentification</string>
     <string name="home_dialog_uninstall_title">Désinstaller</string>
     <string name="home_dialog_uninstall_ap_only">Supprimer AndroidPatch</string>
     <string name="home_dialog_uninstall_all">Désinstaller complètement</string>
@@ -162,8 +157,6 @@
     <string name="mode_select_page_install_inactive_slot_warning">Votre appareil sera **FORCÉ** de démarrer sur le slot inactif actuel après un redémarrage !
 \nN\'utilisez cette option qu\'une fois l\'OTA terminée.
 \nContinuer ?</string>
-    <string name="home_dialog_auth_fail_content">Impossible d\'authentifier la clé, par conséquent APatch ne peut pas fonctionner correctement. \nVoici quelques raisons possibles de l\'échec de l\'authentification : \n1. Vous n\'avez pas patché l\'image de démarrage avec KernelPatch. \n2. L\'image de démarrage patchée n\'a pas été flashée. \n3. La clé est erronée. \n4. Votre appareil ne prend pas en charge APatch et KernelPatch. \n \nVeuillez vérifier et réessayer. Si des problèmes persistent, vous pouvez toujours poser vos questions sur le dépôt officiel.</string>
-    <string name="settings_donot_store_superkey">Ne pas stocker la clé localement</string>
     <string name="apm_webui_open">Ouvrir l\'interface web</string>
     <string name="enable_web_debugging">Activer le débogage WebView</string>
     <string name="kpm_control">Contrôle</string>

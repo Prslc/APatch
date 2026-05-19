@@ -9,7 +9,7 @@
     <string name="home_click_to_install">Kattints a telepítéshez</string>
     <string name="home_installing">Telepítés...</string>
     <string name="home_need_update">Frissítés elérhető</string>
-    <string name="apatch_version_update">Verzió: %s -&gt; %s</string>
+    <string name="apatch_version_update" formatted="false">Verzió: %s -&gt; %s</string>
     <string name="home_su_path">su: %s</string>
     <string name="home_ap_cando_install">Telepítés</string>
     <string name="home_ap_cando_update">Frissítés</string>
@@ -68,13 +68,10 @@
     <string name="send_log">Naplók küldése</string>
     <string name="safe_mode">Biztonságos mód</string>
     <string name="super_key">SzuperKulcs</string>
-    <string name="clear_super_key">SzuperKulcs tisztítása</string>
     <string name="patch_set_superkey">SzuperKulcs beállítása</string>
     <string name="home_patch_set_key_desc">Kizárólag a KernelPatch hitelesítéséhez</string>
-    <string name="kpatch_version_update">Verzió: %s -&gt; %s</string>
+    <string name="kpatch_version_update" formatted="false">Verzió: %s -&gt; %s</string>
     <string name="kpatch_shadow_path_title">kpatch</string>
-    <string name="home_auth_key_title">Írd be a SzuperKulcsot</string>
-    <string name="home_auth_key_desc">Kezdés a tanúsítás után</string>
     <string name="home_kpatch_info_title">Infó</string>
     <string name="home_ap_cando_reboot">Újraindítás</string>
     <string name="patch_title">Javítás</string>
@@ -151,6 +148,5 @@
     <string name="log_saved">Napló elmentve</string>
     <string name="apm_action">Művelet</string>
     <string name="patch_mode_install_to_next_slot">Mód:Telepítés inaktív helyre (OTA után)</string>
-    <string name="settings_donot_store_superkey">Ne mentse a Szuper kulcsot helyileg</string>
     <string name="enable_web_debugging_summary">Nem használható a WebUI hibakereséséhez. Csak akkor engedélyezze ha szüksége van rá.</string>
 </resources>

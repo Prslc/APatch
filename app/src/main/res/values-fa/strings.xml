@@ -50,15 +50,14 @@
     <string name="patch_item_extra_name">نام:</string>
     <string name="patch_item_extra_version">نسخه:</string>
     <string name="patch_item_extra_author">نویسنده:</string>
-    <string name="home_auth_key_title">واردکردن ابر کلید</string>
-    <string name="apatch_version_update">نسخه: %s -&gt; %s</string>
+    <string name="apatch_version_update" formatted="false">نسخه: %s -&gt; %s</string>
     <string name="home_install_unknown_summary">برای نصب کلیک کنید</string>
     <string name="home_click_to_install">برای نصب کلیک کنید</string>
     <string name="home_working">در‌حال‌کار 😋</string>
     <string name="home_installing">نصب کردن</string>
     <string name="kpatch_version">نسخه: %s</string>
     <string name="apatch_version">نسخه: %s</string>
-    <string name="kpatch_version_update">نسخه: %s -&gt; %s</string>
+    <string name="kpatch_version_update" formatted="false">نسخه: %s -&gt; %s</string>
     <string name="kpatch_shadow_path_title">پچk</string>
     <string name="home_ap_cando_update">به روز رسانی</string>
     <string name="patch_config_title">پچ ها</string>
@@ -72,7 +71,6 @@
     <string name="patch_item_skey">ابر کلید</string>
     <string name="settings_global_namespace_mode_summary">همه جلسات ریشه از فضای نام نصب جهانی استفاده می کنند</string>
     <string name="about_source_code"><![CDATA[<p>مشاهده کد منبع در %1$s<p/>به کانال %2$s ما بپیوندید<p/>به گروه %3$s ما بپیوندید]]></string>
-    <string name="clear_super_key">حذف ابر کلید</string>
     <string name="patch_set_superkey">تنظیم ابر کلید</string>
     <string name="patch_embed_kpm_btn">قراردادن KPM</string>
     <string name="patch_mode_install_to_next_slot">حالت: نصب در اسلات بعدی (بعد از OTA)</string>
@@ -82,7 +80,6 @@
     <string name="home_manager_version">مدیر نسخه</string>
     <string name="home_install_unknown">نصب نشده یا معتبر</string>
     <string name="home_patch_set_key_desc">فقط اعتبار برای KernelPatch</string>
-    <string name="home_auth_key_desc">شروع بعد از صدور گواهینامه</string>
     <string name="home_patch_next_step">گام بعد</string>
     <string name="patch_item_error">!!! اوه!!!</string>
     <string name="patch_item_bootimg_slot">اسلات:</string>
@@ -125,7 +122,6 @@
     <string name="apm_failed_to_enable">فعالسازی ماژول \"%s\" ناموفق بود</string>
     <string name="enable_web_debugging">فعالسازی اشکال زدایی نمای وب</string>
     <string name="enable_web_debugging_summary">می تواند برای اشکال زدایی رابط کاربری وب استفاده شود. لطفا فقط وقتی لازم است فعال کنید.</string>
-    <string name="settings_donot_store_superkey_summary">اعتبار سنجی ابر کلید با هر بار شروع مدیر</string>
     <string name="mode_select_page_patch_and_install">وصله و نصب</string>
     <string name="about_telegram_group">گروه تلگرام</string>
     <string name="crash_handle_title">برنامه کرش کرد…</string>
@@ -133,7 +129,6 @@
     <string name="apm_author">نویسنده</string>
     <string name="apm_desc">توضیحات</string>
     <string name="mode_select_page_install_inactive_slot">نصب در یک اسلات غیرفعال (بعد از OTA)</string>
-    <string name="home_dialog_auth_fail_title">اعتبار سنجی نا موفق بود</string>
     <string name="home_dialog_uninstall_title">حذف نصب</string>
     <string name="home_dialog_uninstall_ap_only">حذف AndroidPatch</string>
     <string name="home_dialog_uninstall_all">حذف نصب همه</string>
@@ -176,12 +171,10 @@
     <string name="apm_start_downloading">شروع بارگیری %s</string>
     <string name="mode_select_page_install_inactive_slot_warning">دستگاه شما بعد از راه اندازی مجدد **مجبور خواهد شد** در اسلات غیرفعال فعلی راه اندازی شود!\nاز این گزینه فقط بعد از اتمام OTA استفاده کنید.\nادامه؟</string>
     <string name="apm_version">نسخه</string>
-    <string name="settings_donot_store_superkey">ابر کلید را به صورت محلی ذخیره نکنید</string>
     <string name="setting_reset_su_new_path">مسیر کامل جدید</string>
     <string name="kpm_control_outMsg">پیام</string>
     <string name="settings_use_system_color_theme">تم رنگی سیستم</string>
     <string name="kpm_control_dialog_title">کنترل KPModule</string>
-    <string name="home_dialog_auth_fail_content">اعتبار سنجی ابر کلید ناموفق بود، بنابراین APatch نمی تواند به درستی کار کند. \nدلایل احتمالی:\n1. شما boot.img را به KernelPatch وصله نکردید.\n2. وصله boot.img فلش نشده است.\n3. ابر کلید اشتباه است یا حاوی کاراکترهای خاص است.\n4. دستگاه شما از APatch و KernelPatch پشتیبانی نمی کند.\n\nلطفا بررسی کنید و دوباره امتحان کنید. اگر هنوز مشکلات وجود دارند، همیشه می توانید در صفحه مسائل مخزن رسمی سؤال بپرسید..</string>
     <string name="settings_night_mode_follow_sys_summary">جابجایی خودکار به تم تاریک بر اساس تنظیمات سیستم</string>
     <string name="settings_use_system_color_theme_summary">استفاده از تم رنگی تولید شده بر اساس تصویر زمینه فعلی سیستم</string>
     <string name="about_app_desc">راه حل روت کرنل فقط با یک ایمیج جدا از کرنل،قابلیت نصب ماژول سیستم و قلاب کردن توابع کرنل را ارئه می دهد.</string>

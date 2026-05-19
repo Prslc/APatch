@@ -18,7 +18,6 @@
     <string name="home_working">Treballant 😋</string>
     <string name="apatch_version">Versió: %s</string>
     <string name="kpatch_shadow_path_title">kpatch</string>
-    <string name="home_auth_key_title">Insereix SuperClau</string>
     <string name="home_ap_cando_update">Actualitzar</string>
     <string name="home_ap_cando_uninstall">Desinstal·lar</string>
     <string name="home_ap_cando_reboot">Reinicialitza</string>
@@ -34,7 +33,6 @@
     <string name="about_source_code">&lt;p&gt;Veure el codi font a %1$s&lt;p/&gt; Uneix-te al nostre %2$s canal&lt;p/&gt;Uneix-te al nostre %3$s grup</string>
     <string name="save_log">Desa els registres</string>
     <string name="system_default">Opció per defecte del sistema</string>
-    <string name="clear_super_key">Elimina SuperClau</string>
     <string name="super_key">SuperClau</string>
     <string name="home_patch_next_step">Següent pas</string>
     <string name="safe_mode">Mode segur</string>
@@ -43,13 +41,12 @@
     <string name="home_click_to_install">Clica per instal·lar</string>
     <string name="home_install_unknown_summary">Clica per instal·lar</string>
     <string name="kpatch_version">Versió: %s</string>
-    <string name="kpatch_version_update">Versió: %s -&gt; %s</string>
+    <string name="kpatch_version_update" formatted="false">Versió: %s -&gt; %s</string>
     <string name="home_kpatch_info_title">Informació</string>
-    <string name="home_auth_key_desc">Comença després de la certificació</string>
     <string name="home_ap_cando_install">Instal·lar</string>
     <string name="patch_title">Pegat</string>
     <string name="home_patch_set_key_desc">Només credencial per KernelPatch</string>
-    <string name="apatch_version_update">Versió: %s -&gt; %s</string>
+    <string name="apatch_version_update" formatted="false">Versió: %s -&gt; %s</string>
     <string name="patch_config_title">Pegat</string>
     <string name="patch_mode_bootimg_patch">Mode: Pegat</string>
     <string name="patch_mode_patch_and_install">Mode: Aplicar pegat i instal·lar</string>

@@ -26,13 +26,11 @@
     <string name="home_need_update">Hay una nueva versión disponible</string>
     <string name="patch_set_superkey">Definir superclave</string>
     <string name="home_su_path">Ejecutable «su»</string>
-    <string name="apatch_version_update">Versión: %s → %s</string>
+    <string name="apatch_version_update" formatted="false">Versión: %s → %s</string>
     <string name="home_working">Funcionando 😋</string>
     <string name="home_patch_next_step">Siguiente paso</string>
     <string name="home_not_installed">Sin instalar</string>
-    <string name="home_auth_key_desc">Comenzar tras la certificación</string>
     <string name="home_ap_cando_install">Instalar</string>
-    <string name="home_auth_key_title">Escribir superclave</string>
     <string name="home_ap_cando_update">Actualizar</string>
     <string name="kpm_kp_not_installed">KernelPatch no está instalado</string>
     <string name="home_fingerprint">Huella del dispositivo</string>
@@ -87,7 +85,6 @@
     <string name="apm_update">Actualizar</string>
     <string name="kpm">KPModule</string>
     <string name="apm_author">Autor</string>
-    <string name="clear_super_key">Borrar superclave</string>
     <string name="apm_not_installed">AndroidPatch no está instalado</string>
     <string name="settings_app_language">Idioma</string>
     <string name="system_default">Predeterminado del sistema</string>
@@ -95,7 +92,7 @@
     <string name="settings_global_namespace_mode">Modo de espacio de nombres global</string>
     <string name="settings_global_namespace_mode_summary">Todas las sesiones «root» utilizan el espacio de nombres de montaje global</string>
     <string name="settings_clear_super_key_dialog">¿Seguro que quieres continuar?</string>
-    <string name="kpatch_version_update">Versión: %s → %s</string>
+    <string name="kpatch_version_update" formatted="false">Versión: %s → %s</string>
     <string name="kpatch_shadow_path_title">kpatch</string>
     <string name="home_kpatch_info_title">Info</string>
     <string name="home_ap_cando_reboot">Reiniciar</string>
@@ -145,7 +142,6 @@
     <string name="home_more_menu_about">Acerca de</string>
     <string name="mode_select_page_install_inactive_slot">Instalar en la partición («slot») inactiva (tras una actualización OTA)</string>
     <string name="mode_select_page_select_file">Elige una imagen de arranque «boot» que parchear</string>
-    <string name="home_dialog_auth_fail_title">La autenticación ha fallado</string>
     <string name="mode_select_page_title">Instalar</string>
     <string name="mode_select_page_patch_and_install">Parchear e instalar</string>
     <string name="mode_select_page_install_inactive_slot_warning">Tu dispositivo se verá **OBLIGADO** a arrancar desde la partición («slot») que ahora está inactiva. \nUtiliza esta opción solo cuando una actualización del sistema (OTA) haya terminado de instalarse, justo antes de tener que reiniciar. \n¿Quieres continuar?</string>
@@ -157,12 +153,9 @@
     <string name="home_dialog_uninstall_title">Desinstalar</string>
     <string name="home_dialog_uninstall_ap_only">Quitar AndroidPatch</string>
     <string name="home_dialog_uninstall_all">Desinstalarlo todo</string>
-    <string name="home_dialog_auth_fail_content">Parece que la superclave no da resultado, por lo que APatch no funcionará correctamente. \nA continuación se muestran algunas posibles causas de este error de autenticación: \n1. No has parcheado el «boot.img» original con KernelPatch. \n2. No has flasheado (vía «fastboot flash») dicho «boot.img» ya parcheado. \n3. La superclave que has elegido no es correcta o contiene caracteres especiales.\n4. Tu dispositivo no es compatible con APatch o KernelPatch. \n \nRepásalo todo e inténtalo de nuevo. Si sigue habiendo problemas siempre puedes hacer preguntas en inglés en la pestaña «issues» del repositorio oficial.</string>
     <string name="apm_webui_open">Abrir</string>
     <string name="enable_web_debugging_summary">Se puede utilizar para depurar WebUI, actívalo solo si se necesita de verdad.</string>
-    <string name="settings_donot_store_superkey">No guardar la superclave de forma local</string>
     <string name="patch_mode_install_to_next_slot">Modo: Instalar en el «slot» inactivo (tras OTA)</string>
-    <string name="settings_donot_store_superkey_summary">Pedir que se escriba la superclave al abrir APatch Manager</string>
     <string name="home_new_apatch_found">Nueva versión disponible: %s, toca para actualizar.</string>
     <string name="settings_use_system_color_theme">Utilizar colores del sistema</string>
     <string name="kpm_control_dialog_title">Control de KPModule</string>

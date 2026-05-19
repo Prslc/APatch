@@ -33,15 +33,13 @@
     <string name="kpatch_version">Version: %s</string>
     <string name="apatch_version">Version: %s</string>
     <string name="home_need_update">Ny version tillgänglig</string>
-    <string name="apatch_version_update">Version: %s -&gt; %s</string>
-    <string name="kpatch_version_update">Version: %s -&gt; %s</string>
-    <string name="home_auth_key_title">Ange SuperKey</string>
+    <string name="apatch_version_update" formatted="false">Version: %s -&gt; %s</string>
+    <string name="kpatch_version_update" formatted="false">Version: %s -&gt; %s</string>
     <string name="home_kpatch_info_title">Info</string>
     <string name="home_ap_cando_install">Installera</string>
     <string name="home_ap_cando_update">Uppdatera</string>
     <string name="home_ap_cando_uninstall">Avinstallera</string>
     <string name="home_ap_cando_reboot">Starta om</string>
-    <string name="home_auth_key_desc">Börja efter certifiering</string>
     <string name="patch_mode_uninstall_patch">Läge: Avinstallera KPatch</string>
     <string name="patch_mode_patch_and_install">Mode: Patch och installera</string>
     <string name="patch_mode_install_to_next_slot">Läge: Installera till nästa plats (Efter OTA)</string>
@@ -118,7 +116,6 @@
     <string name="hide_apatch_dialog_summary">Det kommer att användas som en ny app-etikett som visas i startprogrammet</string>
     <string name="enable_web_debugging">Aktivera felsökning för WebView</string>
     <string name="mode_select_page_patch_and_install">Patcha och installera</string>
-    <string name="home_dialog_auth_fail_title">Autentiseringen misslyckades</string>
     <string name="home_more_menu_about">Om</string>
     <string name="home_more_menu_feedback_or_suggestion">Återgivning eller förslag</string>
     <string name="kpm_control_ok">Åtgärden lyckades!</string>
@@ -138,7 +135,6 @@
     <string name="kpm_control_dialog_title">Kontrollera KP-modulen</string>
     <string name="kpm_control_dialog_content">Mata in kontroll-parametrar:</string>
     <string name="mode_select_page_install_inactive_slot">Installera till en icke aktiv plats (Efter OTA)</string>
-    <string name="home_dialog_auth_fail_content">Autentiseringen av super-tangenten kunde inte genomföras, därav kommer inte APatch att fungera korrekt.\nHär är några möjliga orsaker till varför autentiseringen misslyckades:\n1. Du har inte patchat avbilden för boot med KernelPatch.\n2. Den patchade avbilden för boot har inte flashats.\n3. Fel Super-tangent.\n4. Din enhet har inte stöd för APatch och KernelPatch.\n\nVänligen kontrollera och försök igen. Om det fortfarande skulle uppstå problem så kan du alltid ställa frågor på sidan för filförrådets sida för problem-rapportering.</string>
     <string name="settings_use_system_color_theme_summary">Använd ett färgschema som genereras av systemet med den nuvarande bakgrundsbilden</string>
     <string name="about_telegram_channel">Kanal på Telegram</string>
     <string name="home_click_to_learn_apatch">Lär dig om funktionerna i APatch och hur du använder</string>
@@ -152,7 +148,6 @@
     <string name="reboot_bootloader">Starta om till Bootloader</string>
     <string name="reboot_download">Starta om till Nedladdning</string>
     <string name="super_key">SuperNyckel</string>
-    <string name="clear_super_key">Rensa SuperNyckel</string>
     <string name="patch_set_superkey">Sätt SuperNyckel</string>
     <string name="home_not_installed">Inte installerad</string>
     <string name="patch_title">Patch</string>
@@ -160,7 +155,6 @@
     <string name="patch_item_new_extra_kpm">Bädda in ny</string>
     <string name="patch_item_existed_extra_kpm">Existerade</string>
     <string name="su_selinux_via_hook">bypass genom hook</string>
-    <string name="settings_donot_store_superkey">Spara inte supernycklen i local</string>
     <string name="settings_use_system_color_theme">System färgtema</string>
     <string name="settings_night_theme_enabled">Aktivera mörkt tema</string>
 </resources>

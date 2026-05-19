@@ -15,7 +15,6 @@
     <string name="home_learn_apatch">Invata APatch</string>
     <string name="about_source_code">Vezi codul sursă la %1$s<br/> Alătură-te canalului nostru %2$s <p/>Devin-o membrul grupului %3$s</string>
     <string name="send_log">Trimite log-uri</string>
-    <string name="clear_super_key">Șterge cheia</string>
     <string name="patch_set_superkey">Setează Superkey</string>
     <string name="home_patch_set_key_desc">Doar acreditări pentru KernelPatch</string>
     <string name="home_patch_next_step">Pasul următor</string>
@@ -28,12 +27,10 @@
     <string name="kpatch_version">Versiune: %s</string>
     <string name="apatch_version">Versiune:
 \n%s</string>
-    <string name="apatch_version_update">Versiune:
+    <string name="apatch_version_update" formatted="false">Versiune:
 \n%s -&gt; %s</string>
     <string name="home_su_path">Executable su</string>
     <string name="home_apatch_version">Versiune APatch</string>
-    <string name="home_auth_key_title">Introdu Superkey</string>
-    <string name="home_auth_key_desc">Pornește după certificare</string>
     <string name="home_ap_cando_install">Instalează</string>
     <string name="home_ap_cando_update">Actualizează</string>
     <string name="home_ap_cando_uninstall">Dezinstalează</string>
@@ -102,7 +99,7 @@
     <string name="settings_check_update">Verifică pentru actualizări</string>
     <string name="settings_check_update_summary">Verificare automată a actualizarilor la deschiderea aplicației</string>
     <string name="home_install_unknown_summary">Click pentru instalare</string>
-    <string name="kpatch_version_update">Versiune: %s -&gt; %s</string>
+    <string name="kpatch_version_update" formatted="false">Versiune: %s -&gt; %s</string>
     <string name="home_kpatch_info_title">Informații</string>
     <string name="kpatch_shadow_path_title">kpatch</string>
     <string name="home_ap_cando_reboot">Restart</string>
@@ -133,20 +130,16 @@
     <string name="hide_apatch_manager">Ascunde APatch Manager</string>
     <string name="hide_apatch_manager_summary">Instalați o nouă aplicație de proxy cu un ID aleatoriu și o etichetă personalizată a aplicației</string>
     <string name="enable_web_debugging_summary">Poate fi folosit pentru a depana WebUI. Vă rugăm să activați numai când aveți nevoie.</string>
-    <string name="settings_donot_store_superkey">Nu stocați Cheia Super local</string>
-    <string name="settings_donot_store_superkey_summary">Autentificați Cheia Super de fiecare dată când managerul pornește</string>
     <string name="home_new_apatch_found">Versiune noua disponibila: %s, apasă pentru a actualiza.</string>
     <string name="mode_select_page_patch_and_install">Aplică Modificarea și instalează</string>
     <string name="mode_select_page_select_file">Selectați o imagine de pornire pentru modificare</string>
     <string name="mode_select_page_install_inactive_slot">Instalați în slot inactiv (după OTA)</string>
-    <string name="home_dialog_auth_fail_title">Autentificare nereusita</string>
     <string name="about_app_version">Versiunea %1$s</string>
     <string name="enable_web_debugging">Activați depanarea WebView</string>
     <string name="setting_reset_su_path">Resetați calea</string>
     <string name="setting_reset_su_new_path">Cale noua deplina</string>
     <string name="apm_action">Actiune</string>
     <string name="apm_webui_open">Deschis</string>
-    <string name="home_dialog_auth_fail_content">Nu se poate autentifica Cheia Super, prin urmare APatch nu poate funcționa corect.\nAici sunt câteva motive posibile pentru eșecul autentificării:\n1. Nu ați modificat fișierul boot.img utilizând KernelPatch.\n2. Imaginea de pornire boot.img nu a fost integrată.\n3. Cheia Super este greșită sau conține caractere speciale.\n4. Dispozitivul dvs. nu acceptă APatch și KernelPatch.\n\nVă rugăm să verificați și să încercați din nou. Dacă există încă probleme, puteți oricând să puneți întrebări pe pagina de probleme a repozitorului oficial.</string>
     <string name="settings_use_system_color_theme_summary">Utilizați o temă de culoare generată de sistem bazat pe fundalul actual</string>
     <string name="home_device_info">Dispozitiv</string>
     <string name="kpm_add_kpm">Adaugă KPM</string>

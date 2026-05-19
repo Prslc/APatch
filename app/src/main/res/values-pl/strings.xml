@@ -23,7 +23,7 @@
     <string name="home_ap_cando_install">Instaluj</string>
     <string name="home_selinux_status">Status SELinux</string>
     <string name="home_su_path">Plik wykonywalny su</string>
-    <string name="apatch_version_update">Wersja: %s -&gt; %s</string>
+    <string name="apatch_version_update" formatted="false">Wersja: %s -&gt; %s</string>
     <string name="home_kernel">Wersja jądra</string>
     <string name="home_manager_version">Wersja menedżera</string>
     <string name="patch_title">Załataj</string>
@@ -66,7 +66,6 @@
     <string name="patch_set_superkey">Ustaw SuperKey</string>
     <string name="reboot_bootloader">Restartuj do Bootloadera</string>
     <string name="home_apatch_version">Wersja APatch</string>
-    <string name="home_auth_key_title">Wpisz SuperKey</string>
     <string name="apm_reboot_to_apply">Uruchom ponownie aby zadziałało</string>
     <string name="apm_empty">Brak zainstalowanych modułów</string>
     <string name="home_working">Włączony</string>
@@ -74,7 +73,6 @@
     <string name="home_selinux_status_unknown">Nieznany</string>
     <string name="su_pkg_excluded_setting_title">Wyklucz modyfikacje</string>
     <string name="kpm_kp_not_installed">KernelPatch jest niezainstalowany</string>
-    <string name="clear_super_key">Wyczyść SuperKey</string>
     <string name="patch_warnning">Instalacja wiąże się z ryzykiem. Upewnij się, że utworzono kopię zapasową danych.</string>
     <string name="safe_mode">Tryb bezpieczny</string>
     <string name="home_install_unknown">Nie zainstalowano lub nie uwierzytelniono</string>
@@ -89,13 +87,12 @@
     <string name="system_default">Domyślne ustawienie systemowe</string>
     <string name="apm_not_installed">AndroidPatch jest niezainstalowany</string>
     <string name="home_patch_set_key_desc">Tylko dane uwierzytelniające dla KernelPatch</string>
-    <string name="home_auth_key_desc">Rozpocznij po uzyskaniu certyfikatu</string>
     <string name="kpm_unload">Rozpakuj</string>
     <string name="patch">Załataj</string>
     <string name="settings_global_namespace_mode">Tryb globalnej przestrzeni nazw</string>
     <string name="settings_global_namespace_mode_summary">Wszystkie sesje root korzystają z globalnej przestrzeni montowania nazw</string>
     <string name="settings_clear_super_key_dialog">Czy na pewno chcesz kontynuować?</string>
-    <string name="kpatch_version_update">Wersja: %s -&gt; %s</string>
+    <string name="kpatch_version_update" formatted="false">Wersja: %s -&gt; %s</string>
     <string name="home_kpatch_info_title">Informacje</string>
     <string name="patch_select_bootimg_btn">Wybierz rozruch</string>
     <string name="patch_embed_kpm_btn">Osadź KPM</string>
@@ -165,12 +162,9 @@
     <string name="settings_use_system_color_theme_summary">Używaj motywu kolorystycznego wygenerowanego przez system na podstawie bieżącej tapety</string>
     <string name="hide_apatch_manager_failure">Nie udało się ukryć. Zgłoś błąd!</string>
     <string name="enable_web_debugging_summary">Może być używane do debugowania WebUI. Włącz tylko w razie potrzeby.</string>
-    <string name="settings_donot_store_superkey">Nie przechowuj SuperKey lokalnie</string>
-    <string name="settings_donot_store_superkey_summary">Uwierzytelniaj SuperKey przy każdym uruchomieniu menadżera</string>
     <string name="home_new_apatch_found">Dostępna jest nowa wersja %s. Kliknij, aby uaktualnić.</string>
     <string name="mode_select_page_title">Zainstaluj</string>
     <string name="mode_select_page_install_inactive_slot">Zainstaluj do nieaktywnego slotu (po aktualizacji OTA)</string>
-    <string name="home_dialog_auth_fail_content">Nie można uwierzytelnić SuperKey, dlatego APatch nie może działać poprawnie.\nOto kilka możliwych przyczyn niepowodzenia uwierzytelniania:\n1. Nie zaktualizowano pliku boot.img za pomocą KernelPatch.\n2. Poprawiony plik boot.img nie został sflashowany.\n3. Klucz SuperKey jest nieprawidłowy lub zawiera znaki specjalne.\n4. Urządzenie nie obsługuje APatch i KernelPatch.\n\nSprawdź i spróbuj ponownie. Jeśli nadal występują problemy, zawsze możesz zadawać pytania na oficjalnej stronie repozytorium.</string>
     <string name="home_more_menu_feedback_or_suggestion">Opinie bądź sugestie</string>
     <string name="about_app_desc">Rozwiązanie rootowania jądra z jedynie okrojonym obrazem jądra, zapewniające możliwość montowania modułu systemowego i hakowania funkcji jądra.</string>
     <string name="success">Zakończono sukcesem</string>
@@ -178,7 +172,6 @@
     <string name="home_device_info">Urządzenie</string>
     <string name="home_system_version">Wersja systemu</string>
     <string name="kpm_install">Instaluj</string>
-    <string name="home_dialog_auth_fail_title">Uwierzytelnianie nie powiodło się</string>
     <string name="home_dialog_uninstall_title">Odinstaluj</string>
     <string name="home_kpatch_version">Wersja KernelPatch</string>
     <string name="save_log">Zapisz logi</string>

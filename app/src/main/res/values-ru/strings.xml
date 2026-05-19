@@ -14,7 +14,7 @@
     <string name="home_need_update">Доступна новая версия</string>
     <string name="kpatch_version">Версия: %s</string>
     <string name="apatch_version">Версия: %s</string>
-    <string name="apatch_version_update">Версия: %s → %s</string>
+    <string name="apatch_version_update" formatted="false">Версия: %s → %s</string>
     <string name="home_su_path">Исполняемый файл su</string>
     <string name="home_apatch_version">Версия APatch</string>
     <string name="home_kernel">Версия ядра</string>
@@ -65,10 +65,8 @@
     <string name="apm_changelog">Список изменений</string>
     <string name="patch_set_superkey">Установить СуперКлюч</string>
     <string name="kpm_load_toast_failed">Загрузка не удалась</string>
-    <string name="home_auth_key_desc">Начать после сертификации</string>
     <string name="home_patch_set_key_desc">Ключ только для KernelPatch</string>
     <string name="home_patch_next_step">Далее</string>
-    <string name="home_auth_key_title">Введите СуперКлюч</string>
     <string name="patch_title">Патч</string>
     <string name="kpm_kp_not_installed">KernelPatch не установлен</string>
     <string name="kpm_load_toast_succ">Загружено успешно</string>
@@ -87,14 +85,13 @@
     <string name="home_ap_cando_update">Обновить</string>
     <string name="home_ap_cando_uninstall">Деинсталлировать</string>
     <string name="kpm_unload_confirm">Выгрузить модуль \"%s\"?</string>
-    <string name="clear_super_key">Стереть СуперКлюч</string>
     <string name="apm_not_installed">AndroidPatch не установлен</string>
     <string name="settings_app_language">Язык</string>
     <string name="system_default">Как в системе</string>
     <string name="patch">Патч</string>
     <string name="settings_global_namespace_mode">Режим глобального пространства имён</string>
     <string name="settings_global_namespace_mode_summary">Все сеансы суперпользователя root используют монтирование глобального пространства имён</string>
-    <string name="kpatch_version_update">Версия: %s → %s</string>
+    <string name="kpatch_version_update" formatted="false">Версия: %s → %s</string>
     <string name="home_kpatch_info_title">Подробнее</string>
     <string name="home_ap_cando_reboot">Перезагрузить</string>
     <string name="patch_config_title">Патчи</string>
@@ -140,12 +137,9 @@
     <string name="hide_apatch_manager_summary">Установите прокси-приложение со случайным ID пакета и польз. ярлыком приложения</string>
     <string name="setting_reset_su_new_path">Новый полный путь</string>
     <string name="mode_select_page_select_file">Выберите образ boot, который следует пропатчить</string>
-    <string name="settings_donot_store_superkey">Не хранить СуперКлюч в памяти устройства</string>
     <string name="mode_select_page_install_inactive_slot_warning">Ваше устройство будет **ПРИНУДЕТЕЛЬНО** загружено в текущий неактивный слот после перезагрузки!\nИспользуйте эту опцию только после успешной установки OTA.\nПродолжить?</string>
     <string name="kpm_control">Управление</string>
     <string name="mode_select_page_patch_and_install">Пропатчить и установить</string>
-    <string name="settings_donot_store_superkey_summary">Вам придётся вводить СуперКлюч каждый раз при открытии менеджера</string>
-    <string name="home_dialog_auth_fail_content">Не удалось проверить суперключ, поэтому APatch не может работать.\nВот некоторые возможные причины этой ошибки:\n1. Вы не пропатчили boot.img с помощью KernelPatch.\n2. Вы забыли прошить патченный boot.img\n3. Неверный СуперКлюч.\n4. Ваше устройство не поддерживает APatch и KernelPatch.\n\nПожалуйста, установите APatch повторно и проверьте, правильный ли суперключ вы вводите. Если это не помогло, сообщите нам об ошибке или задайте вопрос в Issues официального репозитория.</string>
     <string name="home_more_menu_about">О приложении</string>
     <string name="home_dialog_uninstall_ap_only">Удалить AndroidPatch</string>
     <string name="kpm_control_dialog_title">Управление KPModule</string>
@@ -160,7 +154,6 @@
     <string name="home_new_apatch_found">Доступна новая версия: %s, Нажмите здесь для обновления.</string>
     <string name="mode_select_page_title">Установить</string>
     <string name="mode_select_page_install_inactive_slot">Установить в неактивный слот (после OTA)</string>
-    <string name="home_dialog_auth_fail_title">Ошибка авторизации</string>
     <string name="home_dialog_uninstall_all">Полное удаление</string>
     <string name="home_more_menu_feedback_or_suggestion">Обратная связь и предложения</string>
     <string name="home_dialog_uninstall_title">Удалить</string>

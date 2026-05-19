@@ -18,11 +18,9 @@
     <string name="home_not_installed">Hindi naka-installed</string>
     <string name="home_need_update">May update</string>
     <string name="home_patch_next_step">Susunod na hakbang</string>
-    <string name="home_auth_key_desc">Magsimula ng trabaho pagkatapos ng sertipikasyon</string>
     <string name="super_key">SuperKey</string>
     <string name="home_apatch_version">APatch: %s</string>
     <string name="home_su_path">su: %s</string>
-    <string name="home_auth_key_title">Ilagay ang superkey</string>
     <string name="home_ap_cando_install">I-install</string>
     <string name="home_ap_cando_update">I-update</string>
     <string name="kpm_unload_confirm">Sigurado ka bang nais mong i-unload ang module %s?</string>
@@ -92,5 +90,4 @@
     <string name="log_saved">Na-save ang Log</string>
     <string name="crash_handle_copy">Kopyahin ang log sa pag-crash</string>
     <string name="crash_handle_copied">Nakopya ang log sa pag-crash sa clipboard.</string>
-    <string name="clear_super_key">Alisin ang SuperKey</string>
 </resources>

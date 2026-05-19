@@ -19,7 +19,6 @@
     <string name="home_ap_cando_update">Päivitä</string>
     <string name="patch">Korjaus</string>
     <string name="patch_item_set_skey_label">SuperKeyn tulee olla 8–63 merkkiä pitkä ja sisältää numeroita ja kirjaimia, mutta ei erikoismerkkejä.</string>
-    <string name="clear_super_key">Tyhjennä SuperKey</string>
     <string name="home_device_info">Laite</string>
     <string name="patch_mode_patch_and_install">Tila: Korjaa ja asenna</string>
     <string name="apm_update">Päivitä</string>
@@ -51,11 +50,9 @@
     <string name="home_need_update">Uusi versio saatavilla</string>
     <string name="kpatch_version">Versio: %s</string>
     <string name="apatch_version">Versio: %s</string>
-    <string name="apatch_version_update">Versio: %s -&gt; %s</string>
-    <string name="kpatch_version_update">Versio: %s -&gt; %s</string>
+    <string name="apatch_version_update" formatted="false">Versio: %s -&gt; %s</string>
+    <string name="kpatch_version_update" formatted="false">Versio: %s -&gt; %s</string>
     <string name="kpatch_shadow_path_title">kpatch</string>
-    <string name="home_auth_key_title">Syötä SuperKey</string>
-    <string name="home_auth_key_desc">Käynnistä sertifioinnin jälkeen</string>
     <string name="home_kpatch_info_title">Tiedot</string>
     <string name="home_ap_cando_install">Asenna</string>
     <string name="home_ap_cando_uninstall">Poista asennus</string>
@@ -117,10 +114,8 @@
     <string name="kpm_args">Args</string>
     <string name="hide_apatch_manager_summary">Asenna uusi hallintasovellus satunnaisen tunnuksen ja mukautetun nimikkeen kanssa</string>
     <string name="enable_web_debugging">Ota WebView-viankorjaus käyttöön</string>
-    <string name="settings_donot_store_superkey_summary">Todenna SuperKey aina, kun hallinta käynnistyy</string>
     <string name="mode_select_page_install_inactive_slot_warning">Laitteesi **pakottaa** käynnistymään nykyiseen ei-aktiiviseen kiinnittimeen uudelleenkäynnistyksen jälkeen!\nKäytä tätä vaihtoehtoa vasta OTA:n jälkeen.\nJatketaanko?</string>
     <string name="kpm_control_outMsg">Viesti</string>
-    <string name="home_dialog_auth_fail_content">SuperKeyä ei voi todentaa, joten APatch ei voi toimia kunnolla.\nTässä on joitain mahdollisia syitä todennuksen epäonnistumiseen:\n1. Et korjannut boot.img:ia KernelPatchilla.\n2. Korjattuun boot.img:iin flash-toimintaa ei ole sovellettu.\n3. SuperKey on väärä tai sisältää erikoismerkkejä.\n4. Laitteesi ei tue APatchia ja KernelPatchia.\n\nTarkista ja yritä uudelleen. Jos ongelmia ilmenee edelleen, voit aina esittää kysymyksiä virallisen tietovaraston ongelmasivulla.</string>
     <string name="about_app_desc">Kernel-juuriratkaisu, jossa on vain poistettu ytimen kuva, joka tarjoaa mahdollisuuden asentaa järjestelmämoduulia ja kiinnittää kernel-toiminnon.</string>
     <string name="kpm_control_ok">Toiminta onnistui!</string>
     <string name="settings_night_mode_follow_sys_summary">Vaihda automaattisesti tummaan teemaan järjestelmäasetusten mukaan</string>
@@ -159,13 +154,11 @@
     <string name="apm_webui_open">Avaa</string>
     <string name="apm_action">Toiminta</string>
     <string name="enable_web_debugging_summary">Voidaan käyttää WebUI-viankorjaukseen. Ota käyttöön vain tarvittaessa.</string>
-    <string name="settings_donot_store_superkey">Älä säilytä SuperKeyä paikallisesti</string>
     <string name="home_new_apatch_found">Uusi versio %s on saatavilla, päivitä napsauttamalla.</string>
     <string name="mode_select_page_title">Asenna</string>
     <string name="mode_select_page_patch_and_install">Korjaa ja asenna</string>
     <string name="mode_select_page_select_file">Valitse korjattava käynnistyskuva</string>
     <string name="mode_select_page_install_inactive_slot">Asenna ei-aktiiviseen kiinnittimeen (OTA:n jälkeen)</string>
-    <string name="home_dialog_auth_fail_title">Todennus epäonnistui</string>
     <string name="home_more_menu_feedback_or_suggestion">Palaute tai ehdotus</string>
     <string name="home_more_menu_about">Tietoja</string>
     <string name="home_dialog_uninstall_title">Poista asennus</string>

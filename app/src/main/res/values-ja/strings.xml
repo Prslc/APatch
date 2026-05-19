@@ -4,7 +4,6 @@
     <string name="home">ホーム</string>
     <string name="android_patch">AndroidPatch</string>
     <string name="kpm_unload_confirm">モジュール \"%s\" をアンロードしますか？</string>
-    <string name="home_auth_key_desc">認証後に開始</string>
     <string name="patch_warnning">インストールにはリスクが伴います。データがバックアップされていることを確認してください。</string>
     <string name="home_patch_set_key_desc">KernelPatch の資格情報のみ</string>
     <string name="reboot_download">ダウンロードモードへ再起動</string>
@@ -27,7 +26,6 @@
     <string name="super_key">SuperKey</string>
     <string name="patch_set_superkey">SuperKey を設定</string>
     <string name="home_installing">インストール中</string>
-    <string name="home_auth_key_title">SuperKey を入力</string>
     <string name="kpm_kp_not_installed">KernelPatch はインストールされていません</string>
     <string name="kpm_load">ロード</string>
     <string name="kpm_author">著者</string>
@@ -63,10 +61,9 @@
     <string name="apm_changelog">変更履歴</string>
     <string name="kpatch_version">バージョン: %s</string>
     <string name="apatch_version">バージョン: %s</string>
-    <string name="apatch_version_update">バージョン: %s → %s</string>
+    <string name="apatch_version_update" formatted="false">バージョン: %s → %s</string>
     <string name="home_su_path">su</string>
     <string name="home_selinux_status_disabled">無効</string>
-    <string name="clear_super_key">SuperKey を消去</string>
     <string name="patch_title">パッチ</string>
     <string name="home_selinux_status_enforcing">Enforcing</string>
     <string name="su_pkg_excluded_setting_title">変更の除外</string>
@@ -83,7 +80,7 @@
     <string name="kpm_unload">アンロード</string>
     <string name="apm_empty">インストールされたモジュールはありません</string>
     <string name="settings_clear_super_key_dialog">本当に続行しますか？</string>
-    <string name="kpatch_version_update">バージョン: %s → %s</string>
+    <string name="kpatch_version_update" formatted="false">バージョン: %s → %s</string>
     <string name="kpatch_shadow_path_title">kpatch</string>
     <string name="home_ap_cando_reboot">再起動</string>
     <string name="patch_config_title">パッチ</string>
@@ -150,7 +147,6 @@
     <string name="hide_apatch_dialog_new_manager_name">新しいマネージャー名</string>
     <string name="setting_reset_su_new_path">新しいフルパス</string>
     <string name="enable_web_debugging">WebView デバッグを有効</string>
-    <string name="settings_donot_store_superkey_summary">マネージャーの起動時に SuperKey を認証します</string>
     <string name="home_new_apatch_found">新バージョンが利用可能です: %s タップしてアップデート</string>
     <string name="mode_select_page_title">インストール</string>
     <string name="enable_web_debugging_summary">Web UI のデバッグに使用できます。必要な場合のみ有効にしてください。</string>
@@ -158,18 +154,15 @@
     <string name="mode_select_page_install_inactive_slot_warning">デバイスは再起動後、**強制的に**アクティブでないスロットにブートされます。
 \nこのオプションは、OTA が完了した後のみ使用してください。
 \n続行しますか？</string>
-    <string name="home_dialog_auth_fail_content">SuperKey の認証に失敗したため、APatchは正しく動作しません。 \n以下の理由が考えられます: \n1. KernelPatch で\"boot.img\"をパッチしていない。 \n2. パッチを適用した\"boot.img\"をフラッシュしていない。 \n3. SuperKey が間違っている。 \n4. デバイスが APatch と KernelPatch に対応していない。 \n \n再度確認して、もう一度お試しください。問題が解決しない場合は、公式リポジトリの Issue ページで質問をして下さい。</string>
     <string name="home_dialog_uninstall_ap_only">APatch をアンインストール</string>
     <string name="mode_select_page_select_file">パッチするブートイメージを選択</string>
     <string name="mode_select_page_install_inactive_slot">非アクティブなスロットにインストール (OTA 後)</string>
-    <string name="home_dialog_auth_fail_title">認証失敗</string>
     <string name="home_more_menu_feedback_or_suggestion">フィードバック / 提案</string>
     <string name="home_dialog_uninstall_title">アンインストール</string>
     <string name="kpm_control_dialog_title">KPModule の管理</string>
     <string name="kpm_control_paramters">パラメータ</string>
     <string name="settings_night_theme_enabled">ダークテーマを有効化</string>
     <string name="save_log">ログを保存</string>
-    <string name="settings_donot_store_superkey">ローカルにスーパーキーを保存しない</string>
     <string name="home_more_menu_about">APatch について</string>
     <string name="settings_use_system_color_theme">ダイナミックテーマ</string>
     <string name="settings_night_mode_follow_sys">システムテーマに従う</string>

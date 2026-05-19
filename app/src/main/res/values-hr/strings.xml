@@ -16,7 +16,6 @@
     <string name="send_log">Pošalji logove</string>
     <string name="safe_mode">Sigurni način</string>
     <string name="super_key">SuperKey</string>
-    <string name="clear_super_key">Izbriši SuperKey</string>
     <string name="patch_set_superkey">Postavi SuperKey</string>
     <string name="home_patch_next_step">Sljedeći korak</string>
     <string name="home_not_installed">Nije instalirano</string>
@@ -28,10 +27,9 @@
     <string name="kpatch_version">Verzija: %s</string>
     <string name="apatch_version">Inačica:
 \n%s</string>
-    <string name="apatch_version_update">Inačica:
+    <string name="apatch_version_update" formatted="false">Inačica:
 \n%s -&gt; %s</string>
     <string name="home_su_path">su: %s</string>
-    <string name="home_auth_key_desc">Pokreni nakon certificiranja</string>
     <string name="home_ap_cando_install">Instaliraj</string>
     <string name="home_ap_cando_update">Ažuriraj</string>
     <string name="home_ap_cando_uninstall">De-instaliraj</string>
@@ -75,7 +73,6 @@
     <string name="patch_warnning">Instalacija može biti riskantna. Sačuvaj osobne podatke.</string>
     <string name="kpm_load">Učitaj</string>
     <string name="home_apatch_version">Apatch: %s</string>
-    <string name="home_auth_key_title">Unesi SuperKey</string>
     <string name="home_selinux_status_enforcing">Enforcing</string>
     <string name="home_selinux_status_unknown">Nepoznato</string>
     <string name="kpm_kp_not_installed">KernelPatch nije instaliran</string>
@@ -117,7 +114,7 @@
     <string name="patch_item_extra_event">Događaj:</string>
     <string name="home_new_apatch_found">Nova verzija %s je dostupna, klikni za nadogradnju.</string>
     <string name="settings_check_update_summary">Automatski provjeri za nadogradnje prilikom otvaranja aplikacije</string>
-    <string name="kpatch_version_update">Verzija: %s -&gt; %s</string>
+    <string name="kpatch_version_update" formatted="false">Verzija: %s -&gt; %s</string>
     <string name="home_ap_cando_reboot">Restartiraj</string>
     <string name="patch_mode_patch_and_install">Mod: Patch i instaliraj</string>
     <string name="patch_mode_install_to_next_slot">Mod: Instaliraj na inaktivni slot (Poslije OTA nadogradnje)</string>
@@ -139,18 +136,14 @@
     <string name="home_dialog_uninstall_ap_only">Deinstaliraj AndroidPatch</string>
     <string name="mode_select_page_install_inactive_slot_warning">Vaš uređaj će biti **FORSIRAN* da pokrene trenutni inaktivni slot nakon restarta!\nSamo koristite ovu opcije nakon što je OTA nadogradnje dovršena.\nNastaviti?</string>
     <string name="home_dialog_uninstall_all">Deinstaliraj sve</string>
-    <string name="home_dialog_auth_fail_title">Autentikacija nije uspjela</string>
     <string name="home_dialog_uninstall_title">Deinstaliraj</string>
     <string name="kpm_control_paramters">Parametri</string>
     <string name="kpm_control_outMsg">Poruka</string>
     <string name="kpm_control_ok">Operacija uspješna!</string>
     <string name="patch_item_kernel">Jezgra</string>
-    <string name="settings_donot_store_superkey_summary">Autentificiraj SuperKey pri svakom pokretanju upravitelja</string>
-    <string name="settings_donot_store_superkey">Nemoj spremati SuperKey u local</string>
     <string name="hide_apatch_dialog_new_manager_name">Novo ime upravitelja</string>
     <string name="settings_night_mode_follow_sys_summary">Automatski prebaci na tamni prikaz ovisno o postavkama sistema</string>
     <string name="patch_item_skey">SuperKey</string>
-    <string name="home_dialog_auth_fail_content">Nije moguće autentificirati SuperKey, stoga APatch ne može pravilno funkcionirati.\nOvo su neki od mogućih uzroka neuspjeha autentifikacije:\n1.</string>
     <string name="home_more_menu_feedback_or_suggestion">Povratne informacije ili prijedlozi</string>
     <string name="settings_night_theme_enabled">Uključi tamni prikaz</string>
     <string name="patch_select_bootimg_btn">Odaberite pokretanje</string>
