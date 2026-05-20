@@ -237,12 +237,12 @@ private fun ClearDialog(cacheSize: Long, viewModel: SettingsViewModel) {
             TextButton(
                 stringResource(android.R.string.ok),
                 onClick = {
-                    viewModel.dismissDialog()
                     scope.launch {
                         loading.withLoading {
                             clearAppCache(context)
                             viewModel.refreshCacheSize()
                         }
+                        viewModel.dismissDialog()
                     }
                 },
                 modifier = Modifier.weight(1f),
