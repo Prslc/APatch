@@ -60,11 +60,14 @@ import me.bmax.apatch.ui.theme.APatchTheme
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
 import top.yukonga.miuix.kmp.basic.Scaffold
+import top.yukonga.miuix.kmp.basic.SnackbarHost
+import top.yukonga.miuix.kmp.basic.SnackbarHostState
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import kotlin.math.abs
 
 val LocalSelectedPage = compositionLocalOf { 0 }
+val LocalSnackbarHost = compositionLocalOf { SnackbarHostState() }
 
 class MainActivity : ComponentActivity() {
 
@@ -172,6 +175,7 @@ fun MainScreen() {
     }
 
     val backdrop = rememberBlurBackdrop()
+    val snackBarHostState = remember { SnackbarHostState() }
     val contentReady = rememberContentReady()
     val settledPage by remember { derivedStateOf { mainPagerState.pagerState.settledPage } }
 
@@ -201,10 +205,12 @@ fun MainScreen() {
 
     CompositionLocalProvider(
         LocalDensity provides scaledDensity,
+        LocalSnackbarHost provides snackBarHostState,
         LocalSelectedPage provides mainPagerState.selectedPage
     ) {
         Scaffold(
             bottomBar = { BottomBar(backdrop) },
+            snackbarHost = { SnackbarHost(state = snackBarHostState) },
         ) { innerPadding ->
             HorizontalPager(
                 modifier = Modifier

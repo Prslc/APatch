@@ -82,6 +82,7 @@ import me.bmax.apatch.ui.component.LoadingIndicator
 import me.bmax.apatch.ui.component.ModuleStateIndicator
 import me.bmax.apatch.ui.component.WarningCard
 import me.bmax.apatch.ui.component.rememberConfirmDialog
+import me.bmax.apatch.ui.LocalSnackbarHost
 import me.bmax.apatch.ui.component.rememberLoadingDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.MODULE_TYPE
@@ -112,7 +113,6 @@ import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.SearchBar
 import top.yukonga.miuix.kmp.basic.SnackbarDuration
-import top.yukonga.miuix.kmp.basic.SnackbarHost
 import top.yukonga.miuix.kmp.basic.SnackbarHostState
 import top.yukonga.miuix.kmp.basic.SnackbarResult
 import top.yukonga.miuix.kmp.basic.Surface
@@ -147,7 +147,7 @@ fun APModuleScreen(
 
     val navigator = LocalNavigator.current
     val context = LocalContext.current
-    val snackBarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = LocalSnackbarHost.current
     val scrollBehavior = MiuixScrollBehavior()
 
     var expanded by remember { mutableStateOf(false) }
@@ -240,7 +240,6 @@ fun APModuleScreen(
                 }
             }
         },
-        snackbarHost = { SnackbarHost(state = snackBarHostState) }
     ) { innerPadding ->
 
         PullToRefresh(
