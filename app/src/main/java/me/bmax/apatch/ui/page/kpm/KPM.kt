@@ -6,6 +6,15 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +30,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -101,6 +112,7 @@ fun KPModuleScreen(
 
     val scrollBehavior = MiuixScrollBehavior()
     val kpModuleListState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
+    var fabVisible by remember { mutableStateOf(true) }
 
     val navigator = LocalNavigator.current
     val backdrop = if (isCurrentPage) rememberBlurBackdrop() else null
@@ -129,6 +141,20 @@ fun KPModuleScreen(
         return
     }
 
+    LaunchedEffect(kpModuleListState) {
+        var lastIndex = 0
+        var lastOffset = 0
+        snapshotFlow {
+            kpModuleListState.firstVisibleItemIndex to
+                    kpModuleListState.firstVisibleItemScrollOffset
+        }.collect { (index, offset) ->
+            val scrollingDown = index > lastIndex || (index == lastIndex && offset > lastOffset)
+            fabVisible = !scrollingDown
+            lastIndex = index
+            lastOffset = offset
+        }
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -140,16 +166,34 @@ fun KPModuleScreen(
             )
         },
         floatingActionButton = {
-            KPMFloatingActionButton(
-                onLoadModule = { uri ->
-                    viewModel.loadModule(uri)
-                },
-                onInstallModule = { /*TODO*/ },
-                onNavigateToPatches = {
-                    navigator.navigateToPatches(PatchMode.PATCH_AND_INSTALL)
-                },
-                bottomPadding = bottomPadding
-            )
+            AnimatedVisibility(
+                visible = fabVisible, enter = scaleIn(
+                    initialScale = 0.6f, animationSpec = spring(
+                        dampingRatio = 0.75f, stiffness = 420f
+                    )
+                ) + fadeIn(
+                    animationSpec = tween(120)
+                ), exit = scaleOut(
+                    targetScale = 0.9f, animationSpec = tween(
+                        durationMillis = 180, easing = FastOutSlowInEasing
+                    )
+                ) + fadeOut(
+                    animationSpec = tween(
+                        durationMillis = 280, easing = LinearOutSlowInEasing
+                    )
+                )
+            ) {
+                KPMFloatingActionButton(
+                    onLoadModule = { uri ->
+                        viewModel.loadModule(uri)
+                    },
+                    onInstallModule = { /*TODO*/ },
+                    onNavigateToPatches = {
+                        navigator.navigateToPatches(PatchMode.PATCH_AND_INSTALL)
+                    },
+                    bottomPadding = bottomPadding
+                )
+            }
         }
     ) { innerPadding ->
         KPModuleList(
@@ -379,7 +423,7 @@ private fun KPModuleList(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(
                     top = contentPadding.calculateTopPadding() + 12.dp,
-                    bottom = bottomPadding + 16.dp + 60.dp,   /*  Scaffold Fab Spacing + Fab container height */
+                    bottom = bottomPadding + 16.dp,
                     start = 16.dp,
                     end = 16.dp
                 )
