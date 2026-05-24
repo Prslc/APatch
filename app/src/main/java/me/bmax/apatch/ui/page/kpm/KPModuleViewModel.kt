@@ -44,19 +44,19 @@ class KPModuleViewModel : ViewModel() {
         sortAndEmit(rawModules)
     }
 
-    fun loadModule(uri: Uri) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isRefreshing = true) }
-            try {
-                withContext(Dispatchers.IO) {
-                    loadKernelModule(uri, "")
-                    refreshModuleList()
-                }
-            } catch (e: Exception) {
-                Log.e("KPM", "Load failed", e)
-            } finally {
-                _uiState.update { it.copy(isRefreshing = false, isNeedRefresh = false) }
+    suspend fun loadModule(uri: Uri): Int {
+        _uiState.update { it.copy(isRefreshing = true) }
+        return try {
+            withContext(Dispatchers.IO) {
+                val rc = loadKernelModule(uri, "")
+                refreshModuleList()
+                rc
             }
+        } catch (e: Exception) {
+            Log.e("KPM", "Load failed", e)
+            -1
+        } finally {
+            _uiState.update { it.copy(isRefreshing = false, isNeedRefresh = false) }
         }
     }
 

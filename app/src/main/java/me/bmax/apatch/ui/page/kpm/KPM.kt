@@ -107,6 +107,7 @@ fun KPModuleScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     val confirmDialog = rememberConfirmDialog()
 
@@ -121,6 +122,8 @@ fun KPModuleScreen(
     val moduleUninstallConfirm = stringResource(id = R.string.kpm_unload_confirm)
     val unloadText = stringResource(R.string.kpm_unload)
     val cancelText = stringResource(android.R.string.cancel)
+    val successToastText = stringResource(id = R.string.kpm_load_toast_succ)
+    val failToastText = stringResource(id = R.string.kpm_load_toast_failed)
 
     val state by APApplication.apStateLiveData.observeAsState(APApplication.State.UNKNOWN_STATE)
     if (state == APApplication.State.UNKNOWN_STATE) {
@@ -185,7 +188,11 @@ fun KPModuleScreen(
             ) {
                 KPMFloatingActionButton(
                     onLoadModule = { uri ->
-                        viewModel.loadModule(uri)
+                        scope.launch {
+                            val rc = viewModel.loadModule(uri)
+                            val toastText = if (rc == 0) successToastText else "$failToastText: $rc"
+                            Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
+                        }
                     },
                     onInstallModule = { /*TODO*/ },
                     onNavigateToPatches = {
