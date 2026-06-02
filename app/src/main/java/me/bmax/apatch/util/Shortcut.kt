@@ -6,7 +6,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
@@ -19,7 +18,9 @@ import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.io.SuFileInputStream
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.MainActivity
-import java.util.Locale
+import me.bmax.apatch.util.ui.isColorOS
+import me.bmax.apatch.util.ui.isHyperOS
+import me.bmax.apatch.util.ui.isMiui
 
 object Shortcut {
 
@@ -109,10 +110,9 @@ object Shortcut {
             return
         }
 
-        val manufacturer = Build.MANUFACTURER.lowercase(Locale.ROOT)
         val initialState = getShortcutPermissionState(context)
         Log.d(TAG, "$logPrefix: initial permission state=$initialState")
-        if (manufacturer.contains("xiaomi") && initialState != ShortcutPermissionState.Granted) {
+        if ((isMiui() || isHyperOS()) && initialState != ShortcutPermissionState.Granted) {
             Log.d(TAG, "$logPrefix: device is Xiaomi, trying to grant via root shell")
             val rootSuccess = tryGrantMiuiShortcutPermissionByRoot(context)
             Log.d(TAG, "$logPrefix: root grant attempt success=$rootSuccess")
@@ -366,21 +366,18 @@ object Shortcut {
     }
 
     private fun getShortcutPermissionState(context: Context): ShortcutPermissionState {
-        val manufacturer = Build.MANUFACTURER.lowercase(Locale.ROOT)
         return when {
-            manufacturer.contains("xiaomi") -> checkMiuiShortcutPermission(context)
-            manufacturer.contains("oppo") -> checkOppoShortcutPermission(context)
+            isMiui() || isHyperOS() -> checkMiuiShortcutPermission(context)
+            isColorOS() -> checkOppoShortcutPermission(context)
             else -> ShortcutPermissionState.Unknown
         }
     }
 
     private fun showShortcutPermissionHint(context: Context) {
-        val manufacturer = Build.MANUFACTURER.lowercase(Locale.ROOT)
-        Log.d(TAG, "showShortcutPermissionHint: manufacturer=$manufacturer")
         val state = getShortcutPermissionState(context)
         val messageRes = when {
-            manufacturer.contains("xiaomi") -> R.string.apm_shortcut_permission_tip_xiaomi
-            manufacturer.contains("oppo") -> R.string.apm_shortcut_permission_tip_oppo
+            isMiui() || isHyperOS() -> R.string.apm_shortcut_permission_tip_xiaomi
+            isColorOS() -> R.string.apm_shortcut_permission_tip_oppo
             else -> R.string.apm_shortcut_permission_tip_default
         }
         Log.d(TAG, "showShortcutPermissionHint: state=$state, messageRes=$messageRes")
