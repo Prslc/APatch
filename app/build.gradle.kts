@@ -13,17 +13,15 @@ plugins {
     id("kotlin-parcelize")
 }
 
-val androidCompileSdkVersion: Int by rootProject.extra
-val androidCompileNdkVersion: String by rootProject.extra
-val androidBuildToolsVersion: String by rootProject.extra
-val androidMinSdkVersion: Int by rootProject.extra
-val androidTargetSdkVersion: Int by rootProject.extra
-val androidSourceCompatibility: JavaVersion by rootProject.extra
-val androidTargetCompatibility: JavaVersion by rootProject.extra
-val managerVersionCode: Int by rootProject.extra
-val managerVersionName: String by rootProject.extra
-val branchName: String by rootProject.extra
-val kernelPatchVersion: String by rootProject.extra
+val androidCompileSdkVersion = rootProject.extra.get("androidCompileSdkVersion") as Int
+val androidCompileNdkVersion = rootProject.extra.get("androidCompileNdkVersion") as String
+val androidBuildToolsVersion = rootProject.extra.get("androidBuildToolsVersion") as String
+val androidMinSdkVersion = rootProject.extra.get("androidMinSdkVersion") as Int
+val androidTargetSdkVersion = rootProject.extra.get("androidTargetSdkVersion") as Int
+val managerVersionCode = rootProject.extra.get("managerVersionCode") as Int
+val managerVersionName = rootProject.extra.get("managerVersionName") as String
+val branchName = rootProject.extra.get("branchName") as String
+val kernelPatchVersion = rootProject.extra.get("kernelPatchVersion") as String
 
 apksign {
     storeFileProperty = "KEYSTORE_FILE"
@@ -55,11 +53,35 @@ val baseArgs = mutableListOf(
 android {
     namespace = "me.bmax.apatch"
 
+    compileSdk = androidCompileSdkVersion
+    ndkVersion = androidCompileNdkVersion
+    buildToolsVersion = androidBuildToolsVersion
+
+    defaultConfig {
+        applicationId = "com.example.apatch"
+        minSdk = androidMinSdkVersion
+        targetSdk = androidTargetSdkVersion
+        versionCode = managerVersionCode
+        versionName = managerVersionName
+        ndk.abiFilters.addAll(arrayOf("arm64-v8a"))
+
+        buildConfigField("String", "buildKPV", "\"$kernelPatchVersion\"")
+        base.archivesName = "APatch_${managerVersionCode}_${managerVersionName}_${branchName}"
+
+        externalNativeBuild {
+            cmake {
+                cppFlags += baseFlags + "-std=c++2b"
+                cFlags += baseFlags + "-std=c2x"
+                arguments += baseArgs
+                abiFilters("arm64-v8a")
+            }
+        }
+    }
+
     buildTypes {
         debug {
             isDebuggable = true
             isMinifyEnabled = false
-            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -105,37 +127,6 @@ android {
         prefab = true
     }
 
-    defaultConfig {
-        applicationId = "com.example.apatch"
-        minSdk = androidMinSdkVersion
-        targetSdk = androidTargetSdkVersion
-        versionCode = managerVersionCode
-        versionName = managerVersionName
-        ndk.abiFilters.addAll(arrayOf("arm64-v8a"))
-        externalNativeBuild {
-            cmake {
-                cppFlags += baseFlags + "-std=c++2b"
-                cFlags += baseFlags + "-std=c2x"
-                arguments += baseArgs
-                abiFilters("arm64-v8a")
-            }
-        }
-        buildConfigField("String", "buildKPV", "\"$kernelPatchVersion\"")
-        base.archivesName = "APatch_${managerVersionCode}_${managerVersionName}_${branchName}"
-
-        externalNativeBuild {
-            cmake {
-                arguments += listOf(
-                    "-DANDROID_STL=none",
-                    "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
-                )
-                abiFilters("arm64-v8a")
-                cppFlags += "-std=c++2b"
-                cFlags += "-std=c2x"
-            }
-        }
-    }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
@@ -161,10 +152,6 @@ android {
     androidResources {
         generateLocaleConfig = true
     }
-
-    compileSdk = androidCompileSdkVersion
-    ndkVersion = androidCompileNdkVersion
-    buildToolsVersion = androidBuildToolsVersion
 
     lint {
         abortOnError = false
@@ -198,8 +185,10 @@ fun registerDownloadTask(
     taskName: String, srcUrl: String, destPath: String, project: Project
 ) {
     project.tasks.register(taskName) {
-        val destFile = File(destPath)
+        group = "download"
+        description = "Downloads remote prebuilt assets for KernelPatch."
 
+        val destFile = File(destPath)
         doLast {
             if (!destFile.exists() || isFileUpdated(srcUrl, destFile)) {
                 println(" - Downloading $srcUrl to ${destFile.absolutePath}")
@@ -241,6 +230,9 @@ registerDownloadTask(
 )
 
 tasks.register<Copy>("mergeScripts") {
+    group = "build"
+    description = "Merges update-binary scripts into the assets package metadata."
+
     into("${project.projectDir}/src/main/resources/META-INF/com/google/android")
     from(rootProject.file("${project.rootDir}/scripts/update_binary.sh")) {
         rename { "update-binary" }
@@ -259,31 +251,39 @@ tasks.getByName("preBuild").dependsOn(
 // https://github.com/bbqsrc/cargo-ndk
 // cargo ndk -t arm64-v8a build --release
 tasks.register<Exec>("cargoBuild") {
+    group = "build"
+    description = "Compiles the core Rust apd daemon using cargo-ndk."
+
     executable("cargo")
     args("ndk", "-t", "arm64-v8a", "build", "--release")
     workingDir("${project.rootDir}/apd")
 }
 
 tasks.register<Copy>("buildApd") {
+    group = "build"
+    description = "Copies and renames the compiled Rust binary to the local JNI folder."
+
     dependsOn("cargoBuild")
     from("${project.rootDir}/apd/target/aarch64-linux-android/release/apd")
     into("${project.projectDir}/libs/arm64-v8a")
     rename("apd", "libapd.so")
 }
 
-tasks.configureEach {
-    if (name == "mergeDebugJniLibFolders" || name == "mergeReleaseJniLibFolders") {
-        dependsOn("buildApd")
-    }
-}
+tasks.getByName("preBuild").dependsOn("buildApd")
 
 tasks.register<Exec>("cargoClean") {
+    group = "cleanup"
+    description = "Cleans up the Cargo build artifacts inside apd module."
+
     executable("cargo")
     args("clean")
     workingDir("${project.rootDir}/apd")
 }
 
 tasks.register<Delete>("apdClean") {
+    group = "cleanup"
+    description = "Cleans up the compiled libapd binary inside the project's libs folder."
+
     dependsOn("cargoClean")
     delete(file("${project.projectDir}/libs/arm64-v8a/libapd.so"))
 }
@@ -322,15 +322,10 @@ dependencies {
     implementation(libs.com.github.topjohnwu.libsu.io)
 
     implementation(libs.okhttp)
-
     implementation(libs.dev.rikka.rikkax.parcelablelist)
-
     implementation(libs.kotlinx.coroutines.core)
-
     implementation(libs.me.zhanghai.android.appiconloader)
-
     implementation(libs.markdown)
-
     implementation(libs.ini4j)
 
     compileOnly(libs.cxx)
