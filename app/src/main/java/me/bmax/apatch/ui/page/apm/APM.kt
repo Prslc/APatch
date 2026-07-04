@@ -86,7 +86,6 @@ import me.bmax.apatch.ui.LocalSnackbarHost
 import me.bmax.apatch.ui.WebUIActivity
 import me.bmax.apatch.ui.component.ConfirmResult
 import me.bmax.apatch.ui.component.IconTextButton
-import me.bmax.apatch.ui.component.LoadingIndicator
 import me.bmax.apatch.ui.component.ModuleStateIndicator
 import me.bmax.apatch.ui.component.WarningCard
 import me.bmax.apatch.ui.component.rememberConfirmDialog
@@ -820,9 +819,7 @@ private fun ModuleList(
                         modifier = Modifier.fillParentMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        if (uiState.isRefreshing) {
-                            LoadingIndicator()
-                        } else {
+                        if (!uiState.isRefreshing) {
                             Text(
                                 stringResource(R.string.apm_empty),
                                 textAlign = TextAlign.Center

@@ -40,7 +40,6 @@ import me.bmax.apatch.data.AppInfo
 import me.bmax.apatch.data.AppRepository
 import me.bmax.apatch.ui.component.AppIconImage
 import me.bmax.apatch.ui.component.DropdownItem
-import me.bmax.apatch.ui.component.LoadingIndicator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
@@ -109,9 +108,7 @@ fun SuperUserScreen(
                 onRefresh = { viewModel.fetchAppList() },
                 contentPadding = innerPadding
             ) {
-                if (uiState.isRefreshing && appList.isEmpty()) {
-                    LoadingIndicator()
-                } else {
+                if (appList.isNotEmpty()) {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()

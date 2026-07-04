@@ -60,7 +60,6 @@ import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.ConfirmResult
 import me.bmax.apatch.ui.component.DropdownItem
 import me.bmax.apatch.ui.component.IconTextButton
-import me.bmax.apatch.ui.component.LoadingIndicator
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.component.rememberLoadingDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
@@ -442,9 +441,7 @@ private fun KPModuleList(
                                 modifier = Modifier.fillParentMaxSize(),
                                 contentAlignment = Alignment.Center
                             ) {
-                                if (uiState.isRefreshing) {
-                                    LoadingIndicator()
-                                } else {
+                                if (!uiState.isRefreshing) {
                                     Text(
                                         stringResource(R.string.kpm_apm_empty),
                                         textAlign = TextAlign.Center
