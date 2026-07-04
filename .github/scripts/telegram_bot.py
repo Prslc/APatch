@@ -42,6 +42,7 @@ def send_to_telegram(chat_id, file_path):
     token = os.environ.get("BOT_TOKEN")
     branch = html.escape(os.environ.get("BRANCH", "main"))
     version = html.escape(os.environ.get("VERSION", "0"))
+    kp_version = html.escape(os.environ.get("KP_VERSION", "unknown"))
     kp_hash = html.escape(os.environ.get("KP_HASH", "unknown"))
     run_url = os.environ.get("RUN_URL", "#")
 
@@ -67,7 +68,7 @@ def send_to_telegram(chat_id, file_path):
     caption = (
         f"<b>Branch:</b> <code>{branch}</code>\n"
         f"<b>Manager:</b> <code>v{version}</code>\n"
-        f"<b>KernelPatch:</b> <code>{kp_hash}</code>\n\n"
+        f"<b>KernelPatch:</b> {kp_version}(<code>{kp_hash}</code>)\n\n"
         f"<blockquote>{summary}</blockquote>\n\n"
         f"<a href=\"{compare_url}\">{compare_label}</a> | "
         f"<a href=\"{run_url}\">Workflow</a>"

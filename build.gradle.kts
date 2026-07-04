@@ -4,6 +4,7 @@ plugins {
 }
 
 extra.set("kernelPatchVersion", "0.13.2")
+extra.set("kernelPatchHash", getKernelPatchHash())
 extra.set("androidMinSdkVersion", 26)
 extra.set("androidTargetSdkVersion", 37)
 extra.set("androidCompileSdkVersion", 37)
@@ -37,6 +38,17 @@ fun getBranch(): String {
 
 fun getVersionName(): String {
     return getGitDescribe()
+}
+
+fun getKernelPatchHash(): String {
+    System.getProperty("kpHash")?.let { return it }
+    val version = extra.get("kernelPatchVersion") as String
+    return try {
+        exec("git ls-remote https://github.com/bmax121/KernelPatch.git refs/tags/$version | " +
+            "awk '{print substr(\$1,1,7)}'")
+    } catch (_: Exception) {
+        "unknown"
+    }
 }
 
 tasks.register("printVersion") {

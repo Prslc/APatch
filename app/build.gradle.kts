@@ -22,6 +22,7 @@ val managerVersionCode = rootProject.extra.get("managerVersionCode") as Int
 val managerVersionName = rootProject.extra.get("managerVersionName") as String
 val branchName = rootProject.extra.get("branchName") as String
 val kernelPatchVersion = rootProject.extra.get("kernelPatchVersion") as String
+val kernelPatchHash = rootProject.extra.get("kernelPatchHash") as String
 
 apksign {
     storeFileProperty = "KEYSTORE_FILE"
@@ -66,6 +67,7 @@ android {
         ndk.abiFilters.addAll(arrayOf("arm64-v8a"))
 
         buildConfigField("String", "buildKPV", "\"$kernelPatchVersion\"")
+        buildConfigField("String", "buildKPHash", "\"$kernelPatchHash\"")
         base.archivesName = "APatch_${managerVersionCode}_${managerVersionName}_${branchName}"
 
         externalNativeBuild {

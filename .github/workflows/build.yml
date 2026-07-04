@@ -72,13 +72,37 @@ jobs:
             echo "${{ secrets.SIGNING_KEY }}" | base64 -d > key.jks
           fi
 
+      - name: Get KernelPatch Info
+        id: kp_info
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          KP_VERSION=$(grep -oP 'kernelPatchVersion",\s*"\K[^"]+' build.gradle.kts)
+          echo "KP_VERSION=$KP_VERSION" >> $GITHUB_OUTPUT
+
+          # Get the latest asset updated_at via GitHub API — when KP replaces
+          # release files without recreating the tag, assets always reflect it
+          RELEASE_JSON=$(gh api "repos/bmax121/KernelPatch/releases/tags/$KP_VERSION")
+          ASSET_UPDATED=$(echo "$RELEASE_JSON" | jq -r '.assets | map(.updated_at) | sort | last')
+          echo "Latest asset updated at: $ASSET_UPDATED"
+
+          # Get the latest commit on main before the asset update time
+          KP_HASH=$(gh api "repos/bmax121/KernelPatch/commits?until=$ASSET_UPDATED&per_page=1" \
+            --jq '.[0].sha' | cut -c1-7)
+          echo "KP_HASH=$KP_HASH" >> $GITHUB_OUTPUT
+
+          # Pass to Gradle via system property
+          echo "org.gradle.jvmargs=-Xmx2048m -DkpHash=$KP_HASH" >> gradle.properties
+
       - name: Build with Gradle
         run: |
           echo "org.gradle.parallel=true" >> gradle.properties
           echo "org.gradle.vfs.watch=true" >> gradle.properties
-          echo "org.gradle.jvmargs=-Xmx2048m" >> gradle.properties
           echo "android.native.buildOutput=verbose" >> gradle.properties
           sed -i '/org.gradle.configuration-cache/d' gradle.properties
+          # Only set jvmargs if not already set by the KP info step
+          grep -q '^org.gradle.jvmargs=' gradle.properties || \
+            echo "org.gradle.jvmargs=-Xmx2048m" >> gradle.properties
           ./gradlew assembleRelease
 
       - name: Upload mappings
@@ -87,19 +111,14 @@ jobs:
           name: "mappings"
           path: "app/build/outputs/mapping/release/"
 
-      - name: Get KernelPatch Hash
-        id: kp_hash
-        run: |
-          HASH=$(git ls-remote https://github.com/bmax121/KernelPatch.git HEAD | awk '{print substr($1,1,7)}')
-          echo "KP_HASH=$HASH" >> $GITHUB_OUTPUT
-
       - name: Post to Telegram
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           GITHUB_EVENT_PATH: ${{ github.event_path }}
           BRANCH: ${{ github.ref_name }}
           VERSION: "${{ steps.parse_version.outputs.VERSION }}"
-          KP_HASH: "${{ steps.kp_hash.outputs.KP_HASH }}"
+          KP_VERSION: "${{ steps.kp_info.outputs.KP_VERSION }}"
+          KP_HASH: "${{ steps.kp_info.outputs.KP_HASH }}"
           RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         run: |
           APK_PATH=$(ls app/build/outputs/apk/release/*.apk | head -n 1)
