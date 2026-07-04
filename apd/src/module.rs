@@ -26,7 +26,7 @@ use crate::{
     metamodule, restorecon,
 };
 
-const INSTALLER_CONTENT: &str = include_str!("./installer.sh");
+const INSTALLER_CONTENT: &str = include_str!("../assets/installer.sh");
 const INSTALL_MODULE_SCRIPT: &str = concatcp!(
     INSTALLER_CONTENT,
     "\n",
@@ -366,7 +366,7 @@ fn _install_module(zip: &str) -> Result<()> {
     ensure_boot_completed()?;
 
     // print banner
-    println!(include_str!("banner"));
+    println!(include_str!("./../../banner"));
 
     assets::ensure_binaries().with_context(|| "binary missing")?;
 
