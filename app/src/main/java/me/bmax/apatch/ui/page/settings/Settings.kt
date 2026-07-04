@@ -1,5 +1,6 @@
 package me.bmax.apatch.ui.page.settings
 
+import android.os.Build
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.PaddingValues
@@ -130,14 +131,16 @@ fun SettingScreen(
                         }
                     )
 
-                    // Blur Effects
-                    SwitchItem(
-                        title = stringResource(R.string.settings_blur_enabled),
-                        summary = stringResource(R.string.settings_blur_enabled_summary),
-                        icon = Icons.Filled.BlurOn,
-                        checked = uiState.blurEnabled,
-                        onCheckedChange = { viewModel.setBlurEnabled(it) }
-                    )
+                    // Blur Effects (API 33+ only)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        SwitchItem(
+                            title = stringResource(R.string.settings_blur_enabled),
+                            summary = stringResource(R.string.settings_blur_enabled_summary),
+                            icon = Icons.Filled.BlurOn,
+                            checked = uiState.blurEnabled,
+                            onCheckedChange = { viewModel.setBlurEnabled(it) }
+                        )
+                    }
                     // Page Scale
                     var showScaleSlider by remember { mutableStateOf(false) }
                     var sliderValue by remember(pageScale) { mutableFloatStateOf(pageScale) }

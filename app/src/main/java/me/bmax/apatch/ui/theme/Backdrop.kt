@@ -4,6 +4,7 @@
 
 package me.bmax.apatch.ui.theme
 
+import android.os.Build
 import androidx.compose.runtime.Composable
 import me.bmax.apatch.APApplication
 import androidx.compose.ui.Modifier
@@ -26,7 +27,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
  */
 @Composable
 fun rememberBlurBackdrop(enableBlur: Boolean): LayerBackdrop? {
-    if (!enableBlur || !isRenderEffectSupported()) return null
+    if (!enableBlur || !isRenderEffectSupported() || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return null
     val surfaceColor = MiuixTheme.colorScheme.surface
     return rememberLayerBackdrop {
         drawRect(surfaceColor)
