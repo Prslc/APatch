@@ -42,6 +42,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -86,6 +88,7 @@ import me.bmax.apatch.apApp
 import me.bmax.apatch.ui.LocalSnackbarHost
 import me.bmax.apatch.ui.WebUIActivity
 import me.bmax.apatch.ui.component.ConfirmResult
+import me.bmax.apatch.ui.component.DropdownItem
 import me.bmax.apatch.ui.component.IconTextButton
 import me.bmax.apatch.ui.component.ModuleStateIndicator
 import me.bmax.apatch.ui.component.WarningCard
@@ -111,6 +114,7 @@ import top.yukonga.miuix.kmp.basic.HorizontalDivider
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.InputField
+import top.yukonga.miuix.kmp.basic.ListPopupColumn
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.PullToRefresh
 import top.yukonga.miuix.kmp.basic.Scaffold
@@ -139,6 +143,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
 import top.yukonga.miuix.kmp.utils.PressFeedbackType
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import top.yukonga.miuix.kmp.window.WindowDialog
+import top.yukonga.miuix.kmp.window.WindowListPopup
 
 @Composable
 fun APModuleScreen(
@@ -208,6 +213,43 @@ fun APModuleScreen(
                 color = backdrop.getAppBarColor(),
                 title = stringResource(R.string.apm),
                 scrollBehavior = scrollBehavior,
+                actions = {
+                    val showSortDropdown = remember { mutableStateOf(false) }
+                    val APMitemCount = 2
+
+                    IconButton(onClick = { showSortDropdown.value = true }) {
+                        Icon(
+                            imageVector = Icons.Filled.MoreVert,
+                            contentDescription = stringResource(R.string.apm_sort),
+                            tint = colorScheme.onSurface
+                        )
+                        WindowListPopup(
+                            show = showSortDropdown.value,
+                            onDismissRequest = { showSortDropdown.value = false }
+                        ) {
+                            ListPopupColumn {
+                                DropdownItem(
+                                    text = stringResource(R.string.apm_sort_enabled_first),
+                                    optionSize = APMitemCount,
+                                    index = 0,
+                                    onSelectedIndexChange = {
+                                        viewModel.toggleSortEnabledFirst()
+                                        showSortDropdown.value = false
+                                    }
+                                )
+                                DropdownItem(
+                                    text = stringResource(R.string.apm_sort_action_first),
+                                    optionSize = APMitemCount,
+                                    index = 1,
+                                    onSelectedIndexChange = {
+                                        viewModel.toggleSortActionFirst()
+                                        showSortDropdown.value = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
             ) {
                 SearchBar(
                     modifier = Modifier

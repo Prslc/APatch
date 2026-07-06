@@ -35,20 +35,47 @@ class APModuleViewModel(
     val uiState = _uiState.asStateFlow()
 
     @OptIn(FlowPreview::class)
-    val filteredModules = uiState
-        .map { it.search }.distinctUntilChanged().debounce(200.milliseconds)
-        .combine(uiState.map { it.modules }.distinctUntilChanged()) { query, modules ->
-            val collator = Collator.getInstance(Locale.getDefault())
-            val comparator = compareByDescending<ModuleInfo> { it.metamodule && it.enabled }
-                .thenBy(collator) { it.id }
+    val filteredModules = combine(
+        uiState.map { it.search }.distinctUntilChanged().debounce(200.milliseconds),
+        uiState.map { it.modules }.distinctUntilChanged(),
+        uiState.map { it.sortEnabledFirst }.distinctUntilChanged(),
+        uiState.map { it.sortActionFirst }.distinctUntilChanged()
+    ) { query, modules, sortEnabledFirst, sortActionFull ->
+        val collator = Collator.getInstance(Locale.getDefault())
 
-            modules.filter {
-                it.id.contains(query, true) ||
-                        it.name.contains(query, true) ||
-                        it.pinyinName.contains(query, true)
-            }.sortedWith(comparator)
-        }
+        modules.filter {
+            it.id.contains(query, true) ||
+                    it.name.contains(query, true) ||
+                    it.pinyinName.contains(query, true)
+        }.sortedWith(moduleComparator(sortEnabledFirst, sortActionFull, collator))
+    }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    private fun moduleComparator(
+        sortEnabledFirst: Boolean,
+        sortActionFirst: Boolean,
+        collator: Collator
+    ): Comparator<ModuleInfo> {
+        return compareBy<ModuleInfo>(
+            {
+                val executable = it.hasWebUi || it.hasActionScript
+                when {
+                    it.metamodule && it.enabled -> 0
+                    sortEnabledFirst && sortActionFirst -> when {
+                        it.enabled && executable -> 1
+                        it.enabled -> 2
+                        executable -> 3
+                        else -> 4
+                    }
+                    sortEnabledFirst && !sortActionFirst -> if (it.enabled) 1 else 2
+                    !sortEnabledFirst && sortActionFirst -> if (executable) 1 else 2
+                    else -> 1
+                }
+            },
+            { if (sortEnabledFirst) !it.enabled else 0 },
+            { if (sortActionFirst) !(it.hasWebUi || it.hasActionScript) else 0 }
+        ).thenBy(collator) { it.id }
+    }
 
     fun onSearchChange(newSearch: String) {
         _uiState.update { it.copy(search = newSearch) }
@@ -56,6 +83,14 @@ class APModuleViewModel(
 
     fun markNeedRefresh() {
         _uiState.update { it.copy(isNeedRefresh = true) }
+    }
+
+    fun toggleSortEnabledFirst() {
+        _uiState.update { it.copy(sortEnabledFirst = !it.sortEnabledFirst) }
+    }
+
+    fun toggleSortActionFirst() {
+        _uiState.update { it.copy(sortActionFirst = !it.sortActionFirst) }
     }
 
     suspend fun toggleModule(id: String, enable: Boolean): Boolean {
