@@ -95,7 +95,9 @@ class Navigator(val navController: NavHostController) {
                 targetId = uri.toString(),
                 moduleType = type
             )
-        )
+        ) {
+            launchSingleTop = true
+        }
     }
 
     fun popBackStack() = navController.popBackStack()

@@ -2,6 +2,7 @@ package me.bmax.apatch.ui.page.superuser
 
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -84,7 +85,7 @@ class SuperUserViewModel(
                 _uiState.update { it.copy(isRefreshing = true) }
                 AppRepository.fetchAppList()
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("SuperUserVM", "fetchAppList failed", e)
             } finally {
                 _uiState.update { it.copy(isRefreshing = false) }
             }
