@@ -93,8 +93,10 @@
     <string name="apm_search_count">找到 %d 个模块</string>
     <string name="apm_refresh">刷新</string>
     <string name="apm_sort">排序</string>
+    <string name="apm_sort_default">默认</string>
     <string name="apm_sort_enabled_first">已启用的优先</string>
     <string name="apm_sort_action_first">有操作的优先</string>
+    <string name="apm_sort_web_first">有网页的优先</string>
     <string name="apm_empty">尚未安装模块</string>
     <string name="apm_reboot_to_apply">重启生效</string>
     <string name="apm_uninstall_success">%s 已卸载</string>

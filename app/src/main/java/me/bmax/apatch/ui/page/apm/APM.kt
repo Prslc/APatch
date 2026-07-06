@@ -42,12 +42,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -88,7 +87,6 @@ import me.bmax.apatch.apApp
 import me.bmax.apatch.ui.LocalSnackbarHost
 import me.bmax.apatch.ui.WebUIActivity
 import me.bmax.apatch.ui.component.ConfirmResult
-import me.bmax.apatch.ui.component.DropdownItem
 import me.bmax.apatch.ui.component.IconTextButton
 import me.bmax.apatch.ui.component.ModuleStateIndicator
 import me.bmax.apatch.ui.component.WarningCard
@@ -109,12 +107,13 @@ import me.bmax.apatch.util.reboot
 import okhttp3.Request
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
+import top.yukonga.miuix.kmp.basic.DropdownEntry
+import top.yukonga.miuix.kmp.basic.DropdownItem
 import top.yukonga.miuix.kmp.basic.FloatingActionButton
 import top.yukonga.miuix.kmp.basic.HorizontalDivider
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.InputField
-import top.yukonga.miuix.kmp.basic.ListPopupColumn
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.PullToRefresh
 import top.yukonga.miuix.kmp.basic.Scaffold
@@ -137,13 +136,14 @@ import top.yukonga.miuix.kmp.icon.extended.Delete
 import top.yukonga.miuix.kmp.icon.extended.Download
 import top.yukonga.miuix.kmp.icon.extended.HorizontalSplit
 import top.yukonga.miuix.kmp.icon.extended.Play
+import top.yukonga.miuix.kmp.icon.extended.Sort
 import top.yukonga.miuix.kmp.icon.extended.Undo
+import top.yukonga.miuix.kmp.menu.OverlayIconDropdownMenu
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
 import top.yukonga.miuix.kmp.utils.PressFeedbackType
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import top.yukonga.miuix.kmp.window.WindowDialog
-import top.yukonga.miuix.kmp.window.WindowListPopup
 
 @Composable
 fun APModuleScreen(
@@ -214,40 +214,32 @@ fun APModuleScreen(
                 title = stringResource(R.string.apm),
                 scrollBehavior = scrollBehavior,
                 actions = {
-                    val showSortDropdown = remember { mutableStateOf(false) }
-                    val APMitemCount = 2
-
-                    IconButton(onClick = { showSortDropdown.value = true }) {
-                        Icon(
-                            imageVector = Icons.Filled.MoreVert,
-                            contentDescription = stringResource(R.string.apm_sort),
-                            tint = colorScheme.onSurface
-                        )
-                        WindowListPopup(
-                            show = showSortDropdown.value,
-                            onDismissRequest = { showSortDropdown.value = false }
-                        ) {
-                            ListPopupColumn {
-                                DropdownItem(
-                                    text = stringResource(R.string.apm_sort_enabled_first),
-                                    optionSize = APMitemCount,
-                                    index = 0,
-                                    onSelectedIndexChange = {
-                                        viewModel.toggleSortEnabledFirst()
-                                        showSortDropdown.value = false
+                    var sortIndex by remember { mutableIntStateOf(0) }
+                    val sortMode = DropdownEntry(
+                        items = listOf(
+                            stringResource(R.string.apm_sort_default),
+                            stringResource(R.string.apm_sort_enabled_first),
+                            stringResource(R.string.apm_sort_action_first),
+                            stringResource(R.string.apm_sort_web_first)
+                        ).mapIndexed { index, text ->
+                            DropdownItem(
+                                text = text,
+                                selected = sortIndex == index,
+                                onClick = {
+                                    sortIndex = index
+                                    when (sortIndex) {
+                                        0 -> viewModel.resetSort()
+                                        1 -> viewModel.toggleSortEnabledFirst()
+                                        2 -> viewModel.toggleSortActionFirst()
+                                        3 -> viewModel.toggleSortWebFirst()
                                     }
-                                )
-                                DropdownItem(
-                                    text = stringResource(R.string.apm_sort_action_first),
-                                    optionSize = APMitemCount,
-                                    index = 1,
-                                    onSelectedIndexChange = {
-                                        viewModel.toggleSortActionFirst()
-                                        showSortDropdown.value = false
-                                    }
-                                )
-                            }
+                                }
+                            )
                         }
+                    )
+
+                    OverlayIconDropdownMenu(entry = sortMode) {
+                        Icon(imageVector = MiuixIcons.Sort, contentDescription = null)
                     }
                 }
             ) {
@@ -883,7 +875,8 @@ private fun ModuleList(
             else -> {
                 items(filteredModules, key = { it.id }) { module ->
                     val scope = rememberCoroutineScope()
-                    val updatedModule = viewModel.uiState.value.updateResults[module.id] ?: Triple("", "", "")
+                    val updatedModule =
+                        viewModel.uiState.value.updateResults[module.id] ?: Triple("", "", "")
 
                     ModuleItem(
                         navigator,

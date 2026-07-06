@@ -12,6 +12,7 @@ data class APMUiState(
     val isNeedRefresh: Boolean = false,
     val sortEnabledFirst: Boolean = false,
     val sortActionFirst: Boolean = false,
+    val sortWebFirst: Boolean = false,
 
     val shortcutState: ShortcutState? = null,
     val metaModuleWarning: String? = null,
