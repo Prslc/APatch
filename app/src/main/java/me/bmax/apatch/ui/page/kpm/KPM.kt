@@ -73,12 +73,14 @@ import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.FloatingActionButton
 import top.yukonga.miuix.kmp.basic.HorizontalDivider
 import top.yukonga.miuix.kmp.basic.Icon
+import top.yukonga.miuix.kmp.basic.InputField
 import top.yukonga.miuix.kmp.basic.ListPopupColumn
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.PopupPositionProvider
 import top.yukonga.miuix.kmp.basic.PullToRefresh
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.ScrollBehavior
+import top.yukonga.miuix.kmp.basic.SearchBar
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
@@ -104,6 +106,8 @@ fun KPModuleScreen(
     viewModel: KPModuleViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val filteredModules by viewModel.filteredModules.collectAsStateWithLifecycle()
+    var expanded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -164,7 +168,28 @@ fun KPModuleScreen(
                 color = backdrop.getAppBarColor(),
                 title = stringResource(R.string.kpm),
                 scrollBehavior = scrollBehavior,
-            )
+            ) {
+                SearchBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp, bottom = 4.dp),
+                    inputField = {
+                        InputField(
+                            query = uiState.search,
+                            onQueryChange = { viewModel.updateSearch(it) },
+                            onSearch = { expanded = false },
+                            expanded = expanded,
+                            onExpandedChange = {
+                                expanded = it
+                                if (!it) viewModel.updateSearch("")
+                            }
+                        )
+                    },
+                    expanded = expanded,
+                    onExpandedChange = { expanded = it },
+                    content = {}
+                )
+            }
         },
         floatingActionButton = {
             AnimatedVisibility(
@@ -203,6 +228,7 @@ fun KPModuleScreen(
     ) { innerPadding ->
         KPModuleList(
             uiState = uiState,
+            filteredModules = filteredModules,
             onRefresh = { viewModel.fetchModuleList() },
             onUninstall = { module ->
                 scope.launch {
@@ -397,6 +423,7 @@ fun KPMControlDialog(
 @Composable
 private fun KPModuleList(
     uiState: KPModuleUiState,
+    filteredModules: List<KPModel.KPMInfo>,
     onRefresh: () -> Unit,
     onUninstall: (KPModel.KPMInfo) -> Unit,
     onControl: (KPModel.KPMInfo) -> Unit,
@@ -452,7 +479,7 @@ private fun KPModuleList(
                     }
 
                     else -> {
-                        items(uiState.modules, key = { it.name }) { module ->
+                        items(filteredModules, key = { it.name }) { module ->
                             KPModuleItem(
                                 module,
                                 onUninstall = { onUninstall(module) },

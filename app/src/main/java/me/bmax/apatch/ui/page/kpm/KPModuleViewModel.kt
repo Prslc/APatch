@@ -6,7 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -21,6 +26,19 @@ class KPModuleViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(KPModuleUiState())
     val uiState = _uiState.asStateFlow()
+
+    val filteredModules = combine(
+        uiState.map { it.search }.distinctUntilChanged(),
+        uiState.map { it.modules }.distinctUntilChanged()
+    ) { query, modules ->
+        val trimmed = query.trim()
+        modules.filter {
+            trimmed.isEmpty() ||
+                    it.name.contains(trimmed, true) ||
+                    it.author.contains(trimmed, true) ||
+                    it.description.contains(trimmed, true)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
         fetchModuleList()
@@ -84,6 +102,10 @@ class KPModuleViewModel(
 
     fun closeControlDialog() {
         _uiState.update { it.copy(showControlDialog = false) }
+    }
+
+    fun updateSearch(query: String) {
+        _uiState.update { it.copy(search = query) }
     }
 
     fun controlModule(name: String, param: String): Natives.KPMCtlRes {
