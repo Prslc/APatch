@@ -22,8 +22,6 @@ class KPModuleViewModel(
     private val _uiState = MutableStateFlow(KPModuleUiState())
     val uiState = _uiState.asStateFlow()
 
-    private var rawModules = emptyList<KPModel.KPMInfo>()
-
     init {
         fetchModuleList()
     }
@@ -40,8 +38,10 @@ class KPModuleViewModel(
     }
 
     private suspend fun refreshModuleList() {
-        rawModules = moduleRepo.listModules()
-        sortAndEmit(rawModules)
+        val collator = Collator.getInstance(Locale.getDefault())
+        val comparator = compareBy(collator, KPModel.KPMInfo::name)
+        val modules = moduleRepo.listModules().sortedWith(comparator)
+        _uiState.update { it.copy(modules = modules) }
     }
 
     suspend fun loadModule(uri: Uri): Int {
@@ -76,11 +76,6 @@ class KPModuleViewModel(
                 _uiState.update { it.copy(isRefreshing = false) }
             }
         }
-    }
-
-    private fun sortAndEmit(list: List<KPModel.KPMInfo>) {
-        val comparator = compareBy(Collator.getInstance(Locale.getDefault()), KPModel.KPMInfo::name)
-        _uiState.update { it.copy(modules = list.sortedWith(comparator)) }
     }
 
     fun openControlDialog(module: KPModel.KPMInfo) {

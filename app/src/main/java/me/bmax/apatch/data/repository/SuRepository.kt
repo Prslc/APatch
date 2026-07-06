@@ -7,7 +7,7 @@ interface SuRepository {
     fun grantSu(uid: Int, toUid: Int, scontext: String)
     fun revokeSu(uid: Int)
     fun setUidExclude(uid: Int, exclude: Int)
-    fun changeConfig(config: PkgConfig.Config)
+    suspend fun changeConfig(config: PkgConfig.Config)
 }
 
 object SuRepositoryImpl : SuRepository {
@@ -23,7 +23,7 @@ object SuRepositoryImpl : SuRepository {
         Natives.setUidExclude(uid, exclude)
     }
 
-    override fun changeConfig(config: PkgConfig.Config) {
+    override suspend fun changeConfig(config: PkgConfig.Config) {
         PkgConfig.changeConfig(config)
     }
 }
