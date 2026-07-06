@@ -68,7 +68,6 @@ import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
-import me.bmax.apatch.util.controlKernelModule
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.FloatingActionButton
@@ -318,7 +317,8 @@ fun KPMFloatingActionButton(
 @Composable
 fun KPMControlDialog(
     module: KPModel.KPMInfo,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    viewModel: KPModuleViewModel = viewModel()
 ) {
     var controlParam by remember { mutableStateOf("") }
     var enable by remember { mutableStateOf(false) }
@@ -331,7 +331,7 @@ fun KPMControlDialog(
 
     suspend fun onModuleControl(module: KPModel.KPMInfo) {
         val controlResult = loadingDialog.withLoading {
-            controlKernelModule(module.name, controlParam)
+            viewModel.controlModule(module.name, controlParam)
         }
 
         if (controlResult.rc >= 0) {

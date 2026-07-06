@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.LocaleList
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -17,24 +16,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bmax.apatch.APApplication
-import me.bmax.apatch.Natives
 import me.bmax.apatch.R
 import me.bmax.apatch.apApp
-import me.bmax.apatch.util.calculateCacheSize
-import me.bmax.apatch.util.isGlobalNamespaceEnabled
-import me.bmax.apatch.util.rootShellForResult
-import me.bmax.apatch.util.setGlobalNamespaceEnabled
+import me.bmax.apatch.data.repository.SettingsRepository
+import me.bmax.apatch.data.repository.SettingsRepositoryImpl
 
 var pageScale: Float by mutableFloatStateOf(1.0f)
 
-class SettingsViewModel : ViewModel() {
-    private val prefs = APApplication.sharedPreferences
-
-    var uiState by mutableStateOf(SettingsUiState())
-        private set
+class SettingsViewModel(
+    private val settingsRepo: SettingsRepository = SettingsRepositoryImpl
+) : ViewModel() {
+    private val _uiState = MutableStateFlow(SettingsUiState())
+    val uiState = _uiState.asStateFlow()
 
     val colorValues = listOf(
         0,
@@ -48,7 +47,6 @@ class SettingsViewModel : ViewModel() {
         Color(0xFF795548).toArgb(),
     )
 
-
     init {
         loadPersistentSettings()
         observeApatchState()
@@ -60,15 +58,18 @@ class SettingsViewModel : ViewModel() {
         val currentLocales = LocaleManagerCompat.getApplicationLocales(apApp)
         val tag = if (currentLocales.isEmpty) null else currentLocales.get(0)?.toLanguageTag()
 
-        uiState = uiState.copy(
-            enableWebDebugging = prefs.getBoolean("enable_web_debugging", false),
-            checkUpdate = prefs.getBoolean("check_update", true),
-            blurEnabled = prefs.getBoolean("blur_enabled", true),
-            themeMode = prefs.getInt("color_mode", 0),
-            keyColor = prefs.getInt("key_color", 0),
-            currentLanguageIndex = languagesValues.indexOf(tag).coerceAtLeast(0)
-        )
-        pageScale = prefs.getFloat("page_scale", 1.0f)
+        pageScale = settingsRepo.getPageScale()
+
+        _uiState.update {
+            it.copy(
+                enableWebDebugging = settingsRepo.getBoolean("enable_web_debugging", false),
+                checkUpdate = settingsRepo.getBoolean("check_update", true),
+                blurEnabled = settingsRepo.getBoolean("blur_enabled", true),
+                themeMode = settingsRepo.getInt("color_mode", 0),
+                keyColor = settingsRepo.getInt("key_color", 0),
+                currentLanguageIndex = languagesValues.indexOf(tag).coerceAtLeast(0)
+            )
+        }
     }
 
     private fun observeApatchState() {
@@ -83,78 +84,78 @@ class SettingsViewModel : ViewModel() {
 
                 var globalMount = false
                 if (kReady && aReady) {
-                    globalMount = withContext(Dispatchers.IO) { isGlobalNamespaceEnabled() }
+                    globalMount = withContext(Dispatchers.IO) {
+                        settingsRepo.isGlobalNamespaceEnabled()
+                    }
                 }
 
-                uiState = uiState.copy(
-                    isKpatchReady = kReady,
-                    isApatchReady = aReady,
-                    isGlobalNamespaceEnabled = globalMount
-                )
+                _uiState.update {
+                    it.copy(
+                        isKpatchReady = kReady,
+                        isApatchReady = aReady,
+                        isGlobalNamespaceEnabled = globalMount
+                    )
+                }
             }
         }
     }
 
     fun refreshCacheSize() {
         viewModelScope.launch(Dispatchers.IO) {
-            val size = calculateCacheSize(apApp)
-            uiState = uiState.copy(cacheSize = size)
+            val size = settingsRepo.calculateCacheSize()
+            _uiState.update { it.copy(cacheSize = size) }
         }
     }
 
     fun toggleGlobalNamespace(enabled: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            setGlobalNamespaceEnabled(if (enabled) "1" else "0")
-            uiState = uiState.copy(isGlobalNamespaceEnabled = enabled)
+            settingsRepo.setGlobalNamespaceEnabled(enabled)
+            _uiState.update { it.copy(isGlobalNamespaceEnabled = enabled) }
         }
     }
 
     fun setWebDebugging(enabled: Boolean) {
-        prefs.edit { putBoolean("enable_web_debugging", enabled) }
-        uiState = uiState.copy(enableWebDebugging = enabled)
+        settingsRepo.setBoolean("enable_web_debugging", enabled)
+        _uiState.update { it.copy(enableWebDebugging = enabled) }
     }
 
     fun setCheckUpdate(enabled: Boolean) {
-        prefs.edit { putBoolean("check_update", enabled) }
-        uiState = uiState.copy(checkUpdate = enabled)
+        settingsRepo.setBoolean("check_update", enabled)
+        _uiState.update { it.copy(checkUpdate = enabled) }
     }
 
     fun setBlurEnabled(enabled: Boolean) {
-        prefs.edit { putBoolean("blur_enabled", enabled) }
-        uiState = uiState.copy(blurEnabled = enabled)
+        settingsRepo.setBoolean("blur_enabled", enabled)
+        _uiState.update { it.copy(blurEnabled = enabled) }
     }
 
     fun setPageScale(scale: Float) {
-        val clamped = scale.coerceIn(0.8f, 1.1f)
-        prefs.edit { putFloat("page_scale", clamped) }
-        pageScale = clamped
+        settingsRepo.setPageScale(scale)
+        pageScale = scale.coerceIn(0.8f, 1.1f)
     }
 
     fun setThemeMode(index: Int) {
-        prefs.edit { putInt("color_mode", index) }
-        uiState = uiState.copy(themeMode = index)
+        settingsRepo.setInt("color_mode", index)
+        _uiState.update { it.copy(themeMode = index) }
     }
 
     fun setKeyColor(index: Int) {
         val color = colorValues[index]
-        prefs.edit { putInt("key_color", color) }
-        uiState = uiState.copy(keyColor = color)
+        settingsRepo.setInt("key_color", color)
+        _uiState.update { it.copy(keyColor = color) }
     }
 
     fun showDialog(dialogType: SettingDialogType) {
-        uiState = uiState.copy(currentDialog = dialogType)
+        _uiState.update { it.copy(currentDialog = dialogType) }
     }
 
     fun dismissDialog() {
-        uiState = uiState.copy(currentDialog = SettingDialogType.NONE)
+        _uiState.update { it.copy(currentDialog = SettingDialogType.NONE) }
     }
 
     fun resetSuPath(newPath: String, onResult: (Boolean) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            val success = Natives.resetSuPath(newPath)
-            if (success) {
-                rootShellForResult("echo $newPath > ${APApplication.SU_PATH_FILE}")
-            }
+            val success = settingsRepo.resetSuPath(newPath)
             withContext(Dispatchers.Main) {
                 onResult(success)
             }
@@ -162,7 +163,7 @@ class SettingsViewModel : ViewModel() {
     }
 
     fun updateLanguage(context: Context, localeTag: String, index: Int) {
-        uiState = uiState.copy(currentLanguageIndex = index)
+        _uiState.update { it.copy(currentLanguageIndex = index) }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val localeManager = context.getSystemService(LocaleManager::class.java)

@@ -10,13 +10,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.bmax.apatch.util.listKernelModules
-import me.bmax.apatch.util.loadKernelModule
-import me.bmax.apatch.util.unloadKernelModule
+import me.bmax.apatch.Natives
+import me.bmax.apatch.data.repository.KPModuleRepository
+import me.bmax.apatch.data.repository.KPModuleRepositoryImpl
 import java.text.Collator
 import java.util.Locale
 
-class KPModuleViewModel : ViewModel() {
+class KPModuleViewModel(
+    private val moduleRepo: KPModuleRepository = KPModuleRepositoryImpl
+) : ViewModel() {
     private val _uiState = MutableStateFlow(KPModuleUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -38,7 +40,7 @@ class KPModuleViewModel : ViewModel() {
     }
 
     private suspend fun refreshModuleList() {
-        rawModules = listKernelModules()
+        rawModules = moduleRepo.listModules()
         sortAndEmit(rawModules)
     }
 
@@ -46,7 +48,7 @@ class KPModuleViewModel : ViewModel() {
         _uiState.update { it.copy(isRefreshing = true) }
         return try {
             withContext(Dispatchers.IO) {
-                val rc = loadKernelModule(uri, "")
+                val rc = moduleRepo.loadModule(uri, "")
                 refreshModuleList()
                 rc
             }
@@ -63,7 +65,7 @@ class KPModuleViewModel : ViewModel() {
             _uiState.update { it.copy(isRefreshing = true) }
             try {
                 withContext(Dispatchers.IO) {
-                    val success = unloadKernelModule(moduleName)
+                    val success = moduleRepo.unloadModule(moduleName)
                     if (success) {
                         refreshModuleList()
                     }
@@ -87,5 +89,9 @@ class KPModuleViewModel : ViewModel() {
 
     fun closeControlDialog() {
         _uiState.update { it.copy(showControlDialog = false) }
+    }
+
+    fun controlModule(name: String, param: String): Natives.KPMCtlRes {
+        return moduleRepo.controlModule(name, param)
     }
 }

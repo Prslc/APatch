@@ -1,21 +1,20 @@
 package me.bmax.apatch.ui.page.terminal
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.bmax.apatch.data.repository.ApModuleRepositoryImpl
 import me.bmax.apatch.ui.navigation.MODULE_TYPE
 import me.bmax.apatch.ui.navigation.TERMINAL_TASK_TYPE
-import me.bmax.apatch.util.installModule
-import me.bmax.apatch.util.runAPModuleAction
 
 class TerminalViewModel : ViewModel() {
-    var uiState by mutableStateOf(TerminalUiState())
-        private set
+    private val _uiState = MutableStateFlow(TerminalUiState())
+    val uiState = _uiState.asStateFlow()
 
     private val fullLog = StringBuilder()
 
@@ -26,15 +25,15 @@ class TerminalViewModel : ViewModel() {
         targetId: String,
         moduleType: MODULE_TYPE
     ) {
-        if (uiState.isRunning) return
+        if (_uiState.value.isRunning) return
 
         viewModelScope.launch(Dispatchers.IO) {
-            uiState = uiState.copy(isRunning = true)
+            _uiState.update { it.copy(isRunning = true) }
 
             val success = when (taskType) {
                 TERMINAL_TASK_TYPE.INSTALL -> {
                     val uri = targetId.toUri()
-                    installModule(
+                    ApModuleRepositoryImpl.installModule(
                         uri = uri,
                         type = moduleType,
                         onStdout = { appendLog(it) },
@@ -43,7 +42,7 @@ class TerminalViewModel : ViewModel() {
                 }
 
                 TERMINAL_TASK_TYPE.ACTION -> {
-                    runAPModuleAction(
+                    ApModuleRepositoryImpl.runAction(
                         moduleId = targetId,
                         onStdout = { appendLog(it) },
                         onStderr = { appendLog(it) }
@@ -51,11 +50,11 @@ class TerminalViewModel : ViewModel() {
                 }
             }
 
-            uiState = uiState.copy(
+            _uiState.update { it.copy(
                 isRunning = false,
                 isFinished = true,
                 isSuccess = success
-            )
+            ) }
         }
     }
 
@@ -70,7 +69,7 @@ class TerminalViewModel : ViewModel() {
             } else {
                 fullLog.append(line).append("\n")
             }
-            uiState = uiState.copy(logs = fullLog.toString())
+            _uiState.update { it.copy(logs = fullLog.toString()) }
         }
     }
 

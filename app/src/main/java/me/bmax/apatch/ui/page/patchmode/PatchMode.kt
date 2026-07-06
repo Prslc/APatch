@@ -16,6 +16,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.bmax.apatch.R
@@ -42,7 +44,7 @@ import top.yukonga.miuix.kmp.preference.CheckboxPreference
 @Composable
 fun PatchMode(viewModel: PatchModeViewModel = viewModel()) {
     val navigator = LocalNavigator.current
-    val state = viewModel.uiState
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val backdrop = rememberBlurBackdrop()
 
     val selectImageLauncher = rememberLauncherForActivityResult(

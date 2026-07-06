@@ -1,185 +1,111 @@
 package me.bmax.apatch.ui.page.apm
 
 import android.util.Log
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.topjohnwu.superuser.io.SuFile
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.bmax.apatch.R
-import me.bmax.apatch.apApp
-import me.bmax.apatch.util.HanziToPinyin
-import me.bmax.apatch.util.listModules
-import org.json.JSONArray
-import org.json.JSONObject
+import me.bmax.apatch.data.repository.ApModuleRepository
+import me.bmax.apatch.data.repository.ApModuleRepositoryImpl
 import java.text.Collator
 import java.util.Locale
+import kotlin.time.Duration.Companion.milliseconds
 
-class APModuleViewModel : ViewModel() {
+class APModuleViewModel(
+    private val moduleRepo: ApModuleRepository = ApModuleRepositoryImpl
+) : ViewModel() {
     companion object {
         private const val TAG = "ModuleViewModel"
     }
 
-    var uiState by mutableStateOf(APMUiState())
-        private set
+    private val _uiState = MutableStateFlow(APMUiState())
+    val uiState = _uiState.asStateFlow()
 
-    val filteredModules by derivedStateOf {
-        val collator = Collator.getInstance(Locale.getDefault())
-        val comparator = compareByDescending<ModuleInfo> { it.metamodule && it.enabled }
-            .thenBy(collator) { it.id }
+    @OptIn(FlowPreview::class)
+    val filteredModules = uiState
+        .map { it.search }.distinctUntilChanged().debounce(200.milliseconds)
+        .combine(uiState.map { it.modules }.distinctUntilChanged()) { query, modules ->
+            val collator = Collator.getInstance(Locale.getDefault())
+            val comparator = compareByDescending<ModuleInfo> { it.metamodule && it.enabled }
+                .thenBy(collator) { it.id }
 
-        val query = uiState.search
-        uiState.modules.filter {
-            it.id.contains(query, true) ||
-                    it.name.contains(query, true) ||
-                    it.pinyinName.contains(query, true)
-        }.sortedWith(comparator)
-    }
+            modules.filter {
+                it.id.contains(query, true) ||
+                        it.name.contains(query, true) ||
+                        it.pinyinName.contains(query, true)
+            }.sortedWith(comparator)
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun onSearchChange(newSearch: String) {
-        uiState = uiState.copy(search = newSearch)
+        _uiState.update { it.copy(search = newSearch) }
     }
 
     fun markNeedRefresh() {
-        uiState = uiState.copy(isNeedRefresh = true)
+        _uiState.update { it.copy(isNeedRefresh = true) }
     }
 
-    private suspend fun checkMetaModuleWarning(modules: List<ModuleInfo>) = withContext(Dispatchers.IO) {
-        val needsMountModule = modules.any { module ->
-            val moduleDir = "/data/adb/modules/${module.id}"
-            // Module requires mounting if it has a system dir and no skip_mount file
-            SuFile.open("$moduleDir/system").isDirectory && !SuFile.open("$moduleDir/skip_mount").isFile
-        }
+    suspend fun toggleModule(id: String, enable: Boolean): Boolean {
+        return moduleRepo.toggleModule(id, enable)
+    }
 
-        val warning = if (needsMountModule) {
-            val metaDir = "/data/adb/metamodule"
-            when {
-                !SuFile.open("$metaDir/module.prop").isFile -> apApp.getString(R.string.no_meta_module_installed)
-                SuFile.open("$metaDir/remove").isFile -> apApp.getString(R.string.meta_module_removed)
-                SuFile.open("$metaDir/disable").isFile -> apApp.getString(R.string.meta_module_disabled)
-                else -> null
-            }
-        } else null
+    suspend fun uninstallModule(id: String): Boolean {
+        return moduleRepo.uninstallModule(id)
+    }
 
-        withContext(Dispatchers.Main) {
-            uiState = uiState.copy(metaModuleWarning = warning)
+    suspend fun undoUninstallModule(id: String): Boolean {
+        return moduleRepo.undoUninstallModule(id)
+    }
+
+    private suspend fun checkMetaModuleWarning(modules: List<ModuleInfo>) {
+        val warning = withContext(Dispatchers.IO) {
+            moduleRepo.checkMetaModuleWarning(modules)
         }
+        _uiState.update { it.copy(metaModuleWarning = warning) }
     }
 
     fun fetchModuleList() {
         viewModelScope.launch {
-            uiState = uiState.copy(isRefreshing = true)
-            val newList = withContext(Dispatchers.IO) {
-                runCatching {
-                    val result = listModules()
-                    val array = JSONArray(result)
-                    val h2p = HanziToPinyin.getInstance()
+            _uiState.update { it.copy(isRefreshing = true) }
+            val result = withContext(Dispatchers.IO) {
+                moduleRepo.listModules()
+            }
 
-                    (0 until array.length()).map { i ->
-                        parseModuleInfo(array.getJSONObject(i), h2p)
+            result.fold(
+                onSuccess = { newList ->
+                    _uiState.update {
+                        it.copy(
+                            modules = newList, isNeedRefresh = false, isRefreshing = false
+                        )
                     }
-                }.getOrElse {
-                    Log.e(TAG, "fetchModuleList failed", it)
-                    emptyList()
+                    checkMetaModuleWarning(newList)
+                    launch {
+                        val updateResults = withContext(Dispatchers.IO) {
+                            newList.map { module ->
+                                async { module.id to moduleRepo.checkModuleUpdate(module) }
+                            }.awaitAll().toMap()
+                        }
+                        _uiState.update { it.copy(updateResults = updateResults) }
+                    }
+                },
+                onFailure = { e ->
+                    Log.e(TAG, "fetchModuleList failed", e)
+                    _uiState.update { it.copy(isNeedRefresh = false, isRefreshing = false) }
                 }
-            }
-
-            uiState = uiState.copy(modules = newList, isNeedRefresh = false, isRefreshing = false)
-            checkMetaModuleWarning(newList)
-            launch {
-                val results = withContext(Dispatchers.IO) {
-                    newList.map { module ->
-                        async { module.id to checkUpdate(module) }
-                    }.awaitAll().toMap()
-                }
-                uiState = uiState.copy(updateResults = results)
-            }
+            )
         }
-    }
-
-    private fun parseModuleInfo(obj: JSONObject, h2p: HanziToPinyin): ModuleInfo {
-        val name = obj.optString("name")
-        return ModuleInfo(
-            id = obj.getString("id"),
-            name = name,
-            pinyinName = h2p.toPinyinString(name).lowercase(Locale.getDefault()),
-            author = obj.optString("author", "Unknown"),
-            version = obj.optString("version", "Unknown"),
-            versionCode = obj.optInt("versionCode", 0),
-            description = obj.optString("description"),
-            enabled = obj.getBoolean("enabled"),
-            update = obj.getBoolean("update"),
-            remove = obj.getBoolean("remove"),
-            updateJson = obj.optString("updateJson"),
-            hasWebUi = obj.getBooleanCompat("web"),
-            hasActionScript = obj.getBooleanCompat("action"),
-            metamodule = obj.getBooleanCompat("metamodule"),
-            actionIconPath = obj.optString("actionIcon").takeIf { it.isNotBlank() },
-            webUiIconPath = obj.optString("webuiIcon").takeIf { it.isNotBlank() }
-        )
-    }
-
-    private fun sanitizeVersionString(version: String): String {
-        return version.replace(Regex("[^a-zA-Z0-9.\\-_]"), "_")
-    }
-
-    fun checkUpdate(m: ModuleInfo): Triple<String, String, String> {
-        val empty = Triple("", "", "")
-        if (m.updateJson.isEmpty() || m.remove || m.update || !m.enabled) {
-            return empty
-        }
-        // download updateJson
-        val result = kotlin.runCatching {
-            val url = m.updateJson
-            Log.i(TAG, "checkUpdate url: $url")
-            val response = apApp.okhttpClient
-                .newCall(
-                    okhttp3.Request.Builder()
-                        .url(url)
-                        .build()
-                ).execute()
-            Log.d(TAG, "checkUpdate code: ${response.code}")
-            if (response.isSuccessful) {
-                response.body.string()
-            } else {
-                ""
-            }
-        }.getOrDefault("")
-        Log.i(TAG, "checkUpdate result: $result")
-
-        if (result.isEmpty()) {
-            return empty
-        }
-
-        val updateJson = kotlin.runCatching {
-            JSONObject(result)
-        }.getOrNull() ?: return empty
-
-        val version = sanitizeVersionString(updateJson.optString("version", ""))
-        val versionCode = updateJson.optInt("versionCode", 0)
-        val zipUrl = updateJson.optString("zipUrl", "")
-        val changelog = updateJson.optString("changelog", "")
-        if (versionCode <= m.versionCode || zipUrl.isEmpty()) {
-            return empty
-        }
-
-        return Triple(zipUrl, version, changelog)
-    }
-}
-
-private fun JSONObject.getBooleanCompat(key: String, default: Boolean = false): Boolean {
-    if (!has(key)) return default
-    return when (val value = opt(key)) {
-        is Boolean -> value
-        is String -> value.equals("true", ignoreCase = true) || value == "1"
-        is Number -> value.toInt() != 0
-        else -> default
     }
 }

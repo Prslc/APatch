@@ -75,6 +75,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -102,9 +103,6 @@ import me.bmax.apatch.util.Shortcut
 import me.bmax.apatch.util.download
 import me.bmax.apatch.util.hasMagisk
 import me.bmax.apatch.util.reboot
-import me.bmax.apatch.util.toggleModule
-import me.bmax.apatch.util.undoUninstallModule
-import me.bmax.apatch.util.uninstallModule
 import okhttp3.Request
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
@@ -149,7 +147,7 @@ fun APModuleScreen(
     isCurrentPage: Boolean = true,
     viewModel: APModuleViewModel = viewModel()
 ) {
-    val uiState = viewModel.uiState
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val navigator = LocalNavigator.current
     val context = LocalContext.current
@@ -397,8 +395,8 @@ private fun ModuleList(
     var currentModuleHasAction by remember { mutableStateOf(false) }
     var currentModuleHasWebUi by remember { mutableStateOf(false) }
 
-    val uiState = viewModel.uiState
-    val filteredModules = viewModel.filteredModules
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val filteredModules by viewModel.filteredModules.collectAsStateWithLifecycle()
 
     fun openShortcutDialogForType(type: ShortcutType) {
         selectedShortcutType = type
@@ -696,7 +694,7 @@ private fun ModuleList(
             withContext(Dispatchers.IO) {
                 Shortcut.deleteModuleActionShortcut(context, module.id)
                 Shortcut.deleteModuleWebUiShortcut(context, module.id)
-                uninstallModule(module.id)
+                viewModel.uninstallModule(module.id)
             }
         }
 
@@ -727,7 +725,7 @@ private fun ModuleList(
     suspend fun onModuleUndoUninstall(module: ModuleInfo) {
         val success = loadingDialog.withLoading {
             withContext(Dispatchers.IO) {
-                undoUninstallModule(module.id)
+                viewModel.undoUninstallModule(module.id)
             }
         }
 
@@ -832,7 +830,7 @@ private fun ModuleList(
             else -> {
                 items(filteredModules, key = { it.id }) { module ->
                     val scope = rememberCoroutineScope()
-                    val updatedModule = viewModel.uiState.updateResults[module.id] ?: Triple("", "", "")
+                    val updatedModule = viewModel.uiState.value.updateResults[module.id] ?: Triple("", "", "")
 
                     ModuleItem(
                         navigator,
@@ -848,7 +846,7 @@ private fun ModuleList(
                             scope.launch {
                                 val success = loadingDialog.withLoading {
                                     withContext(Dispatchers.IO) {
-                                        toggleModule(module.id, !module.enabled)
+                                        viewModel.toggleModule(module.id, !module.enabled)
                                     }
                                 }
 
