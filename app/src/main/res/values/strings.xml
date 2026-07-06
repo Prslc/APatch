@@ -172,7 +172,7 @@
     <string name="apm_sort_default">Default</string>
     <string name="apm_sort_enabled_first">Enabled first</string>
     <string name="apm_sort_action_first">Action first</string>
-    <string name="apm_sort_web_first">Web first</string>
+    <string name="apm_sort_web_first">WebUI first</string>
     <string name="apm_empty">No module installed</string>
     <string name="apm_uinstall">Uninstall</string>
     <string name="apm_undo">Undo</string>
