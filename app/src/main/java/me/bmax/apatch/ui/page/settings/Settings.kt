@@ -44,6 +44,7 @@ import me.bmax.apatch.ui.component.SwitchItem
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
+import me.bmax.apatch.ui.theme.LocalPageScale
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
 import me.bmax.apatch.util.formatSize
@@ -144,6 +145,7 @@ fun SettingScreen(
                     }
                     // Page Scale
                     var showScaleSlider by remember { mutableStateOf(false) }
+                    val pageScale = LocalPageScale.current
                     var sliderValue by remember(pageScale) { mutableFloatStateOf(pageScale) }
                     ArrowPreference(
                         title = stringResource(R.string.settings_page_scale),

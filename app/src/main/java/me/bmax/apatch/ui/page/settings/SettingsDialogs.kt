@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import me.bmax.apatch.ui.theme.LocalPageScale
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.Dispatchers
@@ -254,6 +255,7 @@ private fun ClearDialog(cacheSize: Long, viewModel: SettingsViewModel) {
 
 @Composable
 private fun PageScaleDialog(viewModel: SettingsViewModel) {
+    val pageScale = LocalPageScale.current
     var text by remember { mutableStateOf((pageScale * 100).toInt().toString()) }
 
     WindowDialog(

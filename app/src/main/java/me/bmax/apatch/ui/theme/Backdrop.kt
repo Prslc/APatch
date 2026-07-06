@@ -6,7 +6,10 @@ package me.bmax.apatch.ui.theme
 
 import android.os.Build
 import androidx.compose.runtime.Composable
-import me.bmax.apatch.APApplication
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
@@ -20,9 +23,16 @@ import top.yukonga.miuix.kmp.blur.textureBlur
 import top.yukonga.miuix.kmp.shader.isRenderEffectSupported
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
+// Globally observable settings — backed by SharedPreferences,
+// updated by SettingsViewModel, read via CompositionLocal.
+var blurEnabled by mutableStateOf(true)
+
+val LocalEnableBlur = compositionLocalOf { blurEnabled }
+val LocalPageScale = compositionLocalOf { 1.0f }
+
 /**
  * Remember a LayerBackdrop with a solid background to prevent alpha-blending artifacts.
- * * @param enableBlur Whether the blur effect is globally enabled.
+ * @param enableBlur Whether the blur effect is globally enabled.
  * @return A LayerBackdrop instance if supported and enabled, null otherwise.
  */
 @Composable
@@ -41,8 +51,7 @@ fun rememberBlurBackdrop(enableBlur: Boolean): LayerBackdrop? {
  */
 @Composable
 fun rememberBlurBackdrop(): LayerBackdrop? {
-    val prefs = APApplication.sharedPreferences
-    return rememberBlurBackdrop(prefs.getBoolean("blur_enabled", true))
+    return rememberBlurBackdrop(LocalEnableBlur.current)
 }
 
 /**

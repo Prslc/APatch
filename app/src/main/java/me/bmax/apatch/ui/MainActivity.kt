@@ -46,7 +46,6 @@ import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.ui.component.BottomBar
-import me.bmax.apatch.ui.page.settings.pageScale
 import me.bmax.apatch.ui.component.BottomBarDestination
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.NavGraph
@@ -57,6 +56,10 @@ import me.bmax.apatch.ui.page.kpm.KPModuleScreen
 import me.bmax.apatch.ui.page.settings.SettingScreen
 import me.bmax.apatch.ui.page.superuser.SuperUserScreen
 import me.bmax.apatch.ui.theme.APatchTheme
+import me.bmax.apatch.ui.theme.LocalEnableBlur
+import me.bmax.apatch.ui.theme.LocalPageScale
+import me.bmax.apatch.ui.theme.blurEnabled
+import me.bmax.apatch.ui.page.settings.pageScale
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
 import top.yukonga.miuix.kmp.basic.Scaffold
@@ -199,14 +202,17 @@ fun MainScreen() {
     }
 
     val density = LocalDensity.current
-    val scaledDensity = remember(density, pageScale) {
-        Density(density.density * pageScale, density.fontScale)
+    val scale = pageScale
+    val scaledDensity = remember(density, scale) {
+        Density(density.density * scale, density.fontScale)
     }
 
     CompositionLocalProvider(
         LocalDensity provides scaledDensity,
         LocalSnackbarHost provides snackBarHostState,
-        LocalSelectedPage provides mainPagerState.selectedPage
+        LocalSelectedPage provides mainPagerState.selectedPage,
+        LocalPageScale provides scale,
+        LocalEnableBlur provides blurEnabled
     ) {
         Scaffold(
             bottomBar = { BottomBar(backdrop) },

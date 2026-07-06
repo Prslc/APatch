@@ -26,6 +26,7 @@ import me.bmax.apatch.R
 import me.bmax.apatch.apApp
 import me.bmax.apatch.data.repository.SettingsRepository
 import me.bmax.apatch.data.repository.SettingsRepositoryImpl
+import me.bmax.apatch.ui.theme.blurEnabled
 
 var pageScale: Float by mutableFloatStateOf(1.0f)
 
@@ -59,12 +60,13 @@ class SettingsViewModel(
         val tag = if (currentLocales.isEmpty) null else currentLocales.get(0)?.toLanguageTag()
 
         pageScale = settingsRepo.getPageScale()
+        blurEnabled = settingsRepo.getBoolean("blur_enabled", true)
 
         _uiState.update {
             it.copy(
                 enableWebDebugging = settingsRepo.getBoolean("enable_web_debugging", false),
                 checkUpdate = settingsRepo.getBoolean("check_update", true),
-                blurEnabled = settingsRepo.getBoolean("blur_enabled", true),
+                blurEnabled = blurEnabled,
                 themeMode = settingsRepo.getInt("color_mode", 0),
                 keyColor = settingsRepo.getInt("key_color", 0),
                 currentLanguageIndex = languagesValues.indexOf(tag).coerceAtLeast(0)
@@ -126,6 +128,7 @@ class SettingsViewModel(
 
     fun setBlurEnabled(enabled: Boolean) {
         settingsRepo.setBoolean("blur_enabled", enabled)
+        blurEnabled = enabled
         _uiState.update { it.copy(blurEnabled = enabled) }
     }
 
