@@ -17,15 +17,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 import me.bmax.apatch.APApplication
-import me.bmax.apatch.Natives
 import me.bmax.apatch.apApp
 import me.bmax.apatch.data.AppInfo
 import me.bmax.apatch.data.AppRepository
-import me.bmax.apatch.util.PkgConfig
+import me.bmax.apatch.data.repository.SuRepository
+import me.bmax.apatch.data.repository.SuRepositoryImpl
 import java.text.Collator
 import java.util.Locale
 
-class SuperUserViewModel : ViewModel() {
+class SuperUserViewModel(
+    private val suRepo: SuRepository = SuRepositoryImpl
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SuperUserUiState())
     val uiState = _uiState.asStateFlow()
@@ -99,15 +101,15 @@ class SuperUserViewModel : ViewModel() {
                         uid = app.uid,
                         scontext = APApplication.MAGISK_SCONTEXT
                     )
-                    Natives.grantSu(app.uid, 0, profile.scontext)
-                    Natives.setUidExclude(app.uid, 0)
+                    suRepo.grantSu(app.uid, 0, profile.scontext)
+                    suRepo.setUidExclude(app.uid, 0)
                 } else {
                     allow = 0
-                    Natives.revokeSu(app.uid)
+                    suRepo.revokeSu(app.uid)
                 }
             }
 
-            PkgConfig.changeConfig(newConfig)
+            suRepo.changeConfig(newConfig)
             AppRepository.updateLocalConfig(app.uid, newConfig)
         }
     }
@@ -118,11 +120,11 @@ class SuperUserViewModel : ViewModel() {
                 if (excluded) {
                     allow = 0
                     exclude = 1
-                    Natives.revokeSu(app.uid)
-                    Natives.setUidExclude(app.uid, 1)
+                    suRepo.revokeSu(app.uid)
+                    suRepo.setUidExclude(app.uid, 1)
                 } else {
                     exclude = 0
-                    Natives.setUidExclude(app.uid, 0)
+                    suRepo.setUidExclude(app.uid, 0)
                 }
                 profile = profile.copy(
                     uid = app.uid,
@@ -130,7 +132,7 @@ class SuperUserViewModel : ViewModel() {
                 )
             }
 
-            PkgConfig.changeConfig(newConfig)
+            suRepo.changeConfig(newConfig)
             AppRepository.updateLocalConfig(app.uid, newConfig)
         }
     }
