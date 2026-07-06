@@ -239,7 +239,10 @@ fun APModuleScreen(
                     )
 
                     OverlayIconDropdownMenu(entry = sortMode) {
-                        Icon(imageVector = MiuixIcons.Sort, contentDescription = null)
+                        Icon(
+                            imageVector = MiuixIcons.Sort,
+                            contentDescription = stringResource(R.string.apm_sort)
+                        )
                     }
                 }
             ) {
