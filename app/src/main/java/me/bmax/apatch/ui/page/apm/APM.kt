@@ -810,6 +810,17 @@ private fun ModuleList(
             }
         }
 
+        if (uiState.search.isNotEmpty()) {
+            item(key = "search_count") {
+                Text(
+                    text = stringResource(R.string.apm_search_count, filteredModules.size),
+                    fontSize = 13.sp,
+                    color = colorScheme.onSurfaceVariantSummary,
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
+            }
+        }
+
         when {
             filteredModules.isEmpty() -> {
                 item {

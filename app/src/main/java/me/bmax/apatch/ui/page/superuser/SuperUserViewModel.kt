@@ -1,6 +1,7 @@
 package me.bmax.apatch.ui.page.superuser
 
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -31,20 +32,31 @@ class SuperUserViewModel : ViewModel() {
 
     private val staticCollator = Collator.getInstance(Locale.getDefault())
 
-    private val appComparator = compareBy<AppInfo> {
-        when {
-            it.config.allow != 0 -> 0
-            it.config.exclude == 1 -> 1
-            else -> 2
+    private fun buildComparator(sortBy: SortBy): Comparator<AppInfo> {
+        val priorityComparator = compareBy<AppInfo> {
+            when {
+                it.config.allow != 0 -> 0
+                it.config.exclude == 1 -> 1
+                else -> 2
+            }
         }
-    }.thenBy(staticCollator) { it.label }
+        val sortComparator = when (sortBy) {
+            SortBy.NAME -> compareBy(staticCollator) { it.label }
+            SortBy.PACKAGE_NAME -> compareBy(staticCollator) { it.packageName }
+            SortBy.INSTALL_TIME -> compareByDescending<AppInfo> {
+                it.packageInfo.firstInstallTime
+            }
+        }
+        return priorityComparator.thenComparing(sortComparator)
+    }
 
     @OptIn(kotlinx.coroutines.FlowPreview::class)
     val filteredApps = combine(
         AppRepository.apps,
         uiState.map { it.search }.distinctUntilChanged().debounce(200),
-        uiState.map { it.showSystemApps }.distinctUntilChanged()
-    ) { apps, query, showSystem ->
+        uiState.map { it.showSystemApps }.distinctUntilChanged(),
+        uiState.map { it.sortBy }.distinctUntilChanged()
+    ) { apps, query, showSystem, sortBy ->
         val trimmedQuery = query.trim()
 
         apps.asSequence()
@@ -60,7 +72,7 @@ class SuperUserViewModel : ViewModel() {
                         app.lowercaseLabel.contains(trimmedQuery) ||
                         app.pinyinLabel.contains(trimmedQuery)
             }
-            .sortedWith(appComparator)
+            .sortedWith(buildComparator(sortBy))
             .toList()
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
@@ -136,5 +148,9 @@ class SuperUserViewModel : ViewModel() {
 
     fun toggleSystemApps() {
         _uiState.update { it.copy(showSystemApps = !it.showSystemApps) }
+    }
+
+    fun updateSort(sortBy: SortBy) {
+        _uiState.update { it.copy(sortBy = sortBy) }
     }
 }

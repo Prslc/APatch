@@ -148,7 +148,7 @@ fun SuperTopBar(
     scrollBehavior: ScrollBehavior
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val appListItemsCount = 2
+    val appListItemsCount = 2 + SortBy.entries.size
 
     var expanded by remember { mutableStateOf(false) }
 
@@ -193,6 +193,23 @@ fun SuperTopBar(
                                 showDropdown.value = false
                             }
                         )
+
+                        SortBy.entries.forEachIndexed { i, sortBy ->
+                            val label = when (sortBy) {
+                                SortBy.NAME -> stringResource(R.string.su_sort_name)
+                                SortBy.PACKAGE_NAME -> stringResource(R.string.su_sort_package)
+                                SortBy.INSTALL_TIME -> stringResource(R.string.su_sort_install_time)
+                            }
+                            DropdownItem(
+                                text = label,
+                                optionSize = appListItemsCount,
+                                index = 2 + i,
+                                onSelectedIndexChange = {
+                                    if (uiState.sortBy != sortBy) viewModel.updateSort(sortBy)
+                                    showDropdown.value = false
+                                }
+                            )
+                        }
                     }
                 }
             }

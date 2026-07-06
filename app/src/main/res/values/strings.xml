@@ -157,12 +157,16 @@
     <string name="su_pkg_excluded_setting_summary">Enabling this option will allow APatch to restore any files modified by the modules of this app.</string>
     <string name="su_show_system_apps">Show system apps</string>
     <string name="su_hide_system_apps">Hide system apps</string>
+    <string name="su_sort_name">Sort by name</string>
+    <string name="su_sort_package">Sort by package name</string>
+    <string name="su_sort_install_time">Sort by install time</string>
     <string name="su_refresh">Refresh</string>
 
     <string name="apm">APModule</string>
     <string name="apm_not_installed">AndroidPatch not installed</string>
     <string name="apm_failed_to_enable">Failed to enable module: %s</string>
     <string name="apm_failed_to_disable">Failed to disable module: %s</string>
+    <string name="apm_search_count">%d module(s) found</string>
     <string name="apm_empty">No module installed</string>
     <string name="apm_uinstall">Uninstall</string>
     <string name="apm_undo">Undo</string>

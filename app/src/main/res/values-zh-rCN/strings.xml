@@ -86,7 +86,11 @@
     <string name="su_show_system_apps">显示系统应用</string>
     <string name="apm_failed_to_enable">无法启用“%s”模块</string>
     <string name="su_hide_system_apps">隐藏系统应用</string>
+    <string name="su_sort_name">按名称排序</string>
+    <string name="su_sort_package">按包名排序</string>
+    <string name="su_sort_install_time">按安装时间排序</string>
     <string name="apm_failed_to_disable">无法禁用“%s”模块</string>
+    <string name="apm_search_count">找到 %d 个模块</string>
     <string name="apm_empty">尚未安装模块</string>
     <string name="apm_reboot_to_apply">重启生效</string>
     <string name="apm_uninstall_success">%s 已卸载</string>
