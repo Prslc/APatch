@@ -8,11 +8,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.bmax.apatch.data.repository.ApModuleRepository
 import me.bmax.apatch.data.repository.ApModuleRepositoryImpl
 import me.bmax.apatch.ui.navigation.MODULE_TYPE
 import me.bmax.apatch.ui.navigation.TERMINAL_TASK_TYPE
 
-class TerminalViewModel : ViewModel() {
+class TerminalViewModel(
+    private val moduleRepo: ApModuleRepository = ApModuleRepositoryImpl
+) : ViewModel() {
     private val _uiState = MutableStateFlow(TerminalUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -33,7 +36,7 @@ class TerminalViewModel : ViewModel() {
             val success = when (taskType) {
                 TERMINAL_TASK_TYPE.INSTALL -> {
                     val uri = targetId.toUri()
-                    ApModuleRepositoryImpl.installModule(
+                    moduleRepo.installModule(
                         uri = uri,
                         type = moduleType,
                         onStdout = { appendLog(it) },
@@ -42,7 +45,7 @@ class TerminalViewModel : ViewModel() {
                 }
 
                 TERMINAL_TASK_TYPE.ACTION -> {
-                    ApModuleRepositoryImpl.runAction(
+                    moduleRepo.runAction(
                         moduleId = targetId,
                         onStdout = { appendLog(it) },
                         onStderr = { appendLog(it) }

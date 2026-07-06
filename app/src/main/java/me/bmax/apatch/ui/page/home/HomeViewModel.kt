@@ -13,14 +13,19 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.Natives
+import me.bmax.apatch.data.repository.ApModuleRepository
 import me.bmax.apatch.data.repository.ApModuleRepositoryImpl
+import me.bmax.apatch.data.repository.KPModuleRepository
 import me.bmax.apatch.data.repository.KPModuleRepositoryImpl
 import me.bmax.apatch.util.checkNewVersion
 import me.bmax.apatch.util.getDeviceInfo
 import me.bmax.apatch.util.getSELinuxStatus
 import me.bmax.apatch.util.getSystemVersion
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(
+    private val apRepo: ApModuleRepository = ApModuleRepositoryImpl,
+    private val kpRepo: KPModuleRepository = KPModuleRepositoryImpl
+) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -51,8 +56,8 @@ class HomeViewModel : ViewModel() {
     }
 
     fun refreshCounts() = viewModelScope.launch(Dispatchers.IO) {
-        val apm = ApModuleRepositoryImpl.getModuleCount().coerceAtLeast(0)
-        val kpm = KPModuleRepositoryImpl.getModuleCount().coerceAtLeast(0)
+        val apm = apRepo.getModuleCount().coerceAtLeast(0)
+        val kpm = kpRepo.getModuleCount().coerceAtLeast(0)
         _uiState.update { it.copy(apmCount = apm, kpmCount = kpm) }
     }
 
