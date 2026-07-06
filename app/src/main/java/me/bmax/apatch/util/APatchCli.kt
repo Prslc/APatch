@@ -11,19 +11,12 @@ import android.os.Environment
 import android.provider.OpenableColumns
 import android.util.Base64
 import android.util.Log
-import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
-import com.topjohnwu.superuser.ShellUtils
 import com.topjohnwu.superuser.internal.MainShell
 import com.topjohnwu.superuser.io.SuFile
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.BuildConfig
 import me.bmax.apatch.apApp
-import me.bmax.apatch.ui.navigation.MODULE_TYPE
-import org.json.JSONArray
-import java.io.File
 import java.security.MessageDigest
 
 private const val TAG = "APatchCli"
@@ -112,13 +105,6 @@ fun getRootShell(globalMnt: Boolean = false): Shell {
     }
 }
 
-inline fun <T> withNewRootShell(
-    globalMnt: Boolean = false,
-    block: Shell.() -> T
-): T {
-    return createRootShell(globalMnt).use(block)
-}
-
 fun rootAvailable(): Boolean {
     val shell = getRootShell()
     return shell.isRoot
@@ -134,16 +120,6 @@ fun rootShellForResult(vararg cmds: String): Shell.Result {
     val out = ArrayList<String>()
     val err = ArrayList<String>()
     return getRootShell().newJob().add(*cmds).to(out, err).exec()
-}
-
-fun execApd(args: String, newShell: Boolean = false): Boolean {
-    return if (newShell) {
-        withNewRootShell {
-            ShellUtils.fastCmdResult(this, "${APApplication.APD_PATH} $args")
-        }
-    } else {
-        ShellUtils.fastCmdResult(getRootShell(), "${APApplication.APD_PATH} $args")
-    }
 }
 
 fun listModules(): String {
@@ -176,97 +152,6 @@ fun listModules(): String {
     return out.joinToString("\n").ifBlank { "[]" }
 }
 
-fun getModuleCount(): Int {
-    val result = listModules()
-    runCatching {
-        val array = JSONArray(result)
-        return array.length()
-    }.getOrElse { return 0 }
-}
-
-fun toggleModule(id: String, enable: Boolean): Boolean {
-    val cmd = if (enable) {
-        "module enable $id"
-    } else {
-        "module disable $id"
-    }
-    val result = execApd(cmd,true)
-    Log.i(TAG, "$cmd result: $result")
-    return result
-}
-
-fun uninstallModule(id: String): Boolean {
-    val cmd = "module uninstall $id"
-    val result = execApd(cmd,true)
-    Log.i(TAG, "uninstall module $id result: $result")
-    return result
-}
-
-fun undoUninstallModule(id: String): Boolean {
-    val cmd = "module undo-uninstall $id"
-    val result = execApd(cmd,true)
-    Log.i(TAG, "undo-uninstall module $id result: $result")
-    return result
-}
-
-suspend fun installModule(
-    uri: Uri,
-    type: MODULE_TYPE,
-    onStdout: (String) -> Unit,
-    onStderr: (String) -> Unit
-): Boolean = withContext(Dispatchers.IO) {
-    val resolver = apApp.contentResolver
-    val file = File(apApp.cacheDir, "module_${type}_${System.currentTimeMillis()}.zip")
-
-    resolver.openInputStream(uri)?.use { input ->
-        file.outputStream().use { output ->
-            input.copyTo(output)
-        }
-    }
-
-    val stdoutCallback = object : CallbackList<String?>() {
-        override fun onAddElement(s: String?) { onStdout(s ?: "") }
-    }
-    val stderrCallback = object : CallbackList<String?>() {
-        override fun onAddElement(s: String?) { onStderr(s ?: "") }
-    }
-
-    val result = withNewRootShell {
-        val cmd = "${APApplication.APD_PATH} module install \"${file.absolutePath}\""
-        newJob().add(cmd).to(stdoutCallback, stderrCallback).exec()
-    }
-
-    Log.i(TAG, "install $type module result: ${result.isSuccess}")
-
-    if (file.exists()) file.delete()
-
-    result.isSuccess
-}
-
-suspend fun runAPModuleAction(
-    moduleId: String,
-    onStdout: (String) -> Unit,
-    onStderr: (String) -> Unit
-): Boolean = withContext(Dispatchers.IO) {
-    val stdoutCallback = object : CallbackList<String?>() {
-        override fun onAddElement(s: String?) { onStdout(s ?: "") }
-    }
-
-    val stderrCallback = object : CallbackList<String?>() {
-        override fun onAddElement(s: String?) { onStderr(s ?: "") }
-    }
-
-    val result = withNewRootShell {
-        newJob().add("${APApplication.APD_PATH} module action \"$moduleId\"")
-            .to(stdoutCallback, stderrCallback)
-            .exec()
-    }
-
-    Log.i(TAG, "APModule runAction $moduleId result: ${result.isSuccess}")
-
-    result.isSuccess
-}
-
 fun reboot(reason: String = "") {
     val shell = getRootShell()
     val job = shell.newJob()
@@ -282,20 +167,6 @@ fun hasMagisk(): Boolean {
     val result = shell.newJob().add("nsenter --mount=/proc/1/ns/mnt which magisk").exec()
     Log.i(TAG, "has magisk: ${result.isSuccess}")
     return result.isSuccess
-}
-
-fun isGlobalNamespaceEnabled(): Boolean {
-    val shell = getRootShell()
-    val result = ShellUtils.fastCmd(shell, "cat ${APApplication.GLOBAL_NAMESPACE_FILE}")
-    Log.i(TAG, "is global namespace enabled: $result")
-    return result == "1"
-}
-
-fun setGlobalNamespaceEnabled(value: String) {
-    getRootShell().newJob().add("echo $value > ${APApplication.GLOBAL_NAMESPACE_FILE}")
-        .submit { result ->
-            Log.i(TAG, "setGlobalNamespaceEnabled result: ${result.isSuccess} [${result.out}]")
-        }
 }
 
 fun getFileNameFromUri(context: Context, uri: Uri): String? {
