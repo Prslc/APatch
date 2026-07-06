@@ -71,7 +71,7 @@ class APModuleViewModel(
             },
             { if (sortWebFirst) !it.hasWebUi else 0 },
             { if (sortEnabledFirst) !it.enabled else 0 },
-            { if (sortActionFirst) !executable else 0 }
+            { if (sortActionFirst) !(it.hasWebUi || it.hasActionScript) else 0 }
         ).thenBy(collator) { it.id }
     }
 

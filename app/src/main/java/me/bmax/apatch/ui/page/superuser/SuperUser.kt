@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,17 +37,17 @@ import me.bmax.apatch.R
 import me.bmax.apatch.data.AppInfo
 import me.bmax.apatch.data.AppRepository
 import me.bmax.apatch.ui.component.AppIconImage
-import me.bmax.apatch.ui.component.DropdownItem
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
-import top.yukonga.miuix.kmp.basic.IconButton
+import top.yukonga.miuix.kmp.basic.DropdownEntry
+import top.yukonga.miuix.kmp.basic.DropdownItem
 import top.yukonga.miuix.kmp.basic.InputField
-import top.yukonga.miuix.kmp.basic.ListPopupColumn
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
+import top.yukonga.miuix.kmp.menu.OverlayIconDropdownMenu
 import top.yukonga.miuix.kmp.basic.PullToRefresh
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.ScrollBehavior
@@ -62,7 +60,8 @@ import top.yukonga.miuix.kmp.preference.SwitchPreference
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
-import top.yukonga.miuix.kmp.window.WindowListPopup
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.extended.Sort
 
 @Composable
 fun SuperUserScreen(
@@ -148,8 +147,6 @@ fun SuperTopBar(
     scrollBehavior: ScrollBehavior
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val appListItemsCount = 2 + SortBy.entries.size
-
     var expanded by remember { mutableStateOf(false) }
 
     TopAppBar(
@@ -157,61 +154,33 @@ fun SuperTopBar(
         color = backdrop.getAppBarColor(),
         title = stringResource(R.string.su_title),
         actions = {
-            val showDropdown = remember { mutableStateOf(false) }
-
-            IconButton(onClick = { showDropdown.value = true }) {
-                Icon(
-                    imageVector = Icons.Filled.MoreVert,
-                    contentDescription = stringResource(id = R.string.settings)
-                )
-
-                WindowListPopup(
-                    show = showDropdown.value,
-                    onDismissRequest = { showDropdown.value = false }
-                ) {
-                    ListPopupColumn {
-                        DropdownItem(
-                            text = stringResource(R.string.su_refresh),
-                            optionSize = appListItemsCount,
-                            index = 0,
-                            onSelectedIndexChange = {
-                                viewModel.fetchAppList()
-                                showDropdown.value = false
-                            }
-                        )
-
-                        DropdownItem(
-                            text = if (uiState.showSystemApps) {
-                                stringResource(R.string.su_hide_system_apps)
-                            } else {
-                                stringResource(R.string.su_show_system_apps)
-                            },
-                            optionSize = appListItemsCount,
-                            index = 1,
-                            onSelectedIndexChange = {
-                                viewModel.toggleSystemApps()
-                                showDropdown.value = false
-                            }
-                        )
-
-                        SortBy.entries.forEachIndexed { i, sortBy ->
-                            val label = when (sortBy) {
-                                SortBy.NAME -> stringResource(R.string.su_sort_name)
-                                SortBy.PACKAGE_NAME -> stringResource(R.string.su_sort_package)
-                                SortBy.INSTALL_TIME -> stringResource(R.string.su_sort_install_time)
-                            }
-                            DropdownItem(
-                                text = label,
-                                optionSize = appListItemsCount,
-                                index = 2 + i,
-                                onSelectedIndexChange = {
-                                    if (uiState.sortBy != sortBy) viewModel.updateSort(sortBy)
-                                    showDropdown.value = false
-                                }
-                            )
-                        }
+            val systemLabel = if (uiState.showSystemApps) {
+                stringResource(R.string.su_hide_system_apps)
+            } else {
+                stringResource(R.string.su_show_system_apps)
+            }
+            val sortMode = DropdownEntry(
+                items = listOf(
+                    DropdownItem(
+                        text = systemLabel,
+                        onClick = { viewModel.toggleSystemApps() }
+                    )
+                ) + SortBy.entries.map { sortBy ->
+                    val label = when (sortBy) {
+                        SortBy.NAME -> stringResource(R.string.su_sort_name)
+                        SortBy.PACKAGE_NAME -> stringResource(R.string.su_sort_package)
+                        SortBy.INSTALL_TIME -> stringResource(R.string.su_sort_install_time)
                     }
+                    DropdownItem(
+                        text = label,
+                        selected = uiState.sortBy == sortBy,
+                        onClick = { viewModel.updateSort(sortBy) }
+                    )
                 }
+            )
+
+            OverlayIconDropdownMenu(entry = sortMode) {
+                Icon(imageVector = MiuixIcons.Sort, contentDescription = stringResource(R.string.apm_sort))
             }
         },
         scrollBehavior = scrollBehavior
