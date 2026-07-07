@@ -10,6 +10,7 @@ import me.bmax.apatch.apApp
 import me.bmax.apatch.util.getRootShell
 import me.bmax.apatch.util.rootShellForResult
 import java.io.File
+import androidx.core.content.edit
 
 object SettingsRepositoryImpl : SettingsRepository {
     private const val TAG = "SettingsRepo"
@@ -19,14 +20,16 @@ object SettingsRepositoryImpl : SettingsRepository {
     override fun getBoolean(key: String, default: Boolean): Boolean = prefs.getBoolean(key, default)
     override fun getInt(key: String, default: Int): Int = prefs.getInt(key, default)
     override fun getFloat(key: String, default: Float): Float = prefs.getFloat(key, default)
-    override fun setBoolean(key: String, value: Boolean) { prefs.edit().putBoolean(key, value).apply() }
-    override fun setInt(key: String, value: Int) { prefs.edit().putInt(key, value).apply() }
-    override fun setFloat(key: String, value: Float) { prefs.edit().putFloat(key, value).apply() }
+    override fun setBoolean(key: String, value: Boolean) { prefs.edit { putBoolean(key, value) } }
+    override fun setInt(key: String, value: Int) { prefs.edit { putInt(key, value) } }
+    override fun setFloat(key: String, value: Float) { prefs.edit { putFloat(key, value) }
+    }
+
+    override fun getString(key: String, default: String): String = prefs.getString(key, default) ?: default
+    override fun setString(key: String, value: String) { prefs.edit { putString(key, value) } }
 
     override fun getPageScale(): Float = prefs.getFloat("page_scale", 1.0f)
-    override fun setPageScale(scale: Float) {
-        prefs.edit().putFloat("page_scale", scale.coerceIn(0.8f, 1.1f)).apply()
-    }
+    override fun setPageScale(scale: Float) { prefs.edit { putFloat("page_scale", scale.coerceIn(0.8f, 1.1f)) } }
 
     override suspend fun isGlobalNamespaceEnabled(): Boolean = withContext(Dispatchers.IO) {
         val shell = getRootShell()

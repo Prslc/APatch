@@ -1,7 +1,6 @@
 package me.bmax.apatch.ui.page.superuser
 
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageInfo
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,22 +15,36 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.apApp
 import me.bmax.apatch.data.AppInfo
 import me.bmax.apatch.data.AppRepository
+import me.bmax.apatch.data.repository.SettingsRepository
+import me.bmax.apatch.data.repository.SettingsRepositoryImpl
 import me.bmax.apatch.data.repository.SuRepository
 import me.bmax.apatch.data.repository.SuRepositoryImpl
 import java.text.Collator
 import java.util.Locale
+import kotlin.time.Duration.Companion.milliseconds
 
 class SuperUserViewModel(
-    private val suRepo: SuRepository = SuRepositoryImpl
+    private val suRepo: SuRepository = SuRepositoryImpl,
+    private val settingsRepo: SettingsRepository = SettingsRepositoryImpl
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(SuperUserUiState())
+    private val _uiState = MutableStateFlow(
+        SuperUserUiState(sortBy = loadSortBy())
+    )
     val uiState = _uiState.asStateFlow()
+
+    private fun loadSortBy(): SortBy {
+        val name = settingsRepo.getString("su_sort_by", SortBy.NAME.name)
+        return SortBy.entries.find { it.name == name } ?: SortBy.NAME
+    }
+
+    private fun persistSort(sortBy: SortBy) {
+        settingsRepo.setString("su_sort_by", sortBy.name)
+    }
 
     private val staticCollator = Collator.getInstance(Locale.getDefault())
 
@@ -56,7 +69,7 @@ class SuperUserViewModel(
     @OptIn(kotlinx.coroutines.FlowPreview::class)
     val filteredApps = combine(
         AppRepository.apps,
-        uiState.map { it.search }.distinctUntilChanged().debounce(200),
+        uiState.map { it.search }.distinctUntilChanged().debounce(200.milliseconds),
         uiState.map { it.showSystemApps }.distinctUntilChanged(),
         uiState.map { it.sortBy }.distinctUntilChanged()
     ) { apps, query, showSystem, sortBy ->
@@ -139,7 +152,6 @@ class SuperUserViewModel(
     }
 
     override fun onCleared() {
-        super.onCleared()
         viewModelScope.launch(Dispatchers.Main) {
             AppRepository.stopRootService()
         }
@@ -155,5 +167,6 @@ class SuperUserViewModel(
 
     fun updateSort(sortBy: SortBy) {
         _uiState.update { it.copy(sortBy = sortBy) }
+        persistSort(sortBy)
     }
 }

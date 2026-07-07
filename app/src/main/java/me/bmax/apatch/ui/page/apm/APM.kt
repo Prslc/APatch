@@ -214,7 +214,16 @@ fun APModuleScreen(
                 title = stringResource(R.string.apm),
                 scrollBehavior = scrollBehavior,
                 actions = {
-                    var sortIndex by remember { mutableIntStateOf(0) }
+                    var sortIndex by remember {
+                        mutableIntStateOf(
+                            when {
+                                uiState.sortEnabledFirst -> 1
+                                uiState.sortActionFirst -> 2
+                                uiState.sortWebFirst -> 3
+                                else -> 0
+                            }
+                        )
+                    }
                     val sortMode = DropdownEntry(
                         items = listOf(
                             stringResource(R.string.apm_sort_default),
@@ -229,9 +238,9 @@ fun APModuleScreen(
                                     sortIndex = index
                                     when (sortIndex) {
                                         0 -> viewModel.resetSort()
-                                        1 -> viewModel.toggleSortEnabledFirst()
-                                        2 -> viewModel.toggleSortActionFirst()
-                                        3 -> viewModel.toggleSortWebFirst()
+                                        1 -> viewModel.selectSortEnabledFirst()
+                                        2 -> viewModel.selectSortActionFirst()
+                                        3 -> viewModel.selectSortWebFirst()
                                     }
                                 }
                             )

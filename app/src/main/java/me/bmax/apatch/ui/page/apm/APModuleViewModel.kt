@@ -20,19 +20,30 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bmax.apatch.data.repository.ApModuleRepository
 import me.bmax.apatch.data.repository.ApModuleRepositoryImpl
+import me.bmax.apatch.data.repository.SettingsRepository
+import me.bmax.apatch.data.repository.SettingsRepositoryImpl
 import java.text.Collator
 import java.util.Locale
 import kotlin.time.Duration.Companion.milliseconds
 
 class APModuleViewModel(
-    private val moduleRepo: ApModuleRepository = ApModuleRepositoryImpl
+    private val moduleRepo: ApModuleRepository = ApModuleRepositoryImpl,
+    private val settingsRepo: SettingsRepository = SettingsRepositoryImpl
 ) : ViewModel() {
     companion object {
         private const val TAG = "ModuleViewModel"
     }
 
-    private val _uiState = MutableStateFlow(APMUiState())
+    private val _uiState = MutableStateFlow(APMUiState().loadSortMode())
     val uiState = _uiState.asStateFlow()
+
+    private fun APMUiState.loadSortMode(): APMUiState =
+        when (settingsRepo.getString("apm_sort_mode", "")) {
+            "ENABLED_FIRST" -> copy(sortEnabledFirst = true)
+            "ACTION_FIRST" -> copy(sortActionFirst = true)
+            "WEB_FIRST" -> copy(sortWebFirst = true)
+            else -> this
+        }
 
     @OptIn(FlowPreview::class)
     val filteredModules = combine(
@@ -84,19 +95,61 @@ class APModuleViewModel(
     }
 
     fun resetSort() {
-        _uiState.update { it.copy(sortEnabledFirst = false, sortActionFirst = false, sortWebFirst = false) }
+        _uiState.update {
+            it.copy(
+                sortEnabledFirst = false,
+                sortActionFirst = false,
+                sortWebFirst = false
+            )
+        }
+        persistSort()
     }
 
-    fun toggleSortEnabledFirst() {
-        _uiState.update { it.copy(sortEnabledFirst = !it.sortEnabledFirst, sortActionFirst = false, sortWebFirst = false) }
+    fun selectSortEnabledFirst() {
+        if (_uiState.value.sortEnabledFirst) return
+        _uiState.update {
+            it.copy(
+                sortEnabledFirst = true,
+                sortActionFirst = false,
+                sortWebFirst = false
+            )
+        }
+        persistSort()
     }
 
-    fun toggleSortActionFirst() {
-        _uiState.update { it.copy(sortActionFirst = !it.sortActionFirst, sortEnabledFirst = false, sortWebFirst = false) }
+    fun selectSortActionFirst() {
+        if (_uiState.value.sortActionFirst) return
+        _uiState.update {
+            it.copy(
+                sortActionFirst = true,
+                sortEnabledFirst = false,
+                sortWebFirst = false
+            )
+        }
+        persistSort()
     }
 
-    fun toggleSortWebFirst() {
-        _uiState.update { it.copy(sortWebFirst = !it.sortWebFirst, sortEnabledFirst = false, sortActionFirst = false) }
+    fun selectSortWebFirst() {
+        if (_uiState.value.sortWebFirst) return
+        _uiState.update {
+            it.copy(
+                sortWebFirst = true,
+                sortEnabledFirst = false,
+                sortActionFirst = false
+            )
+        }
+        persistSort()
+    }
+
+    private fun persistSort() {
+        val s = _uiState.value
+        val mode = when {
+            s.sortEnabledFirst -> "ENABLED_FIRST"
+            s.sortActionFirst -> "ACTION_FIRST"
+            s.sortWebFirst -> "WEB_FIRST"
+            else -> ""
+        }
+        settingsRepo.setString("apm_sort_mode", mode)
     }
 
     suspend fun toggleModule(id: String, enable: Boolean): Boolean {

@@ -7,6 +7,8 @@ interface SettingsRepository {
     fun setBoolean(key: String, value: Boolean)
     fun setInt(key: String, value: Int)
     fun setFloat(key: String, value: Float)
+    fun getString(key: String, default: String): String
+    fun setString(key: String, value: String)
     fun getPageScale(): Float
     fun setPageScale(scale: Float)
     suspend fun isGlobalNamespaceEnabled(): Boolean
