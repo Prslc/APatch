@@ -39,7 +39,6 @@ import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
 import me.bmax.apatch.apApp
 import me.bmax.apatch.ui.component.BottomBarDestination
-import me.bmax.apatch.ui.component.DropdownItem
 import me.bmax.apatch.ui.component.WarningCard
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
@@ -52,11 +51,11 @@ import me.bmax.apatch.util.Version.getManagerVersion
 import me.bmax.apatch.util.reboot
 import top.yukonga.miuix.kmp.basic.BasicComponent
 import top.yukonga.miuix.kmp.basic.Card
+import top.yukonga.miuix.kmp.basic.DropdownEntry
+import top.yukonga.miuix.kmp.basic.DropdownItem
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.IconButton
-import top.yukonga.miuix.kmp.basic.ListPopupColumn
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
-import top.yukonga.miuix.kmp.basic.PopupPositionProvider
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.Text
@@ -64,10 +63,10 @@ import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.Link
+import top.yukonga.miuix.kmp.menu.OverlayIconDropdownMenu
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
-import top.yukonga.miuix.kmp.window.WindowListPopup
 
 @Composable
 fun HomeScreen(
@@ -168,16 +167,6 @@ private fun TopBar(
     kpState: APApplication.State,
     scrollBehavior: ScrollBehavior
 ) {
-    val howDropdownReboot = remember { mutableStateOf(false) }
-
-    val rebootItems = listOf(
-        stringResource(R.string.reboot),
-        stringResource(R.string.reboot_recovery),
-        stringResource(R.string.reboot_bootloader),
-        stringResource(R.string.reboot_download),
-        stringResource(R.string.reboot_edl),
-    )
-
     TopAppBar(
         modifier = Modifier.blurEffect(backdrop),
         color = backdrop.getAppBarColor(),
@@ -193,40 +182,30 @@ private fun TopBar(
             }
 
             if (kpState != APApplication.State.UNKNOWN_STATE) {
-                IconButton(
-                    onClick = {
-                        howDropdownReboot.value = true
-                    }) {
+                val rebootEntry = DropdownEntry(
+                    items = listOf(
+                        stringResource(R.string.reboot),
+                        stringResource(R.string.reboot_recovery),
+                        stringResource(R.string.reboot_bootloader),
+                        stringResource(R.string.reboot_download),
+                        stringResource(R.string.reboot_edl),
+                    ).mapIndexed { index, text ->
+                        DropdownItem(text = text, onClick = {
+                            when (index) {
+                                0 -> reboot()
+                                1 -> reboot("recovery")
+                                2 -> reboot("bootloader")
+                                3 -> reboot("download")
+                                4 -> reboot("edl")
+                            }
+                        })
+                    }
+                )
+                OverlayIconDropdownMenu(entry = rebootEntry) {
                     Icon(
                         imageVector = Icons.Filled.Refresh,
                         contentDescription = stringResource(id = R.string.reboot)
                     )
-
-                    WindowListPopup(
-                        show = howDropdownReboot.value,
-                        alignment = PopupPositionProvider.Align.BottomStart,
-                        onDismissRequest = { howDropdownReboot.value = false }
-                    ) {
-                        ListPopupColumn {
-                            rebootItems.forEachIndexed { index, string ->
-                                DropdownItem(
-                                    text = string,
-                                    optionSize = rebootItems.size,
-                                    onSelectedIndexChange = {
-                                        when (index) {
-                                            0 -> reboot()
-                                            1 -> reboot("recovery")
-                                            2 -> reboot("bootloader")
-                                            3 -> reboot("download")
-                                            4 -> reboot("edl")
-                                        }
-                                        howDropdownReboot.value = false
-                                    },
-                                    index = index
-                                )
-                            }
-                        }
-                    }
                 }
             }
         }, scrollBehavior = scrollBehavior
@@ -239,7 +218,8 @@ fun BackupWarningCard() {
     val show = rememberSaveable { mutableStateOf(apApp.getBackupWarningState()) }
 
     if (show.value) {
-        WarningCard(message = stringResource(id = R.string.patch_warnning),
+        WarningCard(
+            message = stringResource(id = R.string.patch_warnning),
             icon = {
                 Icon(
                     imageVector = Icons.Filled.Warning,
