@@ -15,7 +15,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -100,6 +99,7 @@ import top.yukonga.miuix.kmp.icon.extended.Add
 import top.yukonga.miuix.kmp.icon.extended.Back
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
+import top.yukonga.miuix.kmp.utils.PressFeedbackType
 import top.yukonga.miuix.kmp.utils.overScrollVertical
 import top.yukonga.miuix.kmp.window.WindowDialog
 
@@ -134,7 +134,6 @@ fun PatchesScreen(
 
     LaunchedEffect(mode) {
         viewModel.prepare(mode)
-        Log.d("wtf", bootImageUri.toString())
         if (mode == PatchMode.PATCH_ONLY && bootImageUri != null) {
             viewModel.copyAndParseBootimg(bootImageUri)
         }
@@ -564,11 +563,12 @@ private fun AddKpmItem(onSelected: (Uri) -> Unit) {
     }
 
     Card(
-        modifier = Modifier
-            .clickable {
-                val intent = Intent(Intent.ACTION_GET_CONTENT).apply { type = "*/*" }
-                selectFileLauncher.launch(intent)
-            }
+        showIndication = true,
+        pressFeedbackType = PressFeedbackType.Sink,
+        onClick = {
+            val intent = Intent(Intent.ACTION_GET_CONTENT).apply { type = "*/*" }
+            selectFileLauncher.launch(intent)
+        }
     ) {
         Row(
             modifier = Modifier
