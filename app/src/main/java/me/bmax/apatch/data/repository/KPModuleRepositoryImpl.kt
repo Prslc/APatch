@@ -35,7 +35,8 @@ object KPModuleRepositoryImpl : KPModuleRepository {
                     getValue("version"),
                     getValue("license"),
                     getValue("author"),
-                    getValue("description")
+                    getValue("description"),
+                    getValue("embedded") == "1"
                 )
             }
     }

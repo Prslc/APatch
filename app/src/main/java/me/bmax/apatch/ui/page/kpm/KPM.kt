@@ -57,6 +57,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
+import me.bmax.apatch.ui.component.ChipLabel
 import me.bmax.apatch.ui.component.ConfirmResult
 import me.bmax.apatch.ui.component.DropdownItem
 import me.bmax.apatch.ui.component.IconTextButton
@@ -525,13 +526,21 @@ private fun KPModuleItem(
                             .weight(1f),
                         verticalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
-                        Text(
-                            text = module.name,
-                            fontSize = 17.sp,
-                            fontWeight = FontWeight(550),
-                            color = colorScheme.onSurface,
-                            textDecoration = decoration
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = module.name,
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight(550),
+                                color = colorScheme.onSurface,
+                                textDecoration = decoration
+                            )
+                            if (module.isEmbedded) {
+                                Spacer(modifier = Modifier.width(6.dp))
+                                ChipLabel(stringResource(R.string.kpm_embed))
+                            }
+                        }
 
                         Text(
                             text = "$moduleVersion: ${module.version}",
