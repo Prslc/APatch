@@ -117,6 +117,7 @@ fun KPModuleScreen(
     val scrollBehavior = MiuixScrollBehavior()
     val kpModuleListState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     var fabVisible by remember { mutableStateOf(true) }
+    var embeddedUnloadTarget by remember { mutableStateOf<KPModel.KPMInfo?>(null) }
 
     val navigator = LocalNavigator.current
     val backdrop = if (isCurrentPage) rememberBlurBackdrop() else null
@@ -232,15 +233,19 @@ fun KPModuleScreen(
             filteredModules = filteredModules,
             onRefresh = { viewModel.fetchModuleList() },
             onUninstall = { module ->
-                scope.launch {
-                    val result = confirmDialog.awaitConfirm(
-                        title = moduleStr,
-                        content = moduleUninstallConfirm.format(module.name),
-                        confirm = unloadText,
-                        dismiss = cancelText
-                    )
-                    if (result == ConfirmResult.Confirmed) {
-                        viewModel.uninstallModule(module.name)
+                if (module.isEmbedded) {
+                    embeddedUnloadTarget = module
+                } else {
+                    scope.launch {
+                        val result = confirmDialog.awaitConfirm(
+                            title = moduleStr,
+                            content = moduleUninstallConfirm.format(module.name),
+                            confirm = unloadText,
+                            dismiss = cancelText
+                        )
+                        if (result == ConfirmResult.Confirmed) {
+                            viewModel.uninstallModule(module.name)
+                        }
                     }
                 }
             },
@@ -258,6 +263,20 @@ fun KPModuleScreen(
         KPMControlDialog(
             module = uiState.controlTarget!!,
             onDismiss = { viewModel.closeControlDialog() }
+        )
+    }
+    if (embeddedUnloadTarget != null) {
+        KPMEmbeddedUnloadDialog(
+            module = embeddedUnloadTarget!!,
+            onDismiss = { embeddedUnloadTarget = null },
+            onGoToPatches = {
+                embeddedUnloadTarget = null
+                navigator.navigateToPatches(PatchMode.PATCH_AND_INSTALL)
+            },
+            onUnload = {
+                viewModel.uninstallModule(embeddedUnloadTarget!!.name)
+                embeddedUnloadTarget = null
+            }
         )
     }
 }
@@ -417,6 +436,47 @@ fun KPMControlDialog(
                 colors = ButtonDefaults.textButtonColorsPrimary(),
                 enabled = enable
             )
+        }
+    }
+}
+
+@Composable
+private fun KPMEmbeddedUnloadDialog(
+    module: KPModel.KPMInfo,
+    onDismiss: () -> Unit,
+    onGoToPatches: () -> Unit,
+    onUnload: () -> Unit,
+) {
+    WindowDialog(
+        show = true,
+        title = stringResource(R.string.kpm),
+        summary = stringResource(R.string.kpm_embedded_unload_content, module.name),
+        onDismissRequest = onDismiss
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                TextButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(android.R.string.cancel),
+                    onClick = onDismiss,
+                )
+                TextButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.kpm_go_patches),
+                    onClick = onGoToPatches,
+                )
+                TextButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.kpm_unload),
+                    onClick = onUnload,
+                    colors = ButtonDefaults.textButtonColorsPrimary(),
+                )
+            }
         }
     }
 }

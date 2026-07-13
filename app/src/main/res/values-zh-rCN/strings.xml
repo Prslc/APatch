@@ -68,6 +68,8 @@
     <string name="kpm_author">作者</string>
     <string name="kpm_load_toast_failed">加载失败</string>
     <string name="kpm_unload">卸载</string>
+    <string name="kpm_embedded_unload_content">\"%s\" 已嵌入到内核中，卸载后将在下次重启时恢复。\n\n要永久删除，请前往修补页面重新修补内核。</string>
+    <string name="kpm_go_patches">修补</string>
     <string name="kpm_control">参数</string>
     <string name="home_selinux_status_disabled">禁用</string>
     <string name="kpm_load">加载</string>

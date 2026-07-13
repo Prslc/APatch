@@ -142,6 +142,8 @@
     <string name="kpm_load_toast_failed">Load failed</string>
     <string name="kpm_unload_confirm">Unload %s module?</string>
     <string name="kpm_unload">Unload</string>
+    <string name="kpm_embedded_unload_content">\"%s\" is embedded in the kernel. Unloading only disables it until the next reboot.\n\nTo remove it permanently, re-patch the kernel from the Patches page.</string>
+    <string name="kpm_go_patches">Patches</string>
     <string name="kpm_control">Control</string>
     <string name="kpm_apm_empty">No module loaded</string>
     <string name="kpm_version">Version</string>
