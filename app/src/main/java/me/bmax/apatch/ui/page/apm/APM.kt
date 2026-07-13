@@ -86,6 +86,7 @@ import me.bmax.apatch.R
 import me.bmax.apatch.apApp
 import me.bmax.apatch.ui.LocalSnackbarHost
 import me.bmax.apatch.ui.WebUIActivity
+import me.bmax.apatch.ui.component.ChipLabel
 import me.bmax.apatch.ui.component.ConfirmResult
 import me.bmax.apatch.ui.component.IconTextButton
 import me.bmax.apatch.ui.component.ModuleStateIndicator
@@ -122,7 +123,6 @@ import top.yukonga.miuix.kmp.basic.SearchBar
 import top.yukonga.miuix.kmp.basic.SnackbarDuration
 import top.yukonga.miuix.kmp.basic.SnackbarHostState
 import top.yukonga.miuix.kmp.basic.SnackbarResult
-import top.yukonga.miuix.kmp.basic.Surface
 import top.yukonga.miuix.kmp.basic.Switch
 import top.yukonga.miuix.kmp.basic.TabRowWithContour
 import top.yukonga.miuix.kmp.basic.Text
@@ -1003,22 +1003,7 @@ private fun ModuleItem(
                             var nameTextLayout: TextLayoutResult? = null
                             val metaPlaceable = if (module.metamodule) {
                                 subcompose("meta") {
-                                    Surface(
-                                        shape = RoundedCornerShape(4.dp),
-                                        color = colorScheme.tertiaryContainer
-                                    ) {
-                                        Text(
-                                            text = "META",
-                                            fontSize = 12.sp,
-                                            modifier = Modifier.padding(
-                                                horizontal = 4.dp,
-                                                vertical = 1.dp
-                                            ),
-                                            color = colorScheme.onTertiaryContainer,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }
+                                    ChipLabel("META")
                                 }.first().measure(
                                     Constraints(
                                         0,
