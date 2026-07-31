@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.compose.compiler) apply false
 }
 
-extra.set("kernelPatchVersion", "0.13.2")
+extra.set("kernelPatchVersion", "0.13.3")
 extra.set("kernelPatchHash", getKernelPatchHash())
 extra.set("androidMinSdkVersion", 26)
 extra.set("androidTargetSdkVersion", 37)
