@@ -16,7 +16,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeFlexibleTopAppBar
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -90,7 +90,7 @@ fun TerminalScreenMaterial(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         topBar = {
             Column(modifier = Modifier.material3BlurEffect(backdrop)) {
-                LargeFlexibleTopAppBar(
+                TopAppBar(
                     title = {
                         Text(
                             text = if (taskType == TERMINAL_TASK_TYPE.INSTALL) {
@@ -132,7 +132,6 @@ fun TerminalScreenMaterial(
                             Icon(Icons.Filled.Save, contentDescription = "Save Log")
                         }
                     },
-                    scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(),
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = backdrop.getMaterial3AppBarColor(),
                         titleContentColor = MaterialTheme.colorScheme.onBackground,
