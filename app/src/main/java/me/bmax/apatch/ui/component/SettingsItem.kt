@@ -1,66 +1,82 @@
 package me.bmax.apatch.ui.component
 
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
-import top.yukonga.miuix.kmp.basic.Icon
-import top.yukonga.miuix.kmp.preference.ArrowPreference
-import top.yukonga.miuix.kmp.preference.SwitchPreference
-import top.yukonga.miuix.kmp.preference.WindowDropdownPreference
-import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
+import me.bmax.apatch.ui.LocalUiMode
+import me.bmax.apatch.ui.UiMode
+import me.bmax.apatch.ui.component.material.ArrowItemMaterial
+import me.bmax.apatch.ui.component.material.DropdownItemMaterial
+import me.bmax.apatch.ui.component.material.SwitchItemMaterial
+import me.bmax.apatch.ui.component.miuix.ArrowItemMiuix
+import me.bmax.apatch.ui.component.miuix.DropdownItemMiuix
+import me.bmax.apatch.ui.component.miuix.SwitchItemMiuix
 
 @Composable
 fun ArrowItem(
     title: String,
-    summary: String,
-    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    summary: String? = null,
+    icon: ImageVector? = null,
     contentDescription: String? = null,
-    onClick: () -> Unit
+    enabled: Boolean = true,
+    onClick: () -> Unit,
 ) {
-    ArrowPreference(
-        title = title,
-        summary = summary,
-        onClick = onClick,
-        startAction = {
-            Icon(
-                imageVector = icon,
-                contentDescription = contentDescription,
-                modifier = Modifier.padding(end = 6.dp),
-                tint = colorScheme.onBackground
-            )
-        }
-    )
+    when (LocalUiMode.current) {
+        UiMode.Miuix -> ArrowItemMiuix(
+            title = title,
+            modifier = modifier,
+            summary = summary,
+            icon = icon,
+            contentDescription = contentDescription,
+            enabled = enabled,
+            onClick = onClick
+        )
+        UiMode.Material -> ArrowItemMaterial(
+            title = title,
+            modifier = modifier,
+            summary = summary,
+            icon = icon,
+            contentDescription = contentDescription,
+            enabled = enabled,
+            onClick = onClick
+        )
+    }
 }
 
 @Composable
 fun SwitchItem(
     title: String,
-    summary: String,
-    icon: ImageVector,
     checked: Boolean,
-    enabled: Boolean = true,
+    modifier: Modifier = Modifier,
+    summary: String? = null,
+    icon: ImageVector? = null,
     contentDescription: String? = null,
+    enabled: Boolean = true,
     onCheckedChange: (Boolean) -> Unit,
 ) {
-    SwitchPreference(
-        title = title,
-        summary = summary,
-        checked = checked,
-        enabled = enabled,
-        onCheckedChange = onCheckedChange,
-        startAction = {
-            Icon(
-                imageVector = icon,
-                modifier = Modifier.padding(end = 6.dp),
-                contentDescription = contentDescription,
-                tint = colorScheme.onBackground
-            )
-        }
-    )
+    when (LocalUiMode.current) {
+        UiMode.Miuix -> SwitchItemMiuix(
+            title = title,
+            checked = checked,
+            modifier = modifier,
+            summary = summary,
+            icon = icon,
+            contentDescription = contentDescription,
+            enabled = enabled,
+            onCheckedChange = onCheckedChange
+        )
+        UiMode.Material -> SwitchItemMaterial(
+            title = title,
+            checked = checked,
+            modifier = modifier,
+            summary = summary,
+            icon = icon,
+            contentDescription = contentDescription,
+            enabled = enabled,
+            onCheckedChange = onCheckedChange
+        )
+    }
 }
 
 @Composable
@@ -68,28 +84,35 @@ fun DropdownItem(
     title: String,
     items: List<String>,
     selectedIndex: Int,
-    icon: ImageVector,
+    modifier: Modifier = Modifier,
     summary: String? = null,
+    icon: ImageVector? = null,
     contentDescription: String? = null,
+    enabled: Boolean = true,
     onSelectedIndexChange: (Int) -> Unit,
 ) {
-    WindowDropdownPreference(
-        title = title,
-        summary = summary,
-        items = items,
-        selectedIndex = selectedIndex,
-        onSelectedIndexChange = onSelectedIndexChange,
-        startAction = {
-            Row(
-                verticalAlignment = CenterVertically
-            ) {
-                Icon(
-                    imageVector = icon,
-                    modifier = Modifier.padding(end = 6.dp),
-                    contentDescription = contentDescription,
-                    tint = colorScheme.onBackground
-                )
-            }
-        }
-    )
+    when (LocalUiMode.current) {
+        UiMode.Miuix -> DropdownItemMiuix(
+            title = title,
+            items = items,
+            selectedIndex = selectedIndex,
+            modifier = modifier,
+            summary = summary,
+            icon = icon,
+            contentDescription = contentDescription,
+            enabled = enabled,
+            onSelectedIndexChange = onSelectedIndexChange
+        )
+        UiMode.Material -> DropdownItemMaterial(
+            title = title,
+            items = items,
+            selectedIndex = selectedIndex,
+            modifier = modifier,
+            summary = summary,
+            icon = icon,
+            contentDescription = contentDescription,
+            enabled = enabled,
+            onSelectedIndexChange = onSelectedIndexChange
+        )
+    }
 }
