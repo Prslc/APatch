@@ -55,8 +55,8 @@ import me.bmax.apatch.ui.theme.LocalPageScale
 import me.bmax.apatch.ui.theme.getMaterial3AppBarColor
 import me.bmax.apatch.ui.theme.material3BlurEffect
 import me.bmax.apatch.ui.theme.rememberMaterial3BlurBackdrop
+import me.bmax.apatch.ui.theme.withBackdrop
 import me.bmax.apatch.util.formatSize
-import top.yukonga.miuix.kmp.blur.layerBackdrop
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,7 +100,7 @@ fun SettingScreenMaterial(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .then(backdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier),
+                .withBackdrop(backdrop),
             contentPadding = PaddingValues(
                 top = paddingValues.calculateTopPadding(),
                 bottom = paddingValues.calculateBottomPadding() + 16.dp
