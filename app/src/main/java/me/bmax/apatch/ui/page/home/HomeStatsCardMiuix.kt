@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.miuix.home
+package me.bmax.apatch.ui.page.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,12 +32,6 @@ import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.miuix.UninstallDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
-import me.bmax.apatch.ui.page.home.APatchAction
-import me.bmax.apatch.ui.page.home.APatchCardState
-import me.bmax.apatch.ui.page.home.KPatchAction
-import me.bmax.apatch.ui.page.home.KPatchCardState
-import me.bmax.apatch.ui.page.home.toAPatchCardState
-import me.bmax.apatch.ui.page.home.toKPatchCardState
 import me.bmax.apatch.ui.page.patch.PatchMode
 import me.bmax.apatch.ui.theme.isInDarkTheme
 import me.bmax.apatch.util.Version

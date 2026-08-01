@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.material.home
+package me.bmax.apatch.ui.page.home
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -38,12 +38,6 @@ import me.bmax.apatch.ui.component.material.BaseWidget
 import me.bmax.apatch.ui.component.material.SegmentedColumn
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.Navigator
-import me.bmax.apatch.ui.page.home.APatchAction
-import me.bmax.apatch.ui.page.home.APatchCardState
-import me.bmax.apatch.ui.page.home.KPatchAction
-import me.bmax.apatch.ui.page.home.KPatchCardState
-import me.bmax.apatch.ui.page.home.toAPatchCardState
-import me.bmax.apatch.ui.page.home.toKPatchCardState
 import me.bmax.apatch.ui.page.patch.PatchMode
 import me.bmax.apatch.util.Version
 import me.bmax.apatch.util.Version.getManagerVersion

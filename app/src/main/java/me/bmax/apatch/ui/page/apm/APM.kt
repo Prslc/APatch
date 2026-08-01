@@ -6,8 +6,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.UiMode
-import me.bmax.apatch.ui.page.material.apm.APModuleScreenMaterial
-import me.bmax.apatch.ui.page.miuix.apm.APModuleScreenMiuix
 
 @Composable
 fun APModuleScreen(

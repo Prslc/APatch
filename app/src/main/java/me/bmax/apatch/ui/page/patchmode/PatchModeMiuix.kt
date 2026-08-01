@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.miuix.patchmode
+package me.bmax.apatch.ui.page.patchmode
 
 import android.app.Activity
 import android.content.Intent
@@ -23,8 +23,6 @@ import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.miuix.WarningCard
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
-import me.bmax.apatch.ui.page.patchmode.InstallMethod
-import me.bmax.apatch.ui.page.patchmode.PatchModeViewModel
 import me.bmax.apatch.ui.page.patch.PatchMode
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor

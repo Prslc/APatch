@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.miuix.apm
+package me.bmax.apatch.ui.page.apm
 
 import android.app.Activity.RESULT_OK
 import android.content.Context
@@ -94,9 +94,6 @@ import me.bmax.apatch.ui.component.miuix.WarningCard
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.component.rememberLoadingDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
-import me.bmax.apatch.ui.page.apm.APModuleViewModel
-import me.bmax.apatch.ui.page.apm.ModuleInfo
-import me.bmax.apatch.ui.page.apm.ShortcutType
 import me.bmax.apatch.ui.navigation.MODULE_TYPE
 import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.theme.blurEffect

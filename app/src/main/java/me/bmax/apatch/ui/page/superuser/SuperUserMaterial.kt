@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.material.superuser
+package me.bmax.apatch.ui.page.superuser
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -64,8 +64,6 @@ import me.bmax.apatch.ui.component.LabelText
 import me.bmax.apatch.ui.component.material.ExpressiveInputField
 import me.bmax.apatch.ui.component.material.ExpressiveSearchBar
 import me.bmax.apatch.ui.component.material.SegmentedColumn
-import me.bmax.apatch.ui.page.superuser.SortBy
-import me.bmax.apatch.ui.page.superuser.SuperUserViewModel
 import me.bmax.apatch.ui.theme.LocalEnableBlur
 import me.bmax.apatch.ui.theme.getMaterial3AppBarColor
 import me.bmax.apatch.ui.theme.material3BlurEffect

@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.material.about
+package me.bmax.apatch.ui.page.about
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

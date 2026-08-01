@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.miuix.patch
+package me.bmax.apatch.ui.page.patch
 
 import android.Manifest
 import android.app.Activity
@@ -73,9 +73,6 @@ import me.bmax.apatch.ui.component.SwitchItem
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.page.kpm.KPModel
-import me.bmax.apatch.ui.page.patch.PatchMode
-import me.bmax.apatch.ui.page.patch.PatchesViewModel
-import me.bmax.apatch.ui.page.patch.PatchUiState
 import me.bmax.apatch.ui.page.patch.utils.checkSuperKeyValidation
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor

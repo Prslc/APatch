@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.material.settings
+package me.bmax.apatch.ui.page.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import me.bmax.apatch.R
-import me.bmax.apatch.ui.page.settings.SettingsViewModel
 import me.bmax.apatch.ui.theme.LocalPageScale
 
 @Composable

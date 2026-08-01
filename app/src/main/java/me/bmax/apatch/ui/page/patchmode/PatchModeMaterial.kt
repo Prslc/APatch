@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.material.patchmode
+package me.bmax.apatch.ui.page.patchmode
 
 import android.app.Activity
 import android.content.Intent
@@ -48,8 +48,6 @@ import me.bmax.apatch.ui.component.material.SegmentedColumn
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.page.patch.PatchMode
-import me.bmax.apatch.ui.page.patchmode.InstallMethod
-import me.bmax.apatch.ui.page.patchmode.PatchModeViewModel
 import me.bmax.apatch.ui.theme.LocalEnableBlur
 import me.bmax.apatch.ui.theme.getMaterial3AppBarColor
 import me.bmax.apatch.ui.theme.material3BlurEffect

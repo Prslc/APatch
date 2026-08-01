@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.material.kpm
+package me.bmax.apatch.ui.page.kpm
 
 import android.app.Activity.RESULT_OK
 import android.content.Intent
@@ -96,9 +96,6 @@ import me.bmax.apatch.ui.component.rememberLoadingDialog
 import me.bmax.apatch.ui.component.material.ExpressiveInputField
 import me.bmax.apatch.ui.component.material.ExpressiveSearchBar
 import me.bmax.apatch.ui.navigation.LocalNavigator
-import me.bmax.apatch.ui.page.kpm.KPModel
-import me.bmax.apatch.ui.page.kpm.KPModuleUiState
-import me.bmax.apatch.ui.page.kpm.KPModuleViewModel
 import me.bmax.apatch.ui.page.patch.PatchMode
 import me.bmax.apatch.ui.theme.LocalEnableBlur
 import me.bmax.apatch.ui.theme.getMaterial3AppBarColor

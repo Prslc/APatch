@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.miuix.terminal
+package me.bmax.apatch.ui.page.terminal
 
 import android.os.Environment
 import android.widget.Toast
@@ -31,7 +31,6 @@ import kotlinx.coroutines.withContext
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.KeyEventBlocker
 import me.bmax.apatch.ui.navigation.MODULE_TYPE
-import me.bmax.apatch.ui.page.terminal.TerminalViewModel
 import me.bmax.apatch.ui.navigation.TERMINAL_TASK_TYPE
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor

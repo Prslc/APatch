@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.miuix.kpm
+package me.bmax.apatch.ui.page.kpm
 
 import android.app.Activity.RESULT_OK
 import android.content.Intent
@@ -63,9 +63,6 @@ import me.bmax.apatch.ui.component.miuix.IconTextButton
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.component.rememberLoadingDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
-import me.bmax.apatch.ui.page.kpm.KPModel
-import me.bmax.apatch.ui.page.kpm.KPModuleUiState
-import me.bmax.apatch.ui.page.kpm.KPModuleViewModel
 import me.bmax.apatch.ui.page.patch.PatchMode
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor

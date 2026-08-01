@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.material.home
+package me.bmax.apatch.ui.page.home
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -66,8 +66,6 @@ import me.bmax.apatch.apApp
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.Navigator
-import me.bmax.apatch.ui.page.home.HomeUiState
-import me.bmax.apatch.ui.page.home.HomeViewModel
 import me.bmax.apatch.ui.theme.LocalEnableBlur
 import me.bmax.apatch.ui.theme.getMaterial3AppBarColor
 import me.bmax.apatch.ui.theme.material3BlurEffect

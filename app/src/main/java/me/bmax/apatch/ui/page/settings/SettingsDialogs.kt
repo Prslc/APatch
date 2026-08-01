@@ -13,10 +13,6 @@ import me.bmax.apatch.ui.UiMode
 import me.bmax.apatch.ui.component.ConfirmResult
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.component.rememberLoadingDialog
-import me.bmax.apatch.ui.page.material.settings.PageScaleDialogMaterial
-import me.bmax.apatch.ui.page.miuix.settings.LogDialogMiuix
-import me.bmax.apatch.ui.page.miuix.settings.PageScaleDialogMiuix
-import me.bmax.apatch.ui.page.miuix.settings.ResetSUPathDialogMiuix
 import me.bmax.apatch.util.clearAppCache
 import me.bmax.apatch.util.formatSize
 

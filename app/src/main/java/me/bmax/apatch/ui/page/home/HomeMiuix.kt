@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.miuix.home
+package me.bmax.apatch.ui.page.home
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -39,8 +39,6 @@ import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
 import me.bmax.apatch.apApp
 import me.bmax.apatch.ui.component.BottomBarDestination
-import me.bmax.apatch.ui.page.home.HomeUiState
-import me.bmax.apatch.ui.page.home.HomeViewModel
 import me.bmax.apatch.ui.component.miuix.WarningCard
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator

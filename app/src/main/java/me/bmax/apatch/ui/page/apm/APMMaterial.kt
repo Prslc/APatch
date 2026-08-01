@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.material.apm
+package me.bmax.apatch.ui.page.apm
 
 import android.app.Activity.RESULT_OK
 import android.content.Context
@@ -136,9 +136,6 @@ import me.bmax.apatch.ui.component.material.ExpressiveSearchBar
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.MODULE_TYPE
 import me.bmax.apatch.ui.navigation.Navigator
-import me.bmax.apatch.ui.page.apm.APModuleViewModel
-import me.bmax.apatch.ui.page.apm.ModuleInfo
-import me.bmax.apatch.ui.page.apm.ShortcutType
 import me.bmax.apatch.ui.theme.LocalEnableBlur
 import me.bmax.apatch.ui.theme.getMaterial3AppBarColor
 import me.bmax.apatch.ui.theme.material3BlurEffect

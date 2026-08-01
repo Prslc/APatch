@@ -6,8 +6,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.UiMode
-import me.bmax.apatch.ui.page.material.patchmode.PatchModeMaterial
-import me.bmax.apatch.ui.page.miuix.patchmode.PatchModeMiuix
 
 sealed class InstallMethod {
     data class SelectFile(@param:StringRes override val label: Int = R.string.mode_select_page_select_file) :

@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.material.terminal
+package me.bmax.apatch.ui.page.terminal
 
 import android.os.Environment
 import android.widget.Toast
@@ -42,7 +42,6 @@ import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.KeyEventBlocker
 import me.bmax.apatch.ui.navigation.MODULE_TYPE
 import me.bmax.apatch.ui.navigation.TERMINAL_TASK_TYPE
-import me.bmax.apatch.ui.page.terminal.TerminalViewModel
 import me.bmax.apatch.ui.theme.LocalEnableBlur
 import me.bmax.apatch.ui.theme.getMaterial3AppBarColor
 import me.bmax.apatch.ui.theme.material3BlurEffect

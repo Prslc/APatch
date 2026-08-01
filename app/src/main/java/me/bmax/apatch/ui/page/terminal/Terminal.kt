@@ -6,8 +6,6 @@ import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.UiMode
 import me.bmax.apatch.ui.navigation.MODULE_TYPE
 import me.bmax.apatch.ui.navigation.TERMINAL_TASK_TYPE
-import me.bmax.apatch.ui.page.material.terminal.TerminalScreenMaterial
-import me.bmax.apatch.ui.page.miuix.terminal.TerminalScreenMiuix
 
 @Composable
 fun TerminalScreen(

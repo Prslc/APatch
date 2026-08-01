@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.miuix.settings
+package me.bmax.apatch.ui.page.settings
 
 import android.content.Intent
 import android.net.Uri
@@ -38,7 +38,6 @@ import me.bmax.apatch.BuildConfig
 import me.bmax.apatch.Natives
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.rememberLoadingDialog
-import me.bmax.apatch.ui.page.settings.SettingsViewModel
 import me.bmax.apatch.ui.theme.LocalPageScale
 import me.bmax.apatch.util.getBugreportFile
 import me.bmax.apatch.util.outputStream

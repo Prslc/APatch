@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.page.miuix.settings
+package me.bmax.apatch.ui.page.settings
 
 import android.os.Build
 import android.widget.Toast
@@ -40,9 +40,6 @@ import me.bmax.apatch.ui.component.DropdownItem
 import me.bmax.apatch.ui.component.SliderPreference
 import me.bmax.apatch.ui.component.SwitchItem
 import me.bmax.apatch.ui.navigation.LocalNavigator
-import me.bmax.apatch.ui.page.settings.SettingDialogType
-import me.bmax.apatch.ui.page.settings.SettingsDialogOverlay
-import me.bmax.apatch.ui.page.settings.SettingsViewModel
 import me.bmax.apatch.ui.theme.LocalPageScale
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
