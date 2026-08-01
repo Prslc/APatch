@@ -5,13 +5,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import kotlinx.coroutines.launch
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.UiMode
+import me.bmax.apatch.ui.component.ConfirmResult
+import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.component.rememberLoadingDialog
 import me.bmax.apatch.ui.page.material.settings.PageScaleDialogMaterial
 import me.bmax.apatch.ui.page.miuix.settings.LogDialogMiuix
@@ -44,7 +44,6 @@ fun SettingsDialogOverlay(uiState: SettingsUiState, viewModel: SettingsViewModel
 @Composable
 private fun ClearDialog(cacheSize: Long, viewModel: SettingsViewModel) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     val loading = rememberLoadingDialog()
     var confirmed by remember { mutableStateOf(false) }
 
@@ -60,22 +59,18 @@ private fun ClearDialog(cacheSize: Long, viewModel: SettingsViewModel) {
         return
     }
 
-    when (LocalUiMode.current) {
-        UiMode.Miuix -> me.bmax.apatch.ui.page.miuix.settings.ClearDialogMiuix(cacheSize, viewModel)
-        UiMode.Material -> androidx.compose.material3.AlertDialog(
-            onDismissRequest = { viewModel.dismissDialog() },
-            title = { androidx.compose.material3.Text(title) },
-            text = { androidx.compose.material3.Text(message) },
-            confirmButton = {
-                androidx.compose.material3.TextButton(onClick = { confirmed = true }) {
-                    androidx.compose.material3.Text(context.getString(android.R.string.ok))
-                }
-            },
-            dismissButton = {
-                androidx.compose.material3.TextButton(onClick = { viewModel.dismissDialog() }) {
-                    androidx.compose.material3.Text(context.getString(android.R.string.cancel))
-                }
-            }
+    val confirmDialog = rememberConfirmDialog()
+    LaunchedEffect(Unit) {
+        val result = confirmDialog.awaitConfirm(
+            title = title,
+            content = message,
+            confirm = context.getString(android.R.string.ok),
+            dismiss = context.getString(android.R.string.cancel)
         )
+        if (result == ConfirmResult.Confirmed) {
+            confirmed = true
+        } else {
+            viewModel.dismissDialog()
+        }
     }
 }

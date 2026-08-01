@@ -40,8 +40,6 @@ import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.rememberLoadingDialog
 import me.bmax.apatch.ui.page.settings.SettingsViewModel
 import me.bmax.apatch.ui.theme.LocalPageScale
-import me.bmax.apatch.util.clearAppCache
-import me.bmax.apatch.util.formatSize
 import me.bmax.apatch.util.getBugreportFile
 import me.bmax.apatch.util.outputStream
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
@@ -198,47 +196,6 @@ fun ResetSUPathDialogMiuix(viewModel: SettingsViewModel) {
     }
 }
 
-@Composable
-fun ClearDialogMiuix(cacheSize: Long, viewModel: SettingsViewModel) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val loading = rememberLoadingDialog()
-
-    WindowDialog(
-        show = true,
-        title = stringResource(R.string.clear_cache_title),
-        summary = stringResource(R.string.clear_cache_message, formatSize(cacheSize)),
-        onDismissRequest = { viewModel.dismissDialog() }
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            TextButton(
-                stringResource(android.R.string.cancel),
-                onClick = { viewModel.dismissDialog() },
-                modifier = Modifier.weight(1f),
-            )
-
-            Spacer(Modifier.width(20.dp))
-
-            TextButton(
-                stringResource(android.R.string.ok),
-                onClick = {
-                    scope.launch {
-                        loading.withLoading {
-                            clearAppCache(context)
-                            viewModel.refreshCacheSize()
-                        }
-                        viewModel.dismissDialog()
-                    }
-                },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.textButtonColorsPrimary(),
-            )
-        }
-    }
-}
 
 @Composable
 fun PageScaleDialogMiuix(viewModel: SettingsViewModel) {

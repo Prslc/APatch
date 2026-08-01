@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -166,9 +167,12 @@ private class ConfirmDialogHandleImpl(
     visible: MutableState<Boolean>,
     coroutineScope: CoroutineScope,
     callback: ConfirmCallback,
-    override var visuals: ConfirmDialogVisuals = ConfirmDialogVisualsImpl.Empty,
+    visuals: ConfirmDialogVisuals = ConfirmDialogVisualsImpl.Empty,
     private val resultFlow: ReceiveChannel<ConfirmResult>
 ) : ConfirmDialogHandle, DialogHandleBase(visible, coroutineScope) {
+    // State-backed so updateVisuals() triggers recomposition of readers
+    // (plain property would leave M3 dialogs showing stale/Empty visuals)
+    override var visuals: ConfirmDialogVisuals by mutableStateOf(visuals)
     private class ResultCollector(
         private val callback: ConfirmCallback
     ) : FlowCollector<ConfirmResult> {
@@ -339,7 +343,7 @@ private fun rememberConfirmDialog(
             dismiss = { coroutineScope.launch { resultChannel.send(ConfirmResult.Canceled) } },
             showDialog = visible
         )
-        UiMode.Material -> ConfirmDialogMaterial(
+        UiMode.Material -> if (visible.value) ConfirmDialogMaterial(
             handle.visuals,
             confirm = { coroutineScope.launch { resultChannel.send(ConfirmResult.Confirmed) } },
             dismiss = { coroutineScope.launch { resultChannel.send(ConfirmResult.Canceled) } },
