@@ -41,7 +41,7 @@ import me.bmax.apatch.apApp
 import me.bmax.apatch.ui.component.BottomBarDestination
 import me.bmax.apatch.ui.page.home.HomeUiState
 import me.bmax.apatch.ui.page.home.HomeViewModel
-import me.bmax.apatch.ui.component.WarningCard
+import me.bmax.apatch.ui.component.miuix.WarningCard
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.Navigator

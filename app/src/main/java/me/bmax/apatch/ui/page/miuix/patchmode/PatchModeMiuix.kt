@@ -20,7 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.bmax.apatch.R
-import me.bmax.apatch.ui.component.WarningCard
+import me.bmax.apatch.ui.component.miuix.WarningCard
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.page.patchmode.InstallMethod

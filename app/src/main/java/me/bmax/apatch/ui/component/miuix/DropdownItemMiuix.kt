@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.component
+package me.bmax.apatch.ui.component.miuix
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

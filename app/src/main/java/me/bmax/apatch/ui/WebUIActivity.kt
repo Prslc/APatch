@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.data.AppRepository
-import me.bmax.apatch.ui.component.LoadingIndicator
+import me.bmax.apatch.ui.component.miuix.LoadingIndicator
 import me.bmax.apatch.ui.theme.APatchTheme
 import me.bmax.apatch.ui.webui.AppIconUtil
 import me.bmax.apatch.ui.webui.Insets

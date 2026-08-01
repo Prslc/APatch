@@ -68,7 +68,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bmax.apatch.R
-import me.bmax.apatch.ui.component.LoadingIndicator
+import me.bmax.apatch.ui.component.miuix.LoadingIndicator
 import me.bmax.apatch.ui.component.SwitchItem
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.Navigator

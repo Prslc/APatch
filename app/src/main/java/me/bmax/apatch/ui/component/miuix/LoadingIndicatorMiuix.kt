@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.component
+package me.bmax.apatch.ui.component.miuix
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -88,9 +88,9 @@ import me.bmax.apatch.ui.LocalSnackbarHost
 import me.bmax.apatch.ui.WebUIActivity
 import me.bmax.apatch.ui.component.AppSnackbarHostState
 import me.bmax.apatch.ui.component.ConfirmResult
-import me.bmax.apatch.ui.component.IconTextButton
-import me.bmax.apatch.ui.component.ModuleStateIndicator
-import me.bmax.apatch.ui.component.WarningCard
+import me.bmax.apatch.ui.component.miuix.IconTextButton
+import me.bmax.apatch.ui.component.miuix.ModuleStateIndicator
+import me.bmax.apatch.ui.component.miuix.WarningCard
 import me.bmax.apatch.ui.component.rememberConfirmDialog
 import me.bmax.apatch.ui.component.rememberLoadingDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator

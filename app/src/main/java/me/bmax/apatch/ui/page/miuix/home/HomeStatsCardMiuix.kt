@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
-import me.bmax.apatch.ui.component.UninstallDialog
+import me.bmax.apatch.ui.component.miuix.UninstallDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.page.home.APatchAction
 import me.bmax.apatch.ui.page.home.APatchCardState
