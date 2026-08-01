@@ -375,18 +375,6 @@ fun rememberConfirmDialog(callback: ConfirmCallback): ConfirmDialogHandle {
     return rememberConfirmDialog(ConfirmDialogVisualsImpl.Empty, callback)
 }
 
-@Composable
-fun rememberCustomDialog(composable: @Composable (dismiss: () -> Unit) -> Unit): DialogHandle {
-    val visible = rememberSaveable { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
-    if (visible.value) {
-        composable { visible.value = false }
-    }
-    return remember {
-        CustomDialogHandleImpl(visible, coroutineScope)
-    }
-}
-
 /**
  * A reusable settings-style dialog that dispatches to the right shell
  * based on [me.bmax.apatch.ui.LocalUiMode].
