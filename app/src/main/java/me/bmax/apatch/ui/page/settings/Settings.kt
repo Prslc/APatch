@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.BlurOn
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.CleaningServices
@@ -41,6 +42,7 @@ import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.ArrowItem
 import me.bmax.apatch.ui.component.DropdownItem
 import me.bmax.apatch.ui.component.SwitchItem
+import me.bmax.apatch.ui.UiMode
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
@@ -177,6 +179,17 @@ fun SettingScreen(
                                 magnetThreshold = 0.05f
                             )
                         },
+                    )
+                    // UI Style
+                    DropdownItem(
+                        title = stringResource(R.string.settings_ui_mode),
+                        summary = stringResource(R.string.settings_ui_mode_summary),
+                        items = UiMode.entries.map { it.name },
+                        selectedIndex = if (uiState.uiMode == UiMode.Material.value) 1 else 0,
+                        icon = Icons.Filled.Dashboard,
+                        onSelectedIndexChange = { index ->
+                            viewModel.setUiMode(if (index == 0) UiMode.Miuix.value else UiMode.Material.value)
+                        }
                     )
                     // Theme System
                     DropdownItem(

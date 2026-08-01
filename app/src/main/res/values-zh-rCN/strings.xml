@@ -251,6 +251,8 @@
     <string name="kpm_control_failed">操作失败！</string>
     <string name="settings_theme">主题</string>
     <string name="settings_theme_summary">选择应用的主题模式</string>
+    <string name="settings_ui_mode">界面风格</string>
+    <string name="settings_ui_mode_summary">选择应用的界面风格</string>
     <string name="settings_theme_mode_system">跟随系统</string>
     <string name="settings_theme_mode_light">浅色</string>
     <string name="settings_theme_mode_dark">深色</string>

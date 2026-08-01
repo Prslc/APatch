@@ -15,6 +15,7 @@ import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -45,6 +46,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import me.bmax.apatch.APApplication
+import me.bmax.apatch.ui.LocalUiMode
+import me.bmax.apatch.ui.UiMode
 import me.bmax.apatch.ui.component.BottomBar
 import me.bmax.apatch.ui.component.BottomBarDestination
 import me.bmax.apatch.ui.navigation.LocalNavigator
@@ -56,6 +59,7 @@ import me.bmax.apatch.ui.page.kpm.KPModuleScreen
 import me.bmax.apatch.ui.page.settings.SettingScreen
 import me.bmax.apatch.ui.page.superuser.SuperUserScreen
 import me.bmax.apatch.ui.theme.APatchTheme
+import me.bmax.apatch.ui.theme.APatchMaterialTheme
 import me.bmax.apatch.ui.theme.LocalEnableBlur
 import me.bmax.apatch.ui.theme.LocalPageScale
 import me.bmax.apatch.ui.theme.blurEnabled
@@ -65,6 +69,8 @@ import me.bmax.apatch.ui.theme.withBackdrop
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.SnackbarHost
 import top.yukonga.miuix.kmp.basic.SnackbarHostState
+import androidx.compose.material3.Scaffold as Material3Scaffold
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import kotlin.math.abs
@@ -104,6 +110,7 @@ class MainActivity : ComponentActivity() {
             val prefs = context.getSharedPreferences("config", MODE_PRIVATE)
             var colorMode by remember { mutableIntStateOf(prefs.getInt("color_mode", 0)) }
             var keyColorInt by remember { mutableIntStateOf(prefs.getInt("key_color", 0)) }
+            var uiMode by remember { mutableStateOf(prefs.getString("ui_mode", "miuix") ?: "miuix") }
             val keyColor =
                 remember(keyColorInt) { if (keyColorInt == 0) null else Color(keyColorInt) }
 
@@ -132,18 +139,26 @@ class MainActivity : ComponentActivity() {
                     when (key) {
                         "color_mode" -> colorMode = prefs.getInt("color_mode", 0)
                         "key_color" -> keyColorInt = prefs.getInt("key_color", 0)
+                        "ui_mode" -> uiMode = prefs.getString("ui_mode", "miuix") ?: "miuix"
                     }
                 }
                 prefs.registerOnSharedPreferenceChangeListener(listener)
                 onDispose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
             }
 
-            APatchTheme(colorMode = colorMode, keyColor = keyColor) {
-                CompositionLocalProvider(LocalNavigator provides navigator) {
-                    NavGraph()
-
-                    LaunchedEffect(Unit) {
-                        navigator.onNewIntent(intent)
+            CompositionLocalProvider(LocalUiMode provides UiMode.fromValue(uiMode)) {
+                when (UiMode.fromValue(uiMode)) {
+                    UiMode.Miuix -> APatchTheme(colorMode = colorMode, keyColor = keyColor) {
+                        CompositionLocalProvider(LocalNavigator provides navigator) {
+                            NavGraph()
+                            LaunchedEffect(Unit) { navigator.onNewIntent(intent) }
+                        }
+                    }
+                    UiMode.Material -> APatchMaterialTheme(colorMode = colorMode, keyColor = keyColor) {
+                        CompositionLocalProvider(LocalNavigator provides navigator) {
+                            NavGraph()
+                            LaunchedEffect(Unit) { navigator.onNewIntent(intent) }
+                        }
                     }
                 }
             }
@@ -157,6 +172,7 @@ fun MainScreen() {
     val navigator = LocalNavigator.current
     val activity = LocalActivity.current as MainActivity
     val coroutineScope = rememberCoroutineScope()
+    val uiMode = LocalUiMode.current
 
     val state by APApplication.apStateLiveData.observeAsState(APApplication.State.UNKNOWN_STATE)
     val kPatchReady = state != APApplication.State.UNKNOWN_STATE
@@ -214,10 +230,7 @@ fun MainScreen() {
         LocalPageScale provides scale,
         LocalEnableBlur provides blurEnabled
     ) {
-        Scaffold(
-            bottomBar = { BottomBar(backdrop) },
-            snackbarHost = { SnackbarHost(state = snackBarHostState) },
-        ) { innerPadding ->
+        val pagerContent = @Composable { innerPadding: PaddingValues ->
             HorizontalPager(
                 modifier = Modifier
                     .fillMaxSize()
@@ -269,6 +282,20 @@ fun MainScreen() {
                     }
                 }
             }
+        }
+
+        when (uiMode) {
+            UiMode.Miuix -> Scaffold(
+                bottomBar = { BottomBar(backdrop) },
+                snackbarHost = { SnackbarHost(state = snackBarHostState) },
+                content = pagerContent,
+            )
+
+            UiMode.Material -> Material3Scaffold(
+                bottomBar = { BottomBar(backdrop) },
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                content = pagerContent,
+            )
         }
     }
 }

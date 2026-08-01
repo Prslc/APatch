@@ -69,6 +69,7 @@ class SettingsViewModel(
                 blurEnabled = blurEnabled,
                 themeMode = settingsRepo.getInt("color_mode", 0),
                 keyColor = settingsRepo.getInt("key_color", 0),
+                uiMode = settingsRepo.getString("ui_mode", "miuix"),
                 currentLanguageIndex = languagesValues.indexOf(tag).coerceAtLeast(0)
             )
         }
@@ -140,6 +141,11 @@ class SettingsViewModel(
     fun setThemeMode(index: Int) {
         settingsRepo.setInt("color_mode", index)
         _uiState.update { it.copy(themeMode = index) }
+    }
+
+    fun setUiMode(mode: String) {
+        settingsRepo.setString("ui_mode", mode)
+        _uiState.update { it.copy(uiMode = mode) }
     }
 
     fun setKeyColor(index: Int) {

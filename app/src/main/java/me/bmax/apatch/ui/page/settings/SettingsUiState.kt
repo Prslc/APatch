@@ -20,6 +20,7 @@ data class SettingsUiState(
     val blurEnabled: Boolean = true,
     val themeMode: Int = 0,
     val keyColor: Int = 0,
+    val uiMode: String = "miuix",
     val cacheSize: Long = 0L,
     val currentLanguageIndex: Int = 0,
     val currentDialog: SettingDialogType = SettingDialogType.NONE
