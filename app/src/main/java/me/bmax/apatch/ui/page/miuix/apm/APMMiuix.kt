@@ -86,6 +86,7 @@ import me.bmax.apatch.R
 import me.bmax.apatch.apApp
 import me.bmax.apatch.ui.LocalSnackbarHost
 import me.bmax.apatch.ui.WebUIActivity
+import me.bmax.apatch.ui.component.AppSnackbarHostState
 import me.bmax.apatch.ui.component.ConfirmResult
 import me.bmax.apatch.ui.component.IconTextButton
 import me.bmax.apatch.ui.component.ModuleStateIndicator
@@ -123,8 +124,6 @@ import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.ScrollBehavior
 import top.yukonga.miuix.kmp.basic.SearchBar
 import top.yukonga.miuix.kmp.basic.SnackbarDuration
-import top.yukonga.miuix.kmp.basic.SnackbarHostState
-import top.yukonga.miuix.kmp.basic.SnackbarResult
 import top.yukonga.miuix.kmp.basic.Surface
 import top.yukonga.miuix.kmp.basic.Switch
 import top.yukonga.miuix.kmp.basic.TabRowWithContour
@@ -408,7 +407,7 @@ private fun ModuleList(
     onInstallModule: (Uri) -> Unit,
     onClickModule: (id: String, name: String, hasWebUi: Boolean) -> Unit,
     context: Context,
-    snackBarHost: SnackbarHostState,
+    snackBarHost: AppSnackbarHostState,
     scrollBehavior: ScrollBehavior
 ) {
     val failedEnable = stringResource(R.string.apm_failed_to_enable)
@@ -766,7 +765,7 @@ private fun ModuleList(
         val result = snackBarHost.showSnackbar(
             message = message, actionLabel = actionLabel, duration = SnackbarDuration.Short
         )
-        if (result == SnackbarResult.ActionPerformed) {
+        if (result) {
             reboot()
         }
     }
@@ -797,7 +796,7 @@ private fun ModuleList(
         val result = snackBarHost.showSnackbar(
             message = message, actionLabel = actionLabel, duration = SnackbarDuration.Short
         )
-        if (result == SnackbarResult.ActionPerformed) {
+        if (result) {
             reboot()
         }
     }
@@ -920,7 +919,7 @@ private fun ModuleList(
                                         duration = SnackbarDuration.Short
                                     )
 
-                                    if (result == SnackbarResult.ActionPerformed) {
+                                    if (result) {
                                         reboot()
                                     }
                                 } else {

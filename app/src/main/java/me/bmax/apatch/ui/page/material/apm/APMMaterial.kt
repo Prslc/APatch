@@ -126,6 +126,7 @@ import me.bmax.apatch.R
 import me.bmax.apatch.apApp
 import me.bmax.apatch.ui.LocalSnackbarHost
 import me.bmax.apatch.ui.WebUIActivity
+import me.bmax.apatch.ui.component.AppSnackbarHostState
 import me.bmax.apatch.ui.component.ConfirmResult
 import me.bmax.apatch.ui.component.LabelText
 import me.bmax.apatch.ui.component.rememberConfirmDialog
@@ -150,8 +151,6 @@ import me.bmax.apatch.util.hasMagisk
 import me.bmax.apatch.util.reboot
 import okhttp3.Request
 import top.yukonga.miuix.kmp.basic.SnackbarDuration
-import top.yukonga.miuix.kmp.basic.SnackbarHostState
-import top.yukonga.miuix.kmp.basic.SnackbarResult
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -447,7 +446,7 @@ private fun ModuleListMaterial(
     onInstallModule: (Uri) -> Unit,
     onClickModule: (id: String, name: String, hasWebUi: Boolean) -> Unit,
     context: Context,
-    snackBarHost: SnackbarHostState
+    snackBarHost: AppSnackbarHostState
 ) {
     val failedEnable = stringResource(R.string.apm_failed_to_enable)
     val failedDisable = stringResource(R.string.apm_failed_to_disable)
@@ -849,7 +848,7 @@ private fun ModuleListMaterial(
         val result = snackBarHost.showSnackbar(
             message = message, actionLabel = actionLabel, duration = SnackbarDuration.Short
         )
-        if (result == SnackbarResult.ActionPerformed) {
+        if (result) {
             reboot()
         }
     }
@@ -880,7 +879,7 @@ private fun ModuleListMaterial(
         val result = snackBarHost.showSnackbar(
             message = message, actionLabel = actionLabel, duration = SnackbarDuration.Short
         )
-        if (result == SnackbarResult.ActionPerformed) {
+        if (result) {
             reboot()
         }
     }
@@ -1004,7 +1003,7 @@ private fun ModuleListMaterial(
                                         duration = SnackbarDuration.Short
                                     )
 
-                                    if (result == SnackbarResult.ActionPerformed) {
+                                    if (result) {
                                         reboot()
                                     }
                                 } else {

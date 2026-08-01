@@ -48,8 +48,11 @@ import kotlinx.coroutines.launch
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.UiMode
+import me.bmax.apatch.ui.component.AppSnackbarHostState
 import me.bmax.apatch.ui.component.BottomBar
 import me.bmax.apatch.ui.component.BottomBarDestination
+import me.bmax.apatch.ui.component.material.SwipeableSnackbarHostMaterial
+import me.bmax.apatch.ui.component.rememberAppSnackbarHostState
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.NavGraph
 import me.bmax.apatch.ui.navigation.Navigator
@@ -68,7 +71,6 @@ import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.SnackbarHost
-import top.yukonga.miuix.kmp.basic.SnackbarHostState
 import androidx.compose.material3.Scaffold as Material3Scaffold
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.platform.LocalDensity
@@ -76,7 +78,7 @@ import androidx.compose.ui.unit.Density
 import kotlin.math.abs
 
 val LocalSelectedPage = compositionLocalOf { 0 }
-val LocalSnackbarHost = compositionLocalOf { SnackbarHostState() }
+val LocalSnackbarHost = compositionLocalOf { AppSnackbarHostState() }
 
 class MainActivity : ComponentActivity() {
 
@@ -194,7 +196,7 @@ fun MainScreen() {
     }
 
     val backdrop = rememberBlurBackdrop()
-    val snackBarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = rememberAppSnackbarHostState()
     val contentReady = rememberContentReady()
     val settledPage by remember { derivedStateOf { mainPagerState.pagerState.settledPage } }
 
@@ -287,13 +289,16 @@ fun MainScreen() {
         when (uiMode) {
             UiMode.Miuix -> Scaffold(
                 bottomBar = { BottomBar(backdrop) },
-                snackbarHost = { SnackbarHost(state = snackBarHostState) },
+                snackbarHost = { SnackbarHost(state = snackBarHostState.miuixState) },
                 content = pagerContent,
             )
 
             UiMode.Material -> Material3Scaffold(
                 bottomBar = { BottomBar(backdrop) },
                 containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                snackbarHost = {
+                    SwipeableSnackbarHostMaterial(hostState = snackBarHostState.materialState)
+                },
                 content = pagerContent,
             )
         }
