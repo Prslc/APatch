@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.component
+package me.bmax.apatch.ui.component.bottombar
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
@@ -17,8 +17,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.UiMode
-import me.bmax.apatch.ui.component.material.BottomBarMaterial
-import me.bmax.apatch.ui.component.miuix.BottomBarMiuix
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
 
 @Composable

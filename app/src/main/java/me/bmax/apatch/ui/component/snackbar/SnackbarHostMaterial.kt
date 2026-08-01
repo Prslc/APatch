@@ -1,6 +1,6 @@
 // This file includes code derived from https://github.com/ReSukiSU/ReSukiSU
 // Swipeable snackbar host adapted from ui/component/SwipeableSnackbarHost.kt
-package me.bmax.apatch.ui.component.material
+package me.bmax.apatch.ui.component.snackbar
 
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarData

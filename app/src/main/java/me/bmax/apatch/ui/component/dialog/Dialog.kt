@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.component
+package me.bmax.apatch.ui.component.dialog
 
 import android.os.Parcelable
 import android.util.Log
@@ -25,10 +25,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.parcelize.Parcelize
 import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.UiMode
-import me.bmax.apatch.ui.component.material.ConfirmDialogMaterial
-import me.bmax.apatch.ui.component.material.LoadingDialogMaterial
-import me.bmax.apatch.ui.component.miuix.ConfirmDialogMiuix
-import me.bmax.apatch.ui.component.miuix.LoadingDialogMiuix
 import kotlin.coroutines.resume
 
 private const val TAG = "DialogComponent"
@@ -413,7 +409,7 @@ fun rememberEditableDialog(
     val uiMode = LocalUiMode.current
     if (visible.value) {
         when (uiMode) {
-            UiMode.Miuix -> me.bmax.apatch.ui.component.miuix.EditableDialogMiuix(
+            UiMode.Miuix -> me.bmax.apatch.ui.component.dialog.EditableDialogMiuix(
                 title = title,
                 content = content,
                 confirmText = confirmText,
@@ -428,7 +424,7 @@ fun rememberEditableDialog(
                 }
             )
 
-            UiMode.Material -> me.bmax.apatch.ui.component.material.EditableDialogMaterial(
+            UiMode.Material -> me.bmax.apatch.ui.component.dialog.EditableDialogMaterial(
                 title = title,
                 content = content,
                 confirmText = confirmText,

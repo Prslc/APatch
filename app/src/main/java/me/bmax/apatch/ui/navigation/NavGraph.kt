@@ -20,7 +20,7 @@ import androidx.navigation.toRoute
 import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.MainScreen
 import me.bmax.apatch.ui.UiMode
-import me.bmax.apatch.ui.component.ModuleInstallDialog
+import me.bmax.apatch.ui.component.moduleinstalldialog.ModuleInstallDialog
 import me.bmax.apatch.ui.page.about.AboutScreen
 import me.bmax.apatch.ui.page.patch.PatchesScreen
 import me.bmax.apatch.ui.page.patchmode.PatchMode

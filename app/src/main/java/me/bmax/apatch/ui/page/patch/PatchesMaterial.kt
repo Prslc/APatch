@@ -87,7 +87,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bmax.apatch.R
-import me.bmax.apatch.ui.component.SwitchItem
+import me.bmax.apatch.ui.component.settingsitem.SwitchItem
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.page.kpm.KPModel

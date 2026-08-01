@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.component.material
+package me.bmax.apatch.ui.component.moduleinstalldialog
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

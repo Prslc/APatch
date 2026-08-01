@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.component.miuix
+package me.bmax.apatch.ui.component.sliderpreference
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable

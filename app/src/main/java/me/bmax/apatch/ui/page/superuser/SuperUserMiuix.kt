@@ -34,7 +34,7 @@ import me.bmax.apatch.R
 import me.bmax.apatch.data.AppInfo
 import me.bmax.apatch.data.AppRepository
 import me.bmax.apatch.ui.component.AppIconImage
-import me.bmax.apatch.ui.component.LabelText
+import me.bmax.apatch.ui.component.labeltext.LabelText
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop

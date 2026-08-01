@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.component
+package me.bmax.apatch.ui.component.snackbar
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable

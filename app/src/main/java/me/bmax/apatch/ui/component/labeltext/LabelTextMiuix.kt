@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.component.miuix
+package me.bmax.apatch.ui.component.labeltext
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

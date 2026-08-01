@@ -90,9 +90,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
-import me.bmax.apatch.ui.component.ConfirmResult
-import me.bmax.apatch.ui.component.rememberConfirmDialog
-import me.bmax.apatch.ui.component.rememberLoadingDialog
+import me.bmax.apatch.ui.component.dialog.ConfirmResult
+import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
+import me.bmax.apatch.ui.component.dialog.rememberLoadingDialog
 import me.bmax.apatch.ui.component.material.ExpressiveInputField
 import me.bmax.apatch.ui.component.material.ExpressiveSearchBar
 import me.bmax.apatch.ui.navigation.LocalNavigator

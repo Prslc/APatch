@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.component.miuix
+package me.bmax.apatch.ui.component.bottombar
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.ui.LocalSelectedPage
-import me.bmax.apatch.ui.component.BottomBarDestination
+import me.bmax.apatch.ui.component.bottombar.BottomBarDestination
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor

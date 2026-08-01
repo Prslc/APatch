@@ -45,7 +45,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.material.BaseWidget
 import me.bmax.apatch.ui.component.material.SegmentedColumn
-import me.bmax.apatch.ui.component.rememberConfirmDialog
+import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.page.patch.PatchMode
 import me.bmax.apatch.ui.theme.LocalEnableBlur

@@ -63,7 +63,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
 import me.bmax.apatch.apApp
-import me.bmax.apatch.ui.component.rememberConfirmDialog
+import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.theme.LocalEnableBlur

@@ -126,11 +126,11 @@ import me.bmax.apatch.R
 import me.bmax.apatch.apApp
 import me.bmax.apatch.ui.LocalSnackbarHost
 import me.bmax.apatch.ui.WebUIActivity
-import me.bmax.apatch.ui.component.AppSnackbarHostState
-import me.bmax.apatch.ui.component.ConfirmResult
-import me.bmax.apatch.ui.component.LabelText
-import me.bmax.apatch.ui.component.rememberConfirmDialog
-import me.bmax.apatch.ui.component.rememberLoadingDialog
+import me.bmax.apatch.ui.component.snackbar.AppSnackbarHostState
+import me.bmax.apatch.ui.component.dialog.ConfirmResult
+import me.bmax.apatch.ui.component.labeltext.LabelText
+import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
+import me.bmax.apatch.ui.component.dialog.rememberLoadingDialog
 import me.bmax.apatch.ui.component.material.ExpressiveInputField
 import me.bmax.apatch.ui.component.material.ExpressiveSearchBar
 import me.bmax.apatch.ui.navigation.LocalNavigator

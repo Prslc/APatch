@@ -1,4 +1,7 @@
-package me.bmax.apatch.ui.component.material
+package me.bmax.apatch.ui.component.sliderpreference
+
+import me.bmax.apatch.ui.component.material.KeyPointSlider
+import me.bmax.apatch.ui.component.material.LocalSegmentedItemShape
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable

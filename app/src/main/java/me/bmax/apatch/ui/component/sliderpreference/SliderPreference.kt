@@ -1,12 +1,10 @@
-package me.bmax.apatch.ui.component
+package me.bmax.apatch.ui.component.sliderpreference
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.UiMode
-import me.bmax.apatch.ui.component.material.SliderPreferenceMaterial
-import me.bmax.apatch.ui.component.miuix.SliderPreferenceMiuix
 
 @Composable
 fun SliderPreference(

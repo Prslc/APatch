@@ -35,10 +35,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.UiMode
-import me.bmax.apatch.ui.component.ArrowItem
-import me.bmax.apatch.ui.component.DropdownItem
-import me.bmax.apatch.ui.component.SliderPreference
-import me.bmax.apatch.ui.component.SwitchItem
+import me.bmax.apatch.ui.component.settingsitem.ArrowItem
+import me.bmax.apatch.ui.component.settingsitem.DropdownItem
+import me.bmax.apatch.ui.component.sliderpreference.SliderPreference
+import me.bmax.apatch.ui.component.settingsitem.SwitchItem
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.theme.LocalPageScale
 import me.bmax.apatch.ui.theme.blurEffect

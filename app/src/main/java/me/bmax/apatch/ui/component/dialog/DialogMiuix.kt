@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.component.miuix
+package me.bmax.apatch.ui.component.dialog
 
 import android.graphics.text.LineBreaker
 import android.os.Build
@@ -36,7 +36,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import io.noties.markwon.Markwon
 import io.noties.markwon.utils.NoCopySpannableFactory
-import me.bmax.apatch.ui.component.ConfirmDialogVisuals
+import me.bmax.apatch.ui.component.dialog.ConfirmDialogVisuals
 import me.bmax.apatch.util.ui.APDialogBlurBehindUtils.Companion.setupWindowBlurListener
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.CircularProgressIndicator

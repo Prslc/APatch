@@ -25,8 +25,8 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineScope
 import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.UiMode
-import me.bmax.apatch.ui.component.AppSnackbarHostState
-import me.bmax.apatch.ui.component.BottomBar
+import me.bmax.apatch.ui.component.snackbar.AppSnackbarHostState
+import me.bmax.apatch.ui.component.bottombar.BottomBar
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.NavGraph
 import me.bmax.apatch.ui.navigation.Navigator

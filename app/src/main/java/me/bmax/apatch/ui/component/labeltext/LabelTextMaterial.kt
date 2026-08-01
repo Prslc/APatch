@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.component.material
+package me.bmax.apatch.ui.component.labeltext
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape

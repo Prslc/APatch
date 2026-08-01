@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.component.material
+package me.bmax.apatch.ui.component.dialog
 
 import android.graphics.text.LineBreaker
 import android.os.Build
@@ -29,7 +29,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import io.noties.markwon.Markwon
 import io.noties.markwon.utils.NoCopySpannableFactory
-import me.bmax.apatch.ui.component.ConfirmDialogVisuals
+import me.bmax.apatch.ui.component.dialog.ConfirmDialogVisuals
 
 @Composable
 internal fun LoadingDialogMaterial(showDialog: MutableState<Boolean>) {

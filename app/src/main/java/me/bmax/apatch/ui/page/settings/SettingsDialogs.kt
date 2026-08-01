@@ -10,9 +10,9 @@ import androidx.compose.ui.platform.LocalContext
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.UiMode
-import me.bmax.apatch.ui.component.ConfirmResult
-import me.bmax.apatch.ui.component.rememberConfirmDialog
-import me.bmax.apatch.ui.component.rememberLoadingDialog
+import me.bmax.apatch.ui.component.dialog.ConfirmResult
+import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
+import me.bmax.apatch.ui.component.dialog.rememberLoadingDialog
 import me.bmax.apatch.util.clearAppCache
 import me.bmax.apatch.util.formatSize
 

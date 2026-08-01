@@ -41,7 +41,7 @@ import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.UiMode
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.data.AppRepository
-import me.bmax.apatch.ui.component.LoadingIndicator
+import me.bmax.apatch.ui.component.loadingindicator.LoadingIndicator
 import me.bmax.apatch.ui.theme.APatchMaterialTheme
 import me.bmax.apatch.ui.theme.APatchTheme
 import me.bmax.apatch.ui.webui.AppIconUtil

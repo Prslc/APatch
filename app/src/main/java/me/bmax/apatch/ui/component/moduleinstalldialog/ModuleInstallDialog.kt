@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.component
+package me.bmax.apatch.ui.component.moduleinstalldialog
 
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -12,9 +12,8 @@ import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.bmax.apatch.ui.LocalUiMode
+import me.bmax.apatch.ui.component.dialog.rememberLoadingDialog
 import me.bmax.apatch.ui.UiMode
-import me.bmax.apatch.ui.component.material.ModuleInstallDialogMaterial
-import me.bmax.apatch.ui.component.miuix.ModuleInstallDialogMiuix
 import me.bmax.apatch.util.InstallPreview
 import me.bmax.apatch.util.ModuleParser
 

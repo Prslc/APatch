@@ -1,4 +1,4 @@
-package me.bmax.apatch.ui.component.material
+package me.bmax.apatch.ui.component.bottombar
 
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -15,7 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.ui.LocalSelectedPage
-import me.bmax.apatch.ui.component.BottomBarDestination
+import me.bmax.apatch.ui.component.bottombar.BottomBarDestination
 import me.bmax.apatch.ui.navigation.LocalNavigator
 
 @Composable

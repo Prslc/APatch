@@ -1,4 +1,8 @@
-package me.bmax.apatch.ui.component.material
+package me.bmax.apatch.ui.component.settingsitem
+
+import me.bmax.apatch.ui.component.material.DropDownMenuWidget
+import me.bmax.apatch.ui.component.material.NavigationItemWidget
+import me.bmax.apatch.ui.component.material.SwitchWidget
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

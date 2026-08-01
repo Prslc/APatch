@@ -38,11 +38,11 @@ import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import me.bmax.apatch.APApplication
-import me.bmax.apatch.ui.component.AppSnackbarHostState
-import me.bmax.apatch.ui.component.BottomBar
-import me.bmax.apatch.ui.component.BottomBarDestination
-import me.bmax.apatch.ui.component.material.SwipeableSnackbarHostMaterial
-import me.bmax.apatch.ui.component.rememberAppSnackbarHostState
+import me.bmax.apatch.ui.component.snackbar.AppSnackbarHostState
+import me.bmax.apatch.ui.component.bottombar.BottomBar
+import me.bmax.apatch.ui.component.bottombar.BottomBarDestination
+import me.bmax.apatch.ui.component.snackbar.SwipeableSnackbarHostMaterial
+import me.bmax.apatch.ui.component.snackbar.rememberAppSnackbarHostState
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.page.apm.APModuleScreen
 import me.bmax.apatch.ui.page.home.HomeScreen

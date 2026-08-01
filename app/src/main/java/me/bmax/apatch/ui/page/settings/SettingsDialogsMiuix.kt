@@ -37,7 +37,7 @@ import kotlinx.coroutines.withContext
 import me.bmax.apatch.BuildConfig
 import me.bmax.apatch.Natives
 import me.bmax.apatch.R
-import me.bmax.apatch.ui.component.rememberLoadingDialog
+import me.bmax.apatch.ui.component.dialog.rememberLoadingDialog
 import me.bmax.apatch.ui.theme.LocalPageScale
 import me.bmax.apatch.util.getBugreportFile
 import me.bmax.apatch.util.outputStream
