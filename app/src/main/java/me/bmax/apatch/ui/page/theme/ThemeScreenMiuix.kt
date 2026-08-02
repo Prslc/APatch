@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BlurOn
 import androidx.compose.material.icons.filled.ZoomIn
 import androidx.compose.material.icons.rounded.Colorize
 import androidx.compose.material.icons.rounded.Dashboard
@@ -21,6 +22,7 @@ import com.materialkolor.PaletteStyle
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.UiMode
 import me.bmax.apatch.ui.component.settingsitem.DropdownItem
+import me.bmax.apatch.ui.component.settingsitem.SwitchItem
 import me.bmax.apatch.ui.component.sliderpreference.SliderPreference
 
 import me.bmax.apatch.ui.theme.LocalPageScale
@@ -42,7 +44,7 @@ fun ThemeScreenMiuix(
     actions: ThemeScreenActions,
     viewModel: ThemeViewModel,
 ) {
-    val backdrop = rememberBlurBackdrop()
+    val backdrop = rememberBlurBackdrop(state.blurEnabled)
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -88,6 +90,13 @@ fun ThemeScreenMiuix(
             item {
                 SmallTitle(stringResource(R.string.settings_theme))
                 Card(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    SwitchItem(
+                        title = stringResource(R.string.settings_blur_enabled),
+                        summary = stringResource(R.string.settings_blur_enabled_summary),
+                        icon = Icons.Filled.BlurOn,
+                        checked = state.blurEnabled,
+                        onCheckedChange = actions.onSetBlur,
+                    )
                     DropdownItem(
                         title = stringResource(R.string.settings_theme),
                         summary = stringResource(R.string.settings_theme_summary),
