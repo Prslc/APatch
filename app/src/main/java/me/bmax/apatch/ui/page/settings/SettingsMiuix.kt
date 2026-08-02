@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.filled.ZoomIn
 import androidx.compose.material.icons.rounded.Colorize
+import androidx.compose.material.icons.rounded.Style
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -198,6 +199,22 @@ fun SettingScreenMiuix(
                             selectedIndex = keyColorIndex,
                             icon = Icons.Rounded.Colorize,
                             onSelectedIndexChange = { viewModel.setKeyColor(it) }
+                        )
+                    }
+
+                    AnimatedVisibility(
+                        visible = uiState.themeMode in 3..5
+                    ) {
+                        val paletteIndex = com.materialkolor.PaletteStyle.entries
+                            .indexOfFirst { it.name == uiState.paletteStyle }
+                            .coerceAtLeast(0)
+                        DropdownItem(
+                            title = stringResource(R.string.settings_palette_style),
+                            summary = stringResource(R.string.settings_palette_style_summary),
+                            items = com.materialkolor.PaletteStyle.entries.map { it.name },
+                            selectedIndex = paletteIndex,
+                            icon = Icons.Rounded.Style,
+                            onSelectedIndexChange = { viewModel.setPaletteStyle(it) }
                         )
                     }
 

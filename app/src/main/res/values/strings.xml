@@ -307,6 +307,8 @@
 
     <string name="settings_key_color">Key color</string>
     <string name="settings_key_color_summary">Customize accent when using Monet.</string>
+    <string name="settings_palette_style">Palette Style</string>
+    <string name="settings_palette_style_summary">Choose color derivation style for Monet theme.</string>
     <string name="settings_key_color_default">Default</string>
     <string name="color_red">Red</string>
     <string name="color_green">Green</string>

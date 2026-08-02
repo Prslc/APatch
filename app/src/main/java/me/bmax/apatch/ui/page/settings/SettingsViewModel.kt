@@ -69,6 +69,7 @@ class SettingsViewModel(
                 blurEnabled = blurEnabled,
                 themeMode = settingsRepo.getInt("color_mode", 0),
                 keyColor = settingsRepo.getInt("key_color", 0),
+                paletteStyle = settingsRepo.getString("palette_style", "TonalSpot"),
                 uiMode = settingsRepo.getString("ui_mode", "miuix"),
                 currentLanguageIndex = languagesValues.indexOf(tag).coerceAtLeast(0)
             )
@@ -152,6 +153,12 @@ class SettingsViewModel(
         val color = colorValues[index]
         settingsRepo.setInt("key_color", color)
         _uiState.update { it.copy(keyColor = color) }
+    }
+
+    fun setPaletteStyle(index: Int) {
+        val style = com.materialkolor.PaletteStyle.entries[index].name
+        settingsRepo.setString("palette_style", style)
+        _uiState.update { it.copy(paletteStyle = style) }
     }
 
     fun showDialog(dialogType: SettingDialogType) {

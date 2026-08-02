@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.material.icons.rounded.Style
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.UiMode
 import me.bmax.apatch.ui.component.settingsitem.ArrowItem
@@ -223,6 +224,22 @@ fun SettingScreenMaterial(
                             selectedIndex = keyColorIndex,
                             icon = Icons.Rounded.Colorize,
                             onSelectedIndexChange = { viewModel.setKeyColor(it) }
+                        )
+                    }
+                    // palette style
+                    item(
+                        animatedVisibility = uiState.themeMode in 3..5
+                    ) {
+                        val paletteIndex = com.materialkolor.PaletteStyle.entries
+                            .indexOfFirst { it.name == uiState.paletteStyle }
+                            .coerceAtLeast(0)
+                        DropdownItem(
+                            title = stringResource(R.string.settings_palette_style),
+                            summary = stringResource(R.string.settings_palette_style_summary),
+                            items = com.materialkolor.PaletteStyle.entries.map { it.name },
+                            selectedIndex = paletteIndex,
+                            icon = Icons.Rounded.Style,
+                            onSelectedIndexChange = { viewModel.setPaletteStyle(it) }
                         )
                     }
 

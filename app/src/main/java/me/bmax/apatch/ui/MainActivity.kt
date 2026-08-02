@@ -10,32 +10,22 @@ import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.CoroutineScope
-import me.bmax.apatch.ui.LocalUiMode
-import me.bmax.apatch.ui.UiMode
-import me.bmax.apatch.ui.component.snackbar.AppSnackbarHostState
-import me.bmax.apatch.ui.component.bottombar.BottomBar
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.NavGraph
 import me.bmax.apatch.ui.navigation.Navigator
-import me.bmax.apatch.ui.theme.APatchTheme
 import me.bmax.apatch.ui.theme.APatchMaterialTheme
-import top.yukonga.miuix.kmp.basic.Scaffold
-import top.yukonga.miuix.kmp.basic.SnackbarHost
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.unit.Density
+import me.bmax.apatch.ui.theme.APatchTheme
 
 
 class MainActivity : ComponentActivity() {
@@ -70,6 +60,7 @@ class MainActivity : ComponentActivity() {
             val prefs = context.getSharedPreferences("config", MODE_PRIVATE)
             var colorMode by remember { mutableIntStateOf(prefs.getInt("color_mode", 0)) }
             var keyColorInt by remember { mutableIntStateOf(prefs.getInt("key_color", 0)) }
+            var paletteStyle by remember { mutableStateOf(prefs.getString("palette_style", "TonalSpot") ?: "TonalSpot") }
             var uiMode by remember { mutableStateOf(prefs.getString("ui_mode", "miuix") ?: "miuix") }
             val keyColor =
                 remember(keyColorInt) { if (keyColorInt == 0) null else Color(keyColorInt) }
@@ -99,6 +90,7 @@ class MainActivity : ComponentActivity() {
                     when (key) {
                         "color_mode" -> colorMode = prefs.getInt("color_mode", 0)
                         "key_color" -> keyColorInt = prefs.getInt("key_color", 0)
+                        "palette_style" -> paletteStyle = prefs.getString("palette_style", "TonalSpot") ?: "TonalSpot"
                         "ui_mode" -> uiMode = prefs.getString("ui_mode", "miuix") ?: "miuix"
                     }
                 }
@@ -114,7 +106,11 @@ class MainActivity : ComponentActivity() {
                             LaunchedEffect(Unit) { navigator.onNewIntent(intent) }
                         }
                     }
-                    UiMode.Material -> APatchMaterialTheme(colorMode = colorMode, keyColor = keyColor) {
+                    UiMode.Material -> APatchMaterialTheme(
+                        colorMode = colorMode,
+                        keyColor = keyColor,
+                        paletteStyle = paletteStyle,
+                    ) {
                         CompositionLocalProvider(LocalNavigator provides navigator) {
                             NavGraph()
                             LaunchedEffect(Unit) { navigator.onNewIntent(intent) }
