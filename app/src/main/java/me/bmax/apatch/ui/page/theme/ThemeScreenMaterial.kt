@@ -50,7 +50,6 @@ import me.bmax.apatch.ui.component.settingsitem.SwitchItem
 import me.bmax.apatch.ui.component.sliderpreference.SliderPreference
 
 import me.bmax.apatch.ui.theme.LocalPageScale
-import me.bmax.apatch.ui.theme.LocalEnableBlur
 import me.bmax.apatch.ui.theme.getMaterial3AppBarColor
 import me.bmax.apatch.ui.theme.material3BlurEffect
 import me.bmax.apatch.ui.theme.rememberMaterial3BlurBackdrop
@@ -63,7 +62,7 @@ fun ThemeScreenMaterial(
     viewModel: ThemeViewModel,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    val backdrop = rememberMaterial3BlurBackdrop(LocalEnableBlur.current)
+    val backdrop = rememberMaterial3BlurBackdrop(state.blurEnabled)
 
     var showThemeDialog by remember { mutableStateOf(false) }
     var showPaletteDialog by remember { mutableStateOf(false) }
@@ -173,7 +172,7 @@ fun ThemeScreenMaterial(
                         icon = Icons.Filled.BlurOn,
                         title = stringResource(R.string.settings_blur_enabled),
                         summary = stringResource(R.string.settings_blur_enabled_summary),
-                        checked = LocalEnableBlur.current,
+                        checked = state.blurEnabled,
                         onCheckedChange = actions.onSetBlur,
                     )
                 }

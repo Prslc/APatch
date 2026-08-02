@@ -26,6 +26,7 @@ fun ThemeScreen(viewModel: ThemeViewModel = viewModel()) {
         themeMode = uiState.themeMode,
         keyColorIndex = keyColorIndex,
         paletteStyleIndex = paletteIndex,
+        blurEnabled = uiState.blurEnabled,
     )
 
     val actions = ThemeScreenActions(
@@ -57,6 +58,7 @@ class ThemeUiState(
     val themeMode: Int,
     val keyColorIndex: Int,
     val paletteStyleIndex: Int,
+    val blurEnabled: Boolean,
 )
 
 class ThemeScreenActions(
