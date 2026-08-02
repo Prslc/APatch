@@ -167,7 +167,8 @@ fun TerminalScreenMaterial(
             Text(
                 modifier = Modifier.padding(12.dp),
                 text = state.logs,
-                fontSize = 12.sp,
+                fontSize = 11.sp,
+                lineHeight = 15.sp,
                 fontFamily = FontFamily.Monospace,
                 color = MaterialTheme.colorScheme.onSurface
             )
