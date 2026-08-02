@@ -283,8 +283,8 @@ private fun AppItem(
                             LabelText(
                                 label = scontext,
                                 modifier = Modifier.padding(top = 4.dp),
-                                containerColor = colorScheme.tertiaryContainer,
-                                contentColor = colorScheme.onTertiaryContainer
+                                containerColor = colorScheme.secondaryContainer,
+                                contentColor = colorScheme.onSecondaryContainer
                             )
                         }
                     }

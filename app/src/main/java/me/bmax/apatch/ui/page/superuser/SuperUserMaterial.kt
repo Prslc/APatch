@@ -347,8 +347,8 @@ private fun AppItemMaterial(
                             LabelText(
                                 label = app.config.profile.scontext.ifEmpty { stringResource(R.string.su_selinux_via_hook) },
                                 modifier = Modifier.padding(top = 4.dp),
-                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                             )
                         }
                     }
