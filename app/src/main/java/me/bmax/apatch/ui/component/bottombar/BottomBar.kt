@@ -23,7 +23,7 @@ import top.yukonga.miuix.kmp.blur.LayerBackdrop
 fun BottomBar(backdrop: LayerBackdrop?) {
     when (LocalUiMode.current) {
         UiMode.Miuix -> BottomBarMiuix(backdrop)
-        UiMode.Material -> BottomBarMaterial()
+        UiMode.Material -> BottomBarMaterial(backdrop)
     }
 }
 

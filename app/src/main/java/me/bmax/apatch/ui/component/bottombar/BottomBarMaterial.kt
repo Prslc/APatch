@@ -3,7 +3,6 @@ package me.bmax.apatch.ui.component.bottombar
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
@@ -11,15 +10,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.ui.LocalSelectedPage
 import me.bmax.apatch.ui.component.bottombar.BottomBarDestination
 import me.bmax.apatch.ui.navigation.LocalNavigator
+import me.bmax.apatch.ui.theme.getMaterial3AppBarColor
+import me.bmax.apatch.ui.theme.material3BlurEffect
+import top.yukonga.miuix.kmp.blur.LayerBackdrop
 
 @Composable
-fun BottomBarMaterial() {
+fun BottomBarMaterial(backdrop: LayerBackdrop?) {
     val navigator = LocalNavigator.current
     val selectedPage = LocalSelectedPage.current
 
@@ -34,7 +37,8 @@ fun BottomBarMaterial() {
     }
 
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        modifier = Modifier.material3BlurEffect(backdrop),
+        containerColor = backdrop.getMaterial3AppBarColor(),
     ) {
         availablePages.forEachIndexed { index, destination ->
             val selected = selectedPage == index
