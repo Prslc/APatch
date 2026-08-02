@@ -1128,12 +1128,6 @@ private fun ModuleItemMaterial(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        if (module.metamodule) {
-                            LabelText(
-                                label = "META",
-                                containerColor = MaterialTheme.colorScheme.tertiary,
-                            )
-                        }
                         Text(
                             text = module.name,
                             fontSize = MaterialTheme.typography.titleMedium.fontSize,
@@ -1142,6 +1136,12 @@ private fun ModuleItemMaterial(
                             textDecoration = decoration,
                             modifier = Modifier.weight(1f, false)
                         )
+                        if (module.metamodule) {
+                            LabelText(
+                                label = "META",
+                                containerColor = MaterialTheme.colorScheme.tertiary,
+                            )
+                        }
                     }
 
                     Text(

@@ -15,11 +15,14 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LabelTextMaterial(
     label: String,
+    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = contentColorFor(containerColor)
 ) {
     Surface(
-        modifier = Modifier.padding(top = 4.dp, end = 4.dp),
+        modifier = Modifier
+            .padding(end = 4.dp)
+            .then(modifier),
         shape = RoundedCornerShape(4.dp),
         color = containerColor
     ) {

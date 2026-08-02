@@ -17,12 +17,14 @@ import top.yukonga.miuix.kmp.basic.Text
 @Composable
 fun LabelTextMiuix(
     label: String,
+    modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = contentColorFor(containerColor)
 ) {
     Box(
         modifier = Modifier
-            .padding(top = 4.dp, end = 4.dp)
+            .padding(end = 4.dp)
+            .then(modifier)
             .background(
                 color = containerColor,
                 shape = RoundedCornerShape(4.dp)

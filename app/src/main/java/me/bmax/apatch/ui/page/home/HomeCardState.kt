@@ -24,6 +24,7 @@ data class KPatchCardState(
     val title: Int,
     val subtitle: String? = null,
     val versionInfo: String? = null,
+    val badge: String? = null,
     val buttonText: Int,
     val buttonAction: KPatchAction,
     val isButtonEnabled: Boolean = true
@@ -70,8 +71,8 @@ fun APApplication.State.toKPatchCardState(
             icon = Icons.Filled.CheckCircle,
             iconDesc = "Working",
             title = R.string.home_working,
-            versionInfo = "${Version.installedKPVString()} (${managerVersion.second}) - " +
-                    if (apState != APApplication.State.ANDROIDPATCH_NOT_INSTALLED) "Full" else "KernelPatch",
+            versionInfo = "${Version.installedKPVString()} (${managerVersion.second})",
+            badge = if (apState != APApplication.State.ANDROIDPATCH_NOT_INSTALLED) "Full" else "KernelPatch",
             buttonText = R.string.home_working,
             buttonAction = KPatchAction.NONE,
             isButtonEnabled = false

@@ -265,6 +265,7 @@ private fun AppItem(
                         if (isExcluded) {
                             LabelText(
                                 label = stringResource(R.string.su_pkg_excluded_label),
+                                modifier = Modifier.padding(top = 4.dp),
                                 containerColor = colorScheme.tertiaryContainer,
                                 contentColor = colorScheme.onTertiaryContainer
                             )
@@ -272,6 +273,7 @@ private fun AppItem(
                         if (isAllowed) {
                             LabelText(
                                 label = "UID: ${app.config.profile.uid}",
+                                modifier = Modifier.padding(top = 4.dp),
                                 containerColor = colorScheme.tertiaryContainer,
                                 contentColor = colorScheme.onTertiaryContainer
                             )
@@ -280,6 +282,7 @@ private fun AppItem(
                             }
                             LabelText(
                                 label = scontext,
+                                modifier = Modifier.padding(top = 4.dp),
                                 containerColor = colorScheme.tertiaryContainer,
                                 contentColor = colorScheme.onTertiaryContainer
                             )

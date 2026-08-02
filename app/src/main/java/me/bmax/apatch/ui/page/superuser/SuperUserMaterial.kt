@@ -332,6 +332,7 @@ private fun AppItemMaterial(
                         if (isExcluded) {
                             LabelText(
                                 label = stringResource(R.string.su_pkg_excluded_label),
+                                modifier = Modifier.padding(top = 4.dp),
                                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                                 contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                             )
@@ -339,11 +340,13 @@ private fun AppItemMaterial(
                         if (isAllowed) {
                             LabelText(
                                 label = "UID: ${app.config.profile.uid}",
+                                modifier = Modifier.padding(top = 4.dp),
                                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                                 contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                             )
                             LabelText(
                                 label = app.config.profile.scontext.ifEmpty { stringResource(R.string.su_selinux_via_hook) },
+                                modifier = Modifier.padding(top = 4.dp),
                                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                                 contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                             )
