@@ -5,6 +5,7 @@
 package me.bmax.apatch.ui.theme
 
 import android.os.Build
+import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
@@ -148,8 +149,12 @@ fun Modifier.material3BlurEffect(
     blurRadius: Float = 25f,
     shape: Shape = RectangleShape
 ): Modifier {
-    // Return early if disabled or backdrop is unavailable
-    if (!enabled || backdrop == null) return this
+    // Paint a solid background when disabled or backdrop is unavailable,
+    // so areas around components (e.g. search bars below a collapsing
+    // top bar) never show through to the scrolling content
+    if (!enabled || backdrop == null) {
+        return this.background(MaterialTheme.colorScheme.surfaceContainer)
+    }
 
     // Grab the current M3 surfaceContainer color for blending with 80% opacity
     val blendColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f)
