@@ -110,7 +110,7 @@ fun MainScreen() {
         if (mainPagerState.selectedPage != 0) {
             mainPagerState.animateToPage(0)
         } else {
-            activity.moveTaskToBack(true)
+            activity.finish()
         }
     }
 
