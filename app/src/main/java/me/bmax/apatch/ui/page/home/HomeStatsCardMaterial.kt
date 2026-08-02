@@ -21,9 +21,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,7 +31,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
-import me.bmax.apatch.ui.component.UninstallType
 import me.bmax.apatch.ui.component.material.BaseWidget
 import me.bmax.apatch.ui.component.material.SegmentedColumn
 import me.bmax.apatch.ui.navigation.LocalNavigator
@@ -45,89 +42,6 @@ import me.bmax.apatch.util.reboot
 
 private val managerVersion = getManagerVersion()
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun UninstallDialogMaterial(showDialog: MutableState<Boolean>) {
-    val navigator = LocalNavigator.current
-    val runAction = { type: UninstallType ->
-        showDialog.value = false
-        when (type) {
-            UninstallType.TEMPORARY -> APApplication.uninstallApatch()
-            UninstallType.RESTORE_STOCK_IMAGE -> navigator.navigateToPatches(PatchMode.UNPATCH)
-            UninstallType.PERMANENT -> {
-                APApplication.uninstallApatch()
-                navigator.navigateToPatches(PatchMode.UNPATCH)
-            }
-            else -> {}
-        }
-    }
-
-    if (showDialog.value) {
-        BasicAlertDialog(
-            onDismissRequest = { showDialog.value = false }
-        ) {
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = AlertDialogDefaults.shape,
-                color = AlertDialogDefaults.containerColor,
-                tonalElevation = AlertDialogDefaults.TonalElevation,
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp, bottom = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(
-                        text = stringResource(R.string.home_dialog_uninstall_title),
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(horizontal = 24.dp)
-                    )
-
-                    Spacer(Modifier.height(24.dp))
-
-                    SegmentedColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp)
-                    ) {
-                        UninstallType.entries.filter { it != UninstallType.NONE }.forEach { type ->
-                            item {
-                                BaseWidget(
-                                    icon = type.icon,
-                                    title = stringResource(type.titleRes),
-                                    description = stringResource(type.summaryRes),
-                                    titleStyle = if (type == UninstallType.PERMANENT) {
-                                        MaterialTheme.typography.titleMedium.copy(
-                                            color = MaterialTheme.colorScheme.error
-                                        )
-                                    } else {
-                                        MaterialTheme.typography.titleMedium
-                                    },
-                                    onClick = { runAction(type) }
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(Modifier.height(24.dp))
-
-                    TextButton(
-                        onClick = { showDialog.value = false },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp)
-                    ) {
-                        Text(stringResource(id = android.R.string.cancel))
-                    }
-                }
-            }
-        }
-    }
-}
-
-
 @Composable
 internal fun KStatusCardMaterial(
     kpState: APApplication.State,
@@ -137,10 +51,6 @@ internal fun KStatusCardMaterial(
     val cardState = remember(kpState, apState) {
         kpState.toKPatchCardState(apState, managerVersion)
     }
-
-    val showUninstallDialog = remember { mutableStateOf(false) }
-
-    UninstallDialogMaterial(showUninstallDialog)
 
     val onMainCardClick = {
         when (cardState.buttonAction) {
@@ -154,15 +64,6 @@ internal fun KStatusCardMaterial(
             }
 
             KPatchAction.REBOOT -> reboot()
-            KPatchAction.UNINSTALL -> {
-                if (apState == APApplication.State.ANDROIDPATCH_INSTALLED ||
-                    apState == APApplication.State.ANDROIDPATCH_NEED_UPDATE
-                ) {
-                    showUninstallDialog.value = true
-                } else {
-                    navigator.navigateToPatches(PatchMode.UNPATCH)
-                }
-            }
 
             else -> {
                 if (kpState != APApplication.State.KERNELPATCH_INSTALLED) {
@@ -301,10 +202,6 @@ internal fun AStatusCardMaterial(apState: APApplication.State) {
                         when (cardState.buttonAction) {
                             APatchAction.INSTALL, APatchAction.UPDATE -> {
                                 APApplication.installApatch()
-                            }
-
-                            APatchAction.UNINSTALL -> {
-                                APApplication.uninstallApatch()
                             }
 
                             APatchAction.NONE -> {}

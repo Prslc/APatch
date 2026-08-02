@@ -19,7 +19,6 @@ import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.rounded.CheckCircleOutline
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
-import me.bmax.apatch.ui.component.miuix.UninstallDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.page.patch.PatchMode
 import me.bmax.apatch.ui.theme.isInDarkTheme
@@ -64,10 +62,6 @@ fun KStatusCard(
         kpState.toKPatchCardState(apState, managerVersion)
     }
 
-    val showUninstallDialog = remember { mutableStateOf(false) }
-
-    UninstallDialog(showUninstallDialog)
-
     val onMainCardClick = {
         when (cardState.buttonAction) {
             KPatchAction.UNKNOWN_STATE -> navigator.navigateToModeSelect()
@@ -80,15 +74,6 @@ fun KStatusCard(
             }
 
             KPatchAction.REBOOT -> reboot()
-            KPatchAction.UNINSTALL -> {
-                if (apState == APApplication.State.ANDROIDPATCH_INSTALLED ||
-                    apState == APApplication.State.ANDROIDPATCH_NEED_UPDATE
-                ) {
-                    showUninstallDialog.value = true
-                } else {
-                    navigator.navigateToPatches(PatchMode.UNPATCH)
-                }
-            }
 
             else -> {
                 if (kpState != APApplication.State.KERNELPATCH_INSTALLED) {
@@ -294,10 +279,6 @@ fun AStatusCard(
                                 when (cardState.buttonAction) {
                                     APatchAction.INSTALL, APatchAction.UPDATE -> {
                                         APApplication.installApatch()
-                                    }
-
-                                    APatchAction.UNINSTALL -> {
-                                        APApplication.uninstallApatch()
                                     }
 
                                     APatchAction.NONE -> {}

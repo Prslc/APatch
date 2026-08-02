@@ -33,7 +33,6 @@ enum class KPatchAction {
     UNKNOWN_STATE,
     UPDATE,
     REBOOT,
-    UNINSTALL,
     NONE
 }
 
@@ -56,7 +55,6 @@ data class APatchCardState(
 enum class APatchAction {
     INSTALL,
     UPDATE,
-    UNINSTALL,
     NONE
 }
 
@@ -74,8 +72,9 @@ fun APApplication.State.toKPatchCardState(
             title = R.string.home_working,
             versionInfo = "${Version.installedKPVString()} (${managerVersion.second}) - " +
                     if (apState != APApplication.State.ANDROIDPATCH_NOT_INSTALLED) "Full" else "KernelPatch",
-            buttonText = R.string.home_ap_cando_uninstall,
-            buttonAction = KPatchAction.UNINSTALL
+            buttonText = R.string.home_working,
+            buttonAction = KPatchAction.NONE,
+            isButtonEnabled = false
         )
 
         APApplication.State.KERNELPATCH_NEED_UPDATE -> KPatchCardState(
@@ -133,8 +132,8 @@ fun APApplication.State.toAPatchCardState(managerVersion: Pair<String, Long>): A
             icon = Icons.Outlined.CheckCircle,
             iconDesc = "Working",
             title = R.string.home_working,
-            buttonText = R.string.home_ap_cando_uninstall,
-            buttonAction = APatchAction.UNINSTALL
+            buttonAction = APatchAction.NONE,
+            showButton = false
         )
 
         APApplication.State.ANDROIDPATCH_NEED_UPDATE -> APatchCardState(

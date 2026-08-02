@@ -15,9 +15,13 @@ import androidx.compose.material.icons.filled.Engineering
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.Update
+import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -28,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.bmax.apatch.R
+import me.bmax.apatch.ui.component.miuix.UninstallDialog
 import me.bmax.apatch.ui.component.settingsitem.ArrowItem
 import me.bmax.apatch.ui.component.settingsitem.DropdownItem
 import me.bmax.apatch.ui.component.settingsitem.SwitchItem
@@ -56,6 +61,9 @@ fun SettingScreenMiuix(
     val navigator = LocalNavigator.current
     val scrollBehavior = MiuixScrollBehavior()
     val backdrop = if (isCurrentPage) rememberBlurBackdrop() else null
+
+    val showUninstallDialog = remember { mutableStateOf(false) }
+    UninstallDialog(showUninstallDialog)
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -169,6 +177,14 @@ fun SettingScreenMiuix(
                                 Toast.makeText(context, R.string.no_cache_to_clear, Toast.LENGTH_SHORT).show()
                             }
                         }
+                    )
+
+                    // uninstall
+                    ArrowItem(
+                        title = stringResource(R.string.home_dialog_uninstall_title),
+                        summary = stringResource(R.string.mode_uninstall_method_all_summary),
+                        icon = Icons.Rounded.DeleteForever,
+                        onClick = { showUninstallDialog.value = true }
                     )
 
                     // about
