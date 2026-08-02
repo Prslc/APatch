@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,6 +29,7 @@ import androidx.compose.ui.window.DialogProperties
 import io.noties.markwon.Markwon
 import io.noties.markwon.utils.NoCopySpannableFactory
 import me.bmax.apatch.ui.component.dialog.ConfirmDialogVisuals
+import me.bmax.apatch.ui.component.loadingindicator.LoadingIndicator
 
 @Composable
 internal fun LoadingDialogMaterial(showDialog: MutableState<Boolean>) {
@@ -50,7 +50,7 @@ internal fun LoadingDialogMaterial(showDialog: MutableState<Boolean>) {
                 Box(
                     contentAlignment = Alignment.Center,
                 ) {
-                    CircularProgressIndicator()
+                    LoadingIndicator()
                 }
             }
         }
