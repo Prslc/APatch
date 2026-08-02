@@ -53,6 +53,10 @@ class HomeViewModel(
 
         refreshCounts()
         refreshSystemInfoAsync()
+
+        viewModelScope.launch {
+            ModuleCountsRefresher.events.collect { refreshCounts() }
+        }
     }
 
     fun refreshCounts() = viewModelScope.launch(Dispatchers.IO) {

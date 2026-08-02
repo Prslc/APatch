@@ -41,6 +41,7 @@ import me.bmax.apatch.APApplication
 import me.bmax.apatch.ui.component.snackbar.AppSnackbarHostState
 import me.bmax.apatch.ui.component.bottombar.BottomBar
 import me.bmax.apatch.ui.component.bottombar.BottomBarDestination
+import me.bmax.apatch.ui.component.bottombar.ModuleCounts
 import me.bmax.apatch.ui.component.snackbar.SwipeableSnackbarHostMaterial
 import me.bmax.apatch.ui.component.snackbar.rememberAppSnackbarHostState
 import me.bmax.apatch.ui.navigation.LocalNavigator
@@ -60,6 +61,7 @@ import top.yukonga.miuix.kmp.basic.SnackbarHost
 
 val LocalSelectedPage = compositionLocalOf { 0 }
 val LocalSnackbarHost = compositionLocalOf { AppSnackbarHostState() }
+val LocalModuleCounts = compositionLocalOf { ModuleCounts() }
 
 @Composable
 fun MainScreen() {
@@ -89,6 +91,7 @@ fun MainScreen() {
 
     val backdrop = rememberBlurBackdrop()
     val snackBarHostState = rememberAppSnackbarHostState()
+    val moduleCounts = remember { ModuleCounts() }
     val contentReady = rememberContentReady()
     val settledPage by remember { derivedStateOf { mainPagerState.pagerState.settledPage } }
 
@@ -120,6 +123,7 @@ fun MainScreen() {
     CompositionLocalProvider(
         LocalDensity provides scaledDensity,
         LocalSnackbarHost provides snackBarHostState,
+        LocalModuleCounts provides moduleCounts,
         LocalSelectedPage provides mainPagerState.selectedPage,
         LocalPageScale provides scale,
         LocalEnableBlur provides blurEnabled
