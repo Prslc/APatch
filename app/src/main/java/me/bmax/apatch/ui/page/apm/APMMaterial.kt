@@ -40,6 +40,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.alpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.automirrored.filled.Undo
@@ -58,7 +59,7 @@ import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
+
 import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
@@ -1095,17 +1096,18 @@ private fun ModuleItemMaterial(
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surfaceBright
     ) {
-        Column(
-            modifier = Modifier
-                .run {
-                    if (module.hasActionScript || module.hasWebUi) {
-                        combinedClickable(
-                            onLongClick = { onModuleAddShortcut(module) },
-                            onClick = {
-                                if (module.hasWebUi) {
-                                    onClick(module)
+        Box {
+            Column(
+                modifier = Modifier
+                    .run {
+                        if (module.hasActionScript || module.hasWebUi) {
+                            combinedClickable(
+                                onLongClick = { onModuleAddShortcut(module) },
+                                onClick = {
+                                    if (module.hasWebUi) {
+                                        onClick(module)
+                                    }
                                 }
-                            }
                         )
                     } else {
                         this
@@ -1258,14 +1260,17 @@ private fun ModuleItemMaterial(
             }
 
             Spacer(Modifier.height(12.dp))
+        }
 
             if (module.update) {
-                CircularProgressIndicator(
+                Icon(
                     modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(top = 8.dp)
-                        .size(20.dp),
-                    strokeWidth = 2.dp
+                        .align(Alignment.Center)
+                        .size(150.dp)
+                        .alpha(0.1f),
+                    imageVector = Icons.Filled.Download,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.outline
                 )
             }
         }

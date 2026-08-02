@@ -1127,6 +1127,7 @@ private fun ModuleItem(
                             iconRes = MiuixIcons.Play,
                             textRes = R.string.apm_action,
                             showText = !hideText,
+                            enabled = !module.remove && module.enabled,
                             onClick = {
                                 navigator.navigateToExecuteAction(module.id)
                                 viewModel.markNeedRefresh()
@@ -1140,6 +1141,7 @@ private fun ModuleItem(
                             iconRes = MiuixIcons.HorizontalSplit,
                             textRes = R.string.apm_webui_open,
                             showText = !hideText,
+                            enabled = !module.remove && module.enabled,
                             onClick = { onClick(module) }
                         )
                         Spacer(modifier = Modifier.width(12.dp))

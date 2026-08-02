@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -28,12 +29,14 @@ fun IconTextButton(
     iconRes: ImageVector,
     textRes: Int,
     showText: Boolean? = null,
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) {
     val finalShowText = showText ?: true
 
     IconButton(
         onClick = onClick,
+        enabled = enabled,
         minHeight = 35.dp,
         minWidth = 35.dp,
         backgroundColor = colorScheme.secondaryContainer
@@ -42,6 +45,7 @@ fun IconTextButton(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .padding(horizontal = if (finalShowText) 10.dp else 4.dp)
+                .alpha(if (enabled) 1f else 0.38f)
         ) {
             Icon(
                 imageVector = iconRes,
