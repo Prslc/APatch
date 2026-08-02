@@ -32,11 +32,6 @@ fun SettingsDialogOverlay(uiState: SettingsUiState, viewModel: SettingsViewModel
             UiMode.Material -> LogDialogMaterial(viewModel)
         }
 
-        SettingDialogType.PAGE_SCALE -> when (LocalUiMode.current) {
-            UiMode.Miuix -> PageScaleDialogMiuix(viewModel)
-            UiMode.Material -> PageScaleDialogMaterial(viewModel)
-        }
-
         SettingDialogType.NONE -> { /* None */ }
     }
 }

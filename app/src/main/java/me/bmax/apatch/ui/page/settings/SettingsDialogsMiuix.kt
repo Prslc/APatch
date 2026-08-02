@@ -34,6 +34,7 @@ import me.bmax.apatch.BuildConfig
 import me.bmax.apatch.Natives
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.dialog.rememberLoadingDialog
+import me.bmax.apatch.ui.page.theme.ThemeViewModel
 import me.bmax.apatch.ui.theme.LocalPageScale
 import me.bmax.apatch.util.getBugreportFile
 import me.bmax.apatch.util.outputStream
@@ -200,7 +201,7 @@ fun ResetSUPathDialogMiuix(viewModel: SettingsViewModel) {
 }
 
 @Composable
-fun PageScaleDialogMiuix(viewModel: SettingsViewModel) {
+fun PageScaleDialogMiuix(viewModel: ThemeViewModel) {
     val pageScale = LocalPageScale.current
     var text by remember { mutableStateOf((pageScale * 100).toInt().toString()) }
 
@@ -208,7 +209,7 @@ fun PageScaleDialogMiuix(viewModel: SettingsViewModel) {
         show = true,
         title = stringResource(R.string.settings_page_scale),
         summary = "80% - 110%",
-        onDismissRequest = { viewModel.dismissDialog() }
+        onDismissRequest = { viewModel.dismissPageScaleDialog() }
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             TextField(
@@ -233,7 +234,7 @@ fun PageScaleDialogMiuix(viewModel: SettingsViewModel) {
             Row(horizontalArrangement = Arrangement.SpaceBetween) {
                 TextButton(
                     text = stringResource(android.R.string.cancel),
-                    onClick = { viewModel.dismissDialog() },
+                    onClick = { viewModel.dismissPageScaleDialog() },
                     modifier = Modifier.weight(1f),
                 )
                 Spacer(Modifier.width(20.dp))
@@ -243,7 +244,7 @@ fun PageScaleDialogMiuix(viewModel: SettingsViewModel) {
                         val parsed = text.toIntOrNull()
                         val clamped = parsed?.coerceIn(80, 110) ?: (pageScale * 100).toInt()
                         viewModel.setPageScale(clamped / 100f)
-                        viewModel.dismissDialog()
+                        viewModel.dismissPageScaleDialog()
                     },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.textButtonColorsPrimary(),

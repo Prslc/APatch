@@ -7,7 +7,6 @@ enum class SettingDialogType {
     RESET_SU_PATH,
     SEND_LOG,
     CLEAR_CACHE,
-    PAGE_SCALE
 }
 
 @Immutable
@@ -17,11 +16,6 @@ data class SettingsUiState(
     val isGlobalNamespaceEnabled: Boolean = false,
     val enableWebDebugging: Boolean = false,
     val checkUpdate: Boolean = true,
-    val blurEnabled: Boolean = true,
-    val themeMode: Int = 0,
-    val keyColor: Int = 0,
-    val paletteStyle: String = "TonalSpot",
-    val uiMode: String = "miuix",
     val cacheSize: Long = 0L,
     val currentLanguageIndex: Int = 0,
     val currentDialog: SettingDialogType = SettingDialogType.NONE

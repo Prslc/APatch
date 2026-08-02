@@ -23,6 +23,7 @@ import me.bmax.apatch.ui.UiMode
 import me.bmax.apatch.ui.component.moduleinstalldialog.ModuleInstallDialog
 import me.bmax.apatch.ui.page.about.AboutScreen
 import me.bmax.apatch.ui.page.patch.PatchesScreen
+import me.bmax.apatch.ui.page.theme.ThemeScreen
 import me.bmax.apatch.ui.page.patchmode.PatchMode
 import me.bmax.apatch.ui.page.terminal.TerminalScreen
 import androidx.compose.material3.MaterialTheme
@@ -36,8 +37,6 @@ fun NavGraph() {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        // 切换动画期间页面移开后会露出容器背景，需与当前 UI 模式页面背景一致，
-        // 否则 MD3 模式下会闪现 Miuix surface 色（白/亮块）
         color = when (LocalUiMode.current) {
             UiMode.Miuix -> MiuixTheme.colorScheme.surface
             UiMode.Material -> MaterialTheme.colorScheme.surfaceContainer
@@ -93,6 +92,10 @@ fun NavGraph() {
 
             composable<AboutRoute> {
                 AboutScreen()
+            }
+
+            composable<ThemeRoute> {
+                ThemeScreen()
             }
 
             composable<PatchesRoute> { backStackEntry ->

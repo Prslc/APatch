@@ -53,7 +53,7 @@ import me.bmax.apatch.ui.page.superuser.SuperUserScreen
 import me.bmax.apatch.ui.theme.LocalEnableBlur
 import me.bmax.apatch.ui.theme.LocalPageScale
 import me.bmax.apatch.ui.theme.blurEnabled
-import me.bmax.apatch.ui.page.settings.pageScale
+import me.bmax.apatch.ui.page.theme.pageScale
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
 import top.yukonga.miuix.kmp.basic.Scaffold

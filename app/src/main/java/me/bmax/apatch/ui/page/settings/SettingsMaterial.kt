@@ -1,6 +1,5 @@
 package me.bmax.apatch.ui.page.settings
 
-import android.os.Build
 import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -9,18 +8,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BlurOn
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.Commit
-import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.Engineering
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.Update
-import androidx.compose.material.icons.filled.ZoomIn
-import androidx.compose.material.icons.rounded.Colorize
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LargeFlexibleTopAppBar
@@ -39,17 +34,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.material.icons.rounded.Style
 import me.bmax.apatch.R
-import me.bmax.apatch.ui.UiMode
+import me.bmax.apatch.ui.component.material.SegmentedColumn
 import me.bmax.apatch.ui.component.settingsitem.ArrowItem
 import me.bmax.apatch.ui.component.settingsitem.DropdownItem
 import me.bmax.apatch.ui.component.settingsitem.SwitchItem
-import me.bmax.apatch.ui.component.material.SegmentedColumn
 import me.bmax.apatch.ui.navigation.LocalNavigator
-import me.bmax.apatch.ui.component.sliderpreference.SliderPreference
 import me.bmax.apatch.ui.theme.LocalEnableBlur
-import me.bmax.apatch.ui.theme.LocalPageScale
 import me.bmax.apatch.ui.theme.getMaterial3AppBarColor
 import me.bmax.apatch.ui.theme.material3BlurEffect
 import me.bmax.apatch.ui.theme.rememberMaterial3BlurBackdrop
@@ -145,104 +136,6 @@ fun SettingScreenMaterial(
                         )
                     }
 
-                    // Blur Effects (API 33+ only)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        item {
-                            SwitchItem(
-                                title = stringResource(R.string.settings_blur_enabled),
-                                summary = stringResource(R.string.settings_blur_enabled_summary),
-                                icon = Icons.Filled.BlurOn,
-                                checked = uiState.blurEnabled,
-                                onCheckedChange = { viewModel.setBlurEnabled(it) }
-                            )
-                        }
-                    }
-                    // Page Scale
-                    item {
-                        val pageScale = LocalPageScale.current
-                        SliderPreference(
-                            title = stringResource(R.string.settings_page_scale),
-                            summary = stringResource(R.string.settings_page_scale_summary),
-                            icon = Icons.Filled.ZoomIn,
-                            value = pageScale,
-                            onValueChangeFinished = { viewModel.setPageScale(it) },
-                            valueRange = 0.8f..1.1f,
-                            keyPoints = listOf(0.8f, 0.9f, 1.0f, 1.1f),
-                            onClick = { viewModel.showDialog(SettingDialogType.PAGE_SCALE) },
-                        )
-                    }
-                    // UI Style
-                    item {
-                        DropdownItem(
-                            title = stringResource(R.string.settings_ui_mode),
-                            summary = stringResource(R.string.settings_ui_mode_summary),
-                            items = UiMode.entries.map { it.name },
-                            selectedIndex = if (uiState.uiMode == UiMode.Material.value) 1 else 0,
-                            icon = Icons.Filled.Dashboard,
-                            onSelectedIndexChange = { index ->
-                                viewModel.setUiMode(if (index == 0) UiMode.Miuix.value else UiMode.Material.value)
-                            }
-                        )
-                    }
-                    // Theme System
-                    item {
-                        DropdownItem(
-                            title = stringResource(R.string.settings_theme),
-                            summary = stringResource(R.string.settings_theme_summary),
-                            items = listOf(
-                                stringResource(R.string.settings_theme_mode_system),
-                                stringResource(R.string.settings_theme_mode_light),
-                                stringResource(R.string.settings_theme_mode_dark),
-                                stringResource(R.string.settings_theme_mode_monet_system),
-                                stringResource(R.string.settings_theme_mode_monet_light),
-                                stringResource(R.string.settings_theme_mode_monet_dark),
-                            ),
-                            selectedIndex = uiState.themeMode,
-                            icon = Icons.Rounded.Palette,
-                            onSelectedIndexChange = { viewModel.setThemeMode(it) }
-                        )
-                    }
-                    // key color
-                    item(
-                        animatedVisibility = uiState.themeMode in 3..5
-                    ) {
-                        val keyColorIndex = viewModel.colorValues.indexOf(uiState.keyColor).coerceAtLeast(0)
-                        DropdownItem(
-                            title = stringResource(R.string.settings_key_color),
-                            summary = stringResource(R.string.settings_key_color_summary),
-                            items = listOf(
-                                stringResource(R.string.settings_key_color_default),
-                                stringResource(R.string.color_red),
-                                stringResource(R.string.color_green),
-                                stringResource(R.string.color_blue),
-                                stringResource(R.string.color_purple),
-                                stringResource(R.string.color_orange),
-                                stringResource(R.string.color_teal),
-                                stringResource(R.string.color_pink),
-                                stringResource(R.string.color_brown),
-                            ),
-                            selectedIndex = keyColorIndex,
-                            icon = Icons.Rounded.Colorize,
-                            onSelectedIndexChange = { viewModel.setKeyColor(it) }
-                        )
-                    }
-                    // palette style
-                    item(
-                        animatedVisibility = uiState.themeMode in 3..5
-                    ) {
-                        val paletteIndex = com.materialkolor.PaletteStyle.entries
-                            .indexOfFirst { it.name == uiState.paletteStyle }
-                            .coerceAtLeast(0)
-                        DropdownItem(
-                            title = stringResource(R.string.settings_palette_style),
-                            summary = stringResource(R.string.settings_palette_style_summary),
-                            items = com.materialkolor.PaletteStyle.entries.map { it.name },
-                            selectedIndex = paletteIndex,
-                            icon = Icons.Rounded.Style,
-                            onSelectedIndexChange = { viewModel.setPaletteStyle(it) }
-                        )
-                    }
-
                     // language
                     item {
                         val languagesValues = stringArrayResource(R.array.languages_values)
@@ -256,6 +149,15 @@ fun SettingScreenMaterial(
                                 val tag = if (index == 0) "" else languagesValues[index]
                                 viewModel.updateLanguage(context, tag, index)
                             }
+                        )
+                    }
+                    // Theme
+                    item {
+                        ArrowItem(
+                            title = stringResource(R.string.settings_theme),
+                            summary = stringResource(R.string.settings_theme_summary),
+                            icon = Icons.Rounded.Palette,
+                            onClick = { navigator.navigateToTheme() }
                         )
                     }
 

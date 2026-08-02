@@ -48,6 +48,7 @@ import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.dialog.rememberLoadingDialog
 import me.bmax.apatch.ui.component.material.BaseWidget
 import me.bmax.apatch.ui.component.material.SegmentedColumn
+import me.bmax.apatch.ui.page.theme.ThemeViewModel
 import me.bmax.apatch.ui.theme.LocalPageScale
 import me.bmax.apatch.util.getBugreportFile
 import me.bmax.apatch.util.outputStream
@@ -55,12 +56,12 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun PageScaleDialogMaterial(viewModel: SettingsViewModel) {
+fun PageScaleDialogMaterial(viewModel: ThemeViewModel) {
     val pageScale = LocalPageScale.current
     var text by remember { mutableStateOf((pageScale * 100).toInt().toString()) }
 
     AlertDialog(
-        onDismissRequest = { viewModel.dismissDialog() },
+        onDismissRequest = { viewModel.dismissPageScaleDialog() },
         title = { Text(stringResource(R.string.settings_page_scale)) },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -84,13 +85,13 @@ fun PageScaleDialogMaterial(viewModel: SettingsViewModel) {
             TextButton(onClick = {
                 val scale = (text.toIntOrNull()?.coerceIn(80, 110) ?: (pageScale * 100).toInt()) / 100f
                 viewModel.setPageScale(scale)
-                viewModel.dismissDialog()
+                viewModel.dismissPageScaleDialog()
             }) {
                 Text(stringResource(android.R.string.ok))
             }
         },
         dismissButton = {
-            TextButton(onClick = { viewModel.dismissDialog() }) {
+            TextButton(onClick = { viewModel.dismissPageScaleDialog() }) {
                 Text(stringResource(android.R.string.cancel))
             }
         }
