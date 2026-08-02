@@ -5,7 +5,6 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
@@ -24,9 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -42,10 +38,13 @@ import me.bmax.apatch.ui.theme.LocalPageScale
 import me.bmax.apatch.util.getBugreportFile
 import me.bmax.apatch.util.outputStream
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
+import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
+import top.yukonga.miuix.kmp.preference.ArrowPreference
+import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
 import top.yukonga.miuix.kmp.window.WindowDialog
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -85,62 +84,67 @@ fun LogDialogMiuix(viewModel: SettingsViewModel) {
         title = stringResource(R.string.send_log),
         onDismissRequest = { viewModel.dismissDialog() }
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            LogActionItemMiuix(
-                icon = Icons.Default.Save,
-                label = stringResource(R.string.save_log),
-                onClick = {
-                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH_mm")
-                    val current = LocalDateTime.now().format(formatter)
-                    exportBugreportLauncher.launch("APatch_bugreport_${current}.tar.gz")
-                }
-            )
-
-            LogActionItemMiuix(
-                icon = Icons.Default.Share,
-                label = stringResource(R.string.send_log),
-                onClick = {
-                    scope.launch {
-                        val bugreport = loadingDialog.withLoading {
-                            withContext(Dispatchers.IO) { getBugreportFile(context) }
-                        }
-                        val uri: Uri = FileProvider.getUriForFile(
-                            context,
-                            "${BuildConfig.APPLICATION_ID}.fileprovider",
-                            bugreport
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Card {
+                ArrowPreference(
+                    title = stringResource(R.string.save_log),
+                    summary = stringResource(R.string.send_log_summary),
+                    onClick = {
+                        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH_mm")
+                        val current = LocalDateTime.now().format(formatter)
+                        exportBugreportLauncher.launch("APatch_bugreport_${current}.tar.gz")
+                    },
+                    startAction = {
+                        Icon(
+                            imageVector = Icons.Default.Save,
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 12.dp),
+                            tint = colorScheme.primary
                         )
-                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                            putExtra(Intent.EXTRA_STREAM, uri)
-                            setDataAndType(uri, "application/gzip")
-                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        }
-                        context.startActivity(Intent.createChooser(shareIntent, logSavedMessage))
-                        viewModel.dismissDialog()
                     }
-                }
+                )
+
+                ArrowPreference(
+                    title = stringResource(R.string.send_log),
+                    summary = stringResource(R.string.send_log_summary),
+                    onClick = {
+                        scope.launch {
+                            val bugreport = loadingDialog.withLoading {
+                                withContext(Dispatchers.IO) { getBugreportFile(context) }
+                            }
+                            val uri: Uri = FileProvider.getUriForFile(
+                                context,
+                                "${BuildConfig.APPLICATION_ID}.fileprovider",
+                                bugreport
+                            )
+                            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                putExtra(Intent.EXTRA_STREAM, uri)
+                                setDataAndType(uri, "application/gzip")
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+                            context.startActivity(Intent.createChooser(shareIntent, logSavedMessage))
+                            viewModel.dismissDialog()
+                        }
+                    },
+                    startAction = {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 12.dp),
+                            tint = colorScheme.primary
+                        )
+                    }
+                )
+            }
+
+            TextButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp, bottom = 24.dp),
+                text = stringResource(id = android.R.string.cancel),
+                onClick = { viewModel.dismissDialog() }
             )
         }
-    }
-}
-
-@Composable
-private fun LogActionItemMiuix(
-    icon: ImageVector,
-    label: String,
-    onClick: () -> Unit
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .padding(16.dp)
-    ) {
-        Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(30.dp))
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(label)
     }
 }
 
@@ -215,7 +219,7 @@ fun PageScaleDialogMiuix(viewModel: SettingsViewModel) {
                     Text(
                         text = "%",
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        color = top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme.onSurfaceVariantActions,
+                        color = colorScheme.onSurfaceVariantActions,
                     )
                 },
                 onValueChange = { newValue ->
