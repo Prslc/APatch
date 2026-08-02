@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,10 +22,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Android
+import androidx.compose.material.icons.filled.Devices
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.InstallMobile
 import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.SystemUpdate
@@ -53,8 +60,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -64,6 +69,7 @@ import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
 import me.bmax.apatch.apApp
 import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
+import me.bmax.apatch.ui.component.material.SegmentedColumn
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.theme.LocalEnableBlur
@@ -152,7 +158,7 @@ fun HomeScreenMaterial(
                     start = 16.dp,
                     end = 16.dp
                 ),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             BackupWarningCardMaterial()
             KStatusCardMaterial(
@@ -205,7 +211,7 @@ private fun RebootDropdown() {
                             reboot(reason)
                             expanded = false
                         },
-                        text = { Text(stringResource(res)) }
+                        text = { Text(text = stringResource(res)) }
                     )
                 }
             }
@@ -237,14 +243,14 @@ private fun MoreMenu(navigator: Navigator) {
                         expanded = false
                         uriHandler.openUri("https://github.com/bmax121/APatch/issues/new/choose")
                     },
-                    text = { Text(stringResource(R.string.home_more_menu_feedback_or_suggestion)) }
+                    text = { Text(text = stringResource(R.string.home_more_menu_feedback_or_suggestion)) }
                 )
                 DropdownMenuItem(
                     onClick = {
                         expanded = false
                         navigator.navigateToAbout()
                     },
-                    text = { Text(stringResource(R.string.home_more_menu_about)) }
+                    text = { Text(text = stringResource(R.string.home_more_menu_about)) }
                 )
             }
         }
@@ -353,69 +359,188 @@ private fun UpdateCardMaterial(state: HomeUiState) {
 
 @Composable
 private fun InfoCardMaterial(state: HomeUiState) {
-    val selinuxText = when (state.selinux) {
-        "Enforcing" -> stringResource(R.string.home_selinux_status_enforcing)
-        "Permissive" -> stringResource(R.string.home_selinux_status_permissive)
-        "Disabled" -> stringResource(R.string.home_selinux_status_disabled)
-        else -> stringResource(R.string.home_selinux_status_unknown)
-    }
-
-    @Composable
-    fun InfoText(
-        title: String,
-        content: String,
-        bottomPadding: Dp = 16.dp
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            text = content,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 2.dp, bottom = bottomPadding)
-        )
-    }
-
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surfaceBright
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
-        ) {
-            if (state.kpState != APApplication.State.UNKNOWN_STATE) {
-                InfoText(
-                    title = stringResource(R.string.home_su_path),
-                    content = state.suPath
-                )
+    SegmentedColumn(contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp)) {
+        if (state.kpState != APApplication.State.UNKNOWN_STATE) {
+            item { shape ->
+                Surface(shape = shape, color = MaterialTheme.colorScheme.surfaceBright) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, top = 14.dp, end = 16.dp, bottom = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Tag,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(Modifier.width(16.dp))
+                        Column {
+                            Text(
+                                text = stringResource(R.string.home_su_path),
+                                style = MaterialTheme.typography.titleSmall
+                            )
+                            Text(
+                                text = state.suPath,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
             }
-            InfoText(
-                title = stringResource(R.string.home_device_info),
-                content = state.deviceInfo,
-            )
-            InfoText(
-                title = stringResource(R.string.home_kernel),
-                content = state.kernelVersion
-            )
-            InfoText(
-                title = stringResource(R.string.home_system_version),
-                content = state.androidVersion
-            )
-            InfoText(
-                title = stringResource(R.string.home_fingerprint),
-                content = state.fingerprint
-            )
-            InfoText(
-                title = stringResource(R.string.home_selinux_status),
-                content = selinuxText,
-                bottomPadding = 0.dp
-            )
+        }
+        item { shape ->
+            Surface(shape = shape, color = MaterialTheme.colorScheme.surfaceBright) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 14.dp, end = 16.dp, bottom = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Devices,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            text = stringResource(R.string.home_device_info),
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        Text(
+                            text = state.deviceInfo,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+        item { shape ->
+            Surface(shape = shape, color = MaterialTheme.colorScheme.surfaceBright) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 14.dp, end = 16.dp, bottom = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Memory,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            text = stringResource(R.string.home_kernel),
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        Text(
+                            text= state.kernelVersion,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+        item { shape ->
+            Surface(shape = shape, color = MaterialTheme.colorScheme.surfaceBright) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 14.dp, end = 16.dp, bottom = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Android,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            stringResource(R.string.home_system_version),
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        Text(
+                            state.androidVersion,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+        item { shape ->
+            Surface(shape = shape, color = MaterialTheme.colorScheme.surfaceBright) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 14.dp, end = 16.dp, bottom = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Fingerprint,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            text = stringResource(R.string.home_fingerprint),
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        Text(
+                            text = state.fingerprint,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+        item { shape ->
+            val selinuxText = when (state.selinux) {
+                "Enforcing" -> stringResource(R.string.home_selinux_status_enforcing)
+                "Permissive" -> stringResource(R.string.home_selinux_status_permissive)
+                "Disabled" -> stringResource(R.string.home_selinux_status_disabled)
+                else -> stringResource(R.string.home_selinux_status_unknown)
+            }
+            Surface(shape = shape, color = MaterialTheme.colorScheme.surfaceBright) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 14.dp, end = 16.dp, bottom = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Filled.Security,
+                        null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            stringResource(R.string.home_selinux_status),
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        Text(
+                            selinuxText,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
         }
     }
 }
