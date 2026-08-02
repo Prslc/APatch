@@ -195,7 +195,6 @@ fun ResetSUPathDialogMiuix(viewModel: SettingsViewModel) {
     }
 }
 
-
 @Composable
 fun PageScaleDialogMiuix(viewModel: SettingsViewModel) {
     val pageScale = LocalPageScale.current

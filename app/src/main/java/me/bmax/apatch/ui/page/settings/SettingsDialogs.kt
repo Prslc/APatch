@@ -19,14 +19,18 @@ import me.bmax.apatch.util.formatSize
 @Composable
 fun SettingsDialogOverlay(uiState: SettingsUiState, viewModel: SettingsViewModel) {
     when (uiState.currentDialog) {
-        SettingDialogType.RESET_SU_PATH ->
-            ResetSUPathDialogMiuix(viewModel)
+        SettingDialogType.RESET_SU_PATH -> when (LocalUiMode.current) {
+            UiMode.Miuix -> ResetSUPathDialogMiuix(viewModel)
+            UiMode.Material -> ResetSUPathDialogMaterial(viewModel)
+        }
 
         SettingDialogType.CLEAR_CACHE ->
             ClearDialog(uiState.cacheSize, viewModel)
 
-        SettingDialogType.SEND_LOG ->
-            LogDialogMiuix(viewModel)
+        SettingDialogType.SEND_LOG -> when (LocalUiMode.current) {
+            UiMode.Miuix -> LogDialogMiuix(viewModel)
+            UiMode.Material -> LogDialogMaterial(viewModel)
+        }
 
         SettingDialogType.PAGE_SCALE -> when (LocalUiMode.current) {
             UiMode.Miuix -> PageScaleDialogMiuix(viewModel)
