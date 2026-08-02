@@ -49,7 +49,7 @@ import me.bmax.apatch.ui.component.dialog.rememberLoadingDialog
 import me.bmax.apatch.ui.component.material.BaseWidget
 import me.bmax.apatch.ui.component.material.SegmentedColumn
 import me.bmax.apatch.ui.page.theme.ThemeViewModel
-import me.bmax.apatch.ui.theme.LocalPageScale
+import me.bmax.apatch.ui.page.theme.pageScale
 import me.bmax.apatch.util.getBugreportFile
 import me.bmax.apatch.util.outputStream
 import java.time.LocalDateTime
@@ -57,8 +57,8 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun PageScaleDialogMaterial(viewModel: ThemeViewModel) {
-    val pageScale = LocalPageScale.current
-    var text by remember { mutableStateOf((pageScale * 100).toInt().toString()) }
+    val currentPageScale = pageScale
+    var text by remember { mutableStateOf((currentPageScale * 100).toInt().toString()) }
 
     AlertDialog(
         onDismissRequest = { viewModel.dismissPageScaleDialog() },
@@ -83,7 +83,7 @@ fun PageScaleDialogMaterial(viewModel: ThemeViewModel) {
         },
         confirmButton = {
             TextButton(onClick = {
-                val scale = (text.toIntOrNull()?.coerceIn(80, 110) ?: (pageScale * 100).toInt()) / 100f
+                val scale = (text.toIntOrNull()?.coerceIn(80, 110) ?: (currentPageScale * 100).toInt()) / 100f
                 viewModel.setPageScale(scale)
                 viewModel.dismissPageScaleDialog()
             }) {

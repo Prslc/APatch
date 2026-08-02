@@ -19,11 +19,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.NavGraph
 import me.bmax.apatch.ui.navigation.Navigator
+import me.bmax.apatch.ui.page.theme.pageScale
 import me.bmax.apatch.ui.theme.APatchMaterialTheme
 import me.bmax.apatch.ui.theme.APatchTheme
 
@@ -50,6 +53,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().setKeepOnScreenCondition { isLoading }
         super.onCreate(savedInstanceState)
+
+        // Apply persisted page scale immediately instead of waiting for
+        // ThemeViewModel (only created when the theme screen is opened)
+        pageScale = getSharedPreferences("config", MODE_PRIVATE)
+            .getFloat("page_scale", 1.0f)
+            .coerceIn(0.8f, 1.1f)
 
         setContent {
             val navController = rememberNavController()
@@ -98,7 +107,16 @@ class MainActivity : ComponentActivity() {
                 onDispose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
             }
 
-            CompositionLocalProvider(LocalUiMode provides UiMode.fromValue(uiMode)) {
+            val density = LocalDensity.current
+            val scale = pageScale
+            val scaledDensity = remember(density, scale) {
+                Density(density.density * scale, density.fontScale)
+            }
+
+            CompositionLocalProvider(
+                LocalDensity provides scaledDensity,
+                LocalUiMode provides UiMode.fromValue(uiMode)
+            ) {
                 when (UiMode.fromValue(uiMode)) {
                     UiMode.Miuix -> APatchTheme(colorMode = colorMode, keyColor = keyColor) {
                         CompositionLocalProvider(LocalNavigator provides navigator) {

@@ -29,7 +29,6 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 var blurEnabled by mutableStateOf(true)
 
 val LocalEnableBlur = compositionLocalOf { blurEnabled }
-val LocalPageScale = compositionLocalOf { 1.0f }
 
 /**
  * Remember a LayerBackdrop with a solid background to prevent alpha-blending artifacts.

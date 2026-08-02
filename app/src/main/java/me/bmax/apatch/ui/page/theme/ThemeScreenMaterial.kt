@@ -48,8 +48,6 @@ import me.bmax.apatch.ui.component.material.SegmentedColumn
 import me.bmax.apatch.ui.component.settingsitem.DropdownItem
 import me.bmax.apatch.ui.component.settingsitem.SwitchItem
 import me.bmax.apatch.ui.component.sliderpreference.SliderPreference
-
-import me.bmax.apatch.ui.theme.LocalPageScale
 import me.bmax.apatch.ui.theme.getMaterial3AppBarColor
 import me.bmax.apatch.ui.theme.material3BlurEffect
 import me.bmax.apatch.ui.theme.rememberMaterial3BlurBackdrop
@@ -226,7 +224,6 @@ fun ThemeScreenMaterial(
 
             SegmentedColumn(title = stringResource(R.string.settings_page_scale)) {
                 item {
-                    val pageScale = LocalPageScale.current
                     SliderPreference(
                         title = stringResource(R.string.settings_page_scale),
                         summary = stringResource(R.string.settings_page_scale_summary),

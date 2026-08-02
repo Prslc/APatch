@@ -24,8 +24,6 @@ import me.bmax.apatch.ui.UiMode
 import me.bmax.apatch.ui.component.settingsitem.DropdownItem
 import me.bmax.apatch.ui.component.settingsitem.SwitchItem
 import me.bmax.apatch.ui.component.sliderpreference.SliderPreference
-
-import me.bmax.apatch.ui.theme.LocalPageScale
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
@@ -149,7 +147,6 @@ fun ThemeScreenMiuix(
             item {
                 SmallTitle(stringResource(R.string.settings_page_scale))
                 Card(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    val pageScale = LocalPageScale.current
                     SliderPreference(
                         title = stringResource(R.string.settings_page_scale),
                         summary = stringResource(R.string.settings_page_scale_summary),

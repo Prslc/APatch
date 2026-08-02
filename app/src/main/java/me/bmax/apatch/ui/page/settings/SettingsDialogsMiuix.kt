@@ -35,7 +35,7 @@ import me.bmax.apatch.Natives
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.dialog.rememberLoadingDialog
 import me.bmax.apatch.ui.page.theme.ThemeViewModel
-import me.bmax.apatch.ui.theme.LocalPageScale
+import me.bmax.apatch.ui.page.theme.pageScale
 import me.bmax.apatch.util.getBugreportFile
 import me.bmax.apatch.util.outputStream
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
@@ -202,8 +202,8 @@ fun ResetSUPathDialogMiuix(viewModel: SettingsViewModel) {
 
 @Composable
 fun PageScaleDialogMiuix(viewModel: ThemeViewModel) {
-    val pageScale = LocalPageScale.current
-    var text by remember { mutableStateOf((pageScale * 100).toInt().toString()) }
+    val currentPageScale = pageScale
+    var text by remember { mutableStateOf((currentPageScale * 100).toInt().toString()) }
 
     WindowDialog(
         show = true,
@@ -242,7 +242,7 @@ fun PageScaleDialogMiuix(viewModel: ThemeViewModel) {
                     text = stringResource(android.R.string.ok),
                     onClick = {
                         val parsed = text.toIntOrNull()
-                        val clamped = parsed?.coerceIn(80, 110) ?: (pageScale * 100).toInt()
+                        val clamped = parsed?.coerceIn(80, 110) ?: (currentPageScale * 100).toInt()
                         viewModel.setPageScale(clamped / 100f)
                         viewModel.dismissPageScaleDialog()
                     },

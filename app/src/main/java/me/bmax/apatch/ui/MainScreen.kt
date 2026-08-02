@@ -26,8 +26,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.material3.MaterialTheme
@@ -51,9 +49,7 @@ import me.bmax.apatch.ui.page.kpm.KPModuleScreen
 import me.bmax.apatch.ui.page.settings.SettingScreen
 import me.bmax.apatch.ui.page.superuser.SuperUserScreen
 import me.bmax.apatch.ui.theme.LocalEnableBlur
-import me.bmax.apatch.ui.theme.LocalPageScale
 import me.bmax.apatch.ui.theme.blurEnabled
-import me.bmax.apatch.ui.page.theme.pageScale
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
 import top.yukonga.miuix.kmp.basic.Scaffold
@@ -114,18 +110,10 @@ fun MainScreen() {
         }
     }
 
-    val density = LocalDensity.current
-    val scale = pageScale
-    val scaledDensity = remember(density, scale) {
-        Density(density.density * scale, density.fontScale)
-    }
-
     CompositionLocalProvider(
-        LocalDensity provides scaledDensity,
         LocalSnackbarHost provides snackBarHostState,
         LocalModuleCounts provides moduleCounts,
         LocalSelectedPage provides mainPagerState.selectedPage,
-        LocalPageScale provides scale,
         LocalEnableBlur provides blurEnabled
     ) {
         val pagerContent = @Composable { innerPadding: PaddingValues ->
