@@ -85,7 +85,7 @@ fun MainScreen() {
         )
     }
 
-    val backdrop = rememberBlurBackdrop()
+    val backdrop = rememberBlurBackdrop(blurEnabled)
     val snackBarHostState = rememberAppSnackbarHostState()
     val moduleCounts = remember { ModuleCounts() }
     val contentReady = rememberContentReady()

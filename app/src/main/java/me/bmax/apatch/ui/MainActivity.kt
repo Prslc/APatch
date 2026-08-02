@@ -29,6 +29,7 @@ import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.page.theme.pageScale
 import me.bmax.apatch.ui.theme.APatchMaterialTheme
 import me.bmax.apatch.ui.theme.APatchTheme
+import me.bmax.apatch.ui.theme.blurEnabled
 
 
 class MainActivity : ComponentActivity() {
@@ -54,11 +55,12 @@ class MainActivity : ComponentActivity() {
         installSplashScreen().setKeepOnScreenCondition { isLoading }
         super.onCreate(savedInstanceState)
 
-        // Apply persisted page scale immediately instead of waiting for
-        // ThemeViewModel (only created when the theme screen is opened)
-        pageScale = getSharedPreferences("config", MODE_PRIVATE)
-            .getFloat("page_scale", 1.0f)
-            .coerceIn(0.8f, 1.1f)
+        // Apply persisted page scale and blur preference immediately
+        // instead of waiting for ThemeViewModel (only created when the
+        // theme screen is opened)
+        val prefs = getSharedPreferences("config", MODE_PRIVATE)
+        pageScale = prefs.getFloat("page_scale", 1.0f).coerceIn(0.8f, 1.1f)
+        blurEnabled = prefs.getBoolean("blur_enabled", true)
 
         setContent {
             val navController = rememberNavController()
