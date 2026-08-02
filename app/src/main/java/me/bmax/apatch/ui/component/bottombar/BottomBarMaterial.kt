@@ -55,6 +55,7 @@ fun BottomBarMaterial(backdrop: LayerBackdrop?) {
                             val count = when (destination) {
                                 BottomBarDestination.AModule -> moduleCounts.apmCount
                                 BottomBarDestination.KModule -> moduleCounts.kpmCount
+                                BottomBarDestination.SuperUser -> moduleCounts.suCount
                                 else -> 0
                             }
                             if (count > 0) {

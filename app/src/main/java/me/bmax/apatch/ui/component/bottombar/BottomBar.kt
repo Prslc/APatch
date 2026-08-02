@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 class ModuleCounts {
     var apmCount by mutableIntStateOf(0)
     var kpmCount by mutableIntStateOf(0)
+    var suCount by mutableIntStateOf(0)
 }
 
 @Composable

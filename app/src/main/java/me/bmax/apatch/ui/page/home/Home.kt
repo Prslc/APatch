@@ -20,9 +20,15 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val counts = LocalModuleCounts.current
-    LaunchedEffect(uiState.apmCount, uiState.kpmCount) {
+
+    LaunchedEffect(
+        uiState.apmCount,
+        uiState.kpmCount,
+        uiState.suCount
+    ) {
         counts.apmCount = uiState.apmCount
         counts.kpmCount = uiState.kpmCount
+        counts.suCount = uiState.suCount
     }
 
     when (LocalUiMode.current) {

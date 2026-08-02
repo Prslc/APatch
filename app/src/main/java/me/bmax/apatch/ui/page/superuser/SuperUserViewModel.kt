@@ -19,6 +19,7 @@ import me.bmax.apatch.APApplication
 import me.bmax.apatch.apApp
 import me.bmax.apatch.data.AppInfo
 import me.bmax.apatch.data.AppRepository
+import me.bmax.apatch.ui.page.home.ModuleCountsRefresher
 import me.bmax.apatch.data.repository.SettingsRepository
 import me.bmax.apatch.data.repository.SettingsRepositoryImpl
 import me.bmax.apatch.data.repository.SuRepository
@@ -125,6 +126,7 @@ class SuperUserViewModel(
 
             suRepo.changeConfig(newConfig)
             AppRepository.updateLocalConfig(app.uid, newConfig)
+            ModuleCountsRefresher.requestRefresh()
         }
     }
 
