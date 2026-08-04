@@ -32,8 +32,6 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Tag
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.SystemUpdate
 import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
@@ -70,6 +68,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
 import me.bmax.apatch.apApp
+import me.bmax.apatch.ui.component.WarningCard
 import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
 import me.bmax.apatch.ui.component.material.SegmentedColumn
 import me.bmax.apatch.ui.navigation.LocalNavigator
@@ -264,41 +263,13 @@ private fun BackupWarningCardMaterial() {
     val show = rememberSaveable { mutableStateOf(apApp.getBackupWarningState()) }
 
     if (show.value) {
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.errorContainer,
-            contentColor = MaterialTheme.colorScheme.onErrorContainer
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Warning,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(Modifier.width(12.dp))
-                Text(
-                    text = stringResource(id = R.string.patch_warnning),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.weight(1f)
-                )
-                IconButton(
-                    onClick = {
-                        apApp.updateBackupWarningState(false)
-                        show.value = false
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Clear,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
+        WarningCard(
+            message = stringResource(id = R.string.patch_warnning),
+            onClose = {
+                apApp.updateBackupWarningState(false)
+                show.value = false
             }
-        }
+        )
     }
 }
 
@@ -319,42 +290,29 @@ private fun UpdateCardMaterial(state: HomeUiState) {
             val changelogTitle = stringResource(id = R.string.apm_changelog)
             val updateText = stringResource(id = R.string.apm_update)
 
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.outlineVariant,
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            if (info.changelog.isEmpty()) {
-                                uriHandler.openUri(info.downloadUrl)
-                            } else {
-                                updateDialog.showConfirm(
-                                    title = changelogTitle,
-                                    content = info.changelog,
-                                    markdown = true,
-                                    confirm = updateText
-                                )
-                            }
-                        }
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+            WarningCard(
+                message = stringResource(id = R.string.home_new_apatch_found).format(info.versionCode),
+                containerColor = MaterialTheme.colorScheme.outlineVariant,
+                icon = {
                     Icon(
                         imageVector = Icons.Outlined.SystemUpdate,
                         contentDescription = null,
                         modifier = Modifier.size(24.dp)
                     )
-                    Spacer(Modifier.width(12.dp))
-                    Text(
-                        text = stringResource(id = R.string.home_new_apatch_found).format(info.versionCode),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.weight(1f)
-                    )
+                },
+                onClick = {
+                    if (info.changelog.isEmpty()) {
+                        uriHandler.openUri(info.downloadUrl)
+                    } else {
+                        updateDialog.showConfirm(
+                            title = changelogTitle,
+                            content = info.changelog,
+                            markdown = true,
+                            confirm = updateText
+                        )
+                    }
                 }
-            }
+            )
         }
     }
 }

@@ -39,7 +39,7 @@ import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
 import me.bmax.apatch.apApp
 import me.bmax.apatch.ui.component.bottombar.BottomBarDestination
-import me.bmax.apatch.ui.component.miuix.WarningCard
+import me.bmax.apatch.ui.component.WarningCard
 import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.Navigator
@@ -314,21 +314,24 @@ fun UpdateCard(state: HomeUiState) {
         ) {
             val updateDialog =
                 rememberConfirmDialog(onConfirm = { uriHandler.openUri(info.downloadUrl) })
+            val changelogTitle = stringResource(id = R.string.apm_changelog)
+            val updateText = stringResource(id = R.string.apm_update)
 
             WarningCard(
-                message = stringResource(id = R.string.home_new_apatch_found).format(info.versionCode)
-            ) {
-                if (info.changelog.isEmpty()) {
-                    uriHandler.openUri(info.downloadUrl)
-                } else {
-                    updateDialog.showConfirm(
-                        title = stringResource(id = R.string.apm_changelog),
-                        content = info.changelog,
-                        markdown = true,
-                        confirm = stringResource(id = R.string.apm_update)
-                    )
+                message = stringResource(id = R.string.home_new_apatch_found).format(info.versionCode),
+                onClick = {
+                    if (info.changelog.isEmpty()) {
+                        uriHandler.openUri(info.downloadUrl)
+                    } else {
+                        updateDialog.showConfirm(
+                            title = changelogTitle,
+                            content = info.changelog,
+                            markdown = true,
+                            confirm = updateText
+                        )
+                    }
                 }
-            }
+            )
         }
     }
 }
