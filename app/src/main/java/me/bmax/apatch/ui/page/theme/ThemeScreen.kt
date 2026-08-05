@@ -6,6 +6,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.materialkolor.PaletteStyle
+import com.materialkolor.dynamiccolor.ColorSpec
 import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.UiMode
 import me.bmax.apatch.ui.navigation.LocalNavigator
@@ -19,6 +20,7 @@ fun ThemeScreen(viewModel: ThemeViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val paletteIndex = PaletteStyle.entries.indexOfFirst { it.name == uiState.paletteStyle }.coerceAtLeast(0)
+    val colorSpecIndex = ColorSpec.SpecVersion.entries.indexOfFirst { it.name == uiState.colorSpec }.coerceAtLeast(0)
     val keyColorIndex = viewModel.colorValues.indexOf(uiState.keyColor).coerceAtLeast(0)
 
     val state = ThemeUiState(
@@ -26,6 +28,7 @@ fun ThemeScreen(viewModel: ThemeViewModel = viewModel()) {
         themeMode = uiState.themeMode,
         keyColorIndex = keyColorIndex,
         paletteStyleIndex = paletteIndex,
+        colorSpecIndex = colorSpecIndex,
         blurEnabled = uiState.blurEnabled,
     )
 
@@ -35,6 +38,7 @@ fun ThemeScreen(viewModel: ThemeViewModel = viewModel()) {
         onSetThemeMode = viewModel::setThemeMode,
         onSetKeyColor = viewModel::setKeyColor,
         onSetPaletteStyle = viewModel::setPaletteStyle,
+        onSetColorSpec = viewModel::setColorSpec,
         onSetPageScale = viewModel::setPageScale,
         onSetBlur = viewModel::setBlurEnabled,
     )
@@ -58,6 +62,7 @@ class ThemeUiState(
     val themeMode: Int,
     val keyColorIndex: Int,
     val paletteStyleIndex: Int,
+    val colorSpecIndex: Int,
     val blurEnabled: Boolean,
 )
 
@@ -67,6 +72,7 @@ class ThemeScreenActions(
     val onSetThemeMode: (Int) -> Unit,
     val onSetKeyColor: (Int) -> Unit,
     val onSetPaletteStyle: (Int) -> Unit,
+    val onSetColorSpec: (Int) -> Unit,
     val onSetPageScale: (Float) -> Unit,
     val onSetBlur: (Boolean) -> Unit,
 )

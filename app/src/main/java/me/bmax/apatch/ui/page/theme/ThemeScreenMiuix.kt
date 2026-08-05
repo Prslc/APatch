@@ -27,6 +27,7 @@ import me.bmax.apatch.ui.component.sliderpreference.SliderPreference
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
+import me.bmax.apatch.ui.theme.supportsSpec2025
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.IconButton
@@ -137,6 +138,25 @@ fun ThemeScreenMiuix(
                                 selectedIndex = state.paletteStyleIndex,
                                 icon = Icons.Rounded.Style,
                                 onSelectedIndexChange = { actions.onSetPaletteStyle(it) }
+                            )
+                            val supportsSpec2025 =
+                                PaletteStyle.entries.getOrElse(state.paletteStyleIndex) { PaletteStyle.TonalSpot }
+                                    .supportsSpec2025
+                            DropdownItem(
+                                title = stringResource(R.string.settings_color_spec),
+                                summary = if (supportsSpec2025) {
+                                    stringResource(R.string.settings_color_spec_summary)
+                                } else {
+                                    stringResource(R.string.settings_color_spec_only_2021)
+                                },
+                                items = listOf(
+                                    stringResource(R.string.settings_color_spec_2021),
+                                    stringResource(R.string.settings_color_spec_2025),
+                                ),
+                                selectedIndex = if (supportsSpec2025) state.colorSpecIndex else 0,
+                                icon = Icons.Rounded.Style,
+                                enabled = supportsSpec2025,
+                                onSelectedIndexChange = { actions.onSetColorSpec(it) }
                             )
                         }
                     }

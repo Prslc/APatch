@@ -72,6 +72,7 @@ class MainActivity : ComponentActivity() {
             var colorMode by remember { mutableIntStateOf(prefs.getInt("color_mode", 0)) }
             var keyColorInt by remember { mutableIntStateOf(prefs.getInt("key_color", 0)) }
             var paletteStyle by remember { mutableStateOf(prefs.getString("palette_style", "TonalSpot") ?: "TonalSpot") }
+            var colorSpec by remember { mutableStateOf(prefs.getString("color_spec", "SPEC_2025") ?: "SPEC_2025") }
             var uiMode by remember { mutableStateOf(prefs.getString("ui_mode", "miuix") ?: "miuix") }
             val keyColor =
                 remember(keyColorInt) { if (keyColorInt == 0) null else Color(keyColorInt) }
@@ -102,6 +103,7 @@ class MainActivity : ComponentActivity() {
                         "color_mode" -> colorMode = prefs.getInt("color_mode", 0)
                         "key_color" -> keyColorInt = prefs.getInt("key_color", 0)
                         "palette_style" -> paletteStyle = prefs.getString("palette_style", "TonalSpot") ?: "TonalSpot"
+                        "color_spec" -> colorSpec = prefs.getString("color_spec", "SPEC_2025") ?: "SPEC_2025"
                         "ui_mode" -> uiMode = prefs.getString("ui_mode", "miuix") ?: "miuix"
                     }
                 }
@@ -130,6 +132,7 @@ class MainActivity : ComponentActivity() {
                         colorMode = colorMode,
                         keyColor = keyColor,
                         paletteStyle = paletteStyle,
+                        colorSpec = colorSpec,
                     ) {
                         CompositionLocalProvider(LocalNavigator provides navigator) {
                             NavGraph()

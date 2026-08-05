@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
+import com.materialkolor.dynamiccolor.ColorSpec
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -20,6 +21,7 @@ data class ThemeState(
     val themeMode: Int = 0,
     val keyColor: Int = 0,
     val paletteStyle: String = "TonalSpot",
+    val colorSpec: String = "SPEC_2025",
     val uiMode: String = "miuix",
     val showPageScaleDialog: Boolean = false,
 )
@@ -55,6 +57,7 @@ class ThemeViewModel(
                 themeMode = settingsRepo.getInt("color_mode", 0),
                 keyColor = settingsRepo.getInt("key_color", 0),
                 paletteStyle = settingsRepo.getString("palette_style", "TonalSpot"),
+                colorSpec = settingsRepo.getString("color_spec", "SPEC_2025"),
                 uiMode = settingsRepo.getString("ui_mode", "miuix"),
             )
         }
@@ -91,6 +94,12 @@ class ThemeViewModel(
         val style = com.materialkolor.PaletteStyle.entries[index].name
         settingsRepo.setString("palette_style", style)
         _uiState.update { it.copy(paletteStyle = style) }
+    }
+
+    fun setColorSpec(index: Int) {
+        val spec = ColorSpec.SpecVersion.entries[index].name
+        settingsRepo.setString("color_spec", spec)
+        _uiState.update { it.copy(colorSpec = spec) }
     }
 
     fun showPageScaleDialog() {

@@ -51,6 +51,7 @@ import me.bmax.apatch.ui.component.sliderpreference.SliderPreference
 import me.bmax.apatch.ui.theme.getMaterial3AppBarColor
 import me.bmax.apatch.ui.theme.material3BlurEffect
 import me.bmax.apatch.ui.theme.rememberMaterial3BlurBackdrop
+import me.bmax.apatch.ui.theme.supportsSpec2025
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -219,6 +220,27 @@ fun ThemeScreenMaterial(
                             onClick = { showPaletteDialog = true }
                         )
                     }
+                    item {
+                        val supportsSpec2025 =
+                            PaletteStyle.entries.getOrElse(state.paletteStyleIndex) { PaletteStyle.TonalSpot }
+                                .supportsSpec2025
+                        DropdownItem(
+                            title = stringResource(R.string.settings_color_spec),
+                            summary = if (supportsSpec2025) {
+                                stringResource(R.string.settings_color_spec_summary)
+                            } else {
+                                stringResource(R.string.settings_color_spec_only_2021)
+                            },
+                            items = listOf(
+                                stringResource(R.string.settings_color_spec_2021),
+                                stringResource(R.string.settings_color_spec_2025),
+                            ),
+                            selectedIndex = if (supportsSpec2025) state.colorSpecIndex else 0,
+                            icon = Icons.Rounded.Style,
+                            enabled = supportsSpec2025,
+                            onSelectedIndexChange = { actions.onSetColorSpec(it) }
+                        )
+                    }
                 }
             }
 
@@ -300,3 +322,4 @@ private fun PaletteStyleDialogMaterial(
         confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) } }
     )
 }
+

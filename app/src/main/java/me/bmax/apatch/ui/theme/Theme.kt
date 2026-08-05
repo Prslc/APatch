@@ -47,11 +47,25 @@ fun APatchTheme(
     )
 }
 
+val PaletteStyle.supportsSpec2025: Boolean
+    get() = this == PaletteStyle.TonalSpot ||
+            this == PaletteStyle.Neutral ||
+            this == PaletteStyle.Vibrant ||
+            this == PaletteStyle.Expressive
+
+fun ColorSpec.SpecVersion.effectiveFor(style: PaletteStyle): ColorSpec.SpecVersion =
+    if (this == ColorSpec.SpecVersion.SPEC_2025 && !style.supportsSpec2025) {
+        ColorSpec.SpecVersion.SPEC_2021
+    } else {
+        this
+    }
+
 @Composable
 fun APatchMaterialTheme(
     colorMode: Int = 0,
     keyColor: Color? = null,
     paletteStyle: String = "TonalSpot",
+    colorSpec: String = "SPEC_2025",
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -61,9 +75,14 @@ fun APatchMaterialTheme(
     val resolvedStyle = remember(paletteStyle) {
         runCatching { PaletteStyle.valueOf(paletteStyle) }.getOrDefault(PaletteStyle.TonalSpot)
     }
+    val resolvedSpec = remember(colorSpec, resolvedStyle) {
+        runCatching { ColorSpec.SpecVersion.valueOf(colorSpec) }
+            .getOrDefault(ColorSpec.SpecVersion.SPEC_2025)
+            .effectiveFor(resolvedStyle)
+    }
 
     val isMonet = colorMode in 3..5
-    val colorScheme = remember(keyColor, darkTheme, colorMode, resolvedStyle) {
+    val colorScheme = remember(keyColor, darkTheme, colorMode, resolvedStyle, resolvedSpec) {
         when {
             isMonet && keyColor != null ->
                 dynamicColorScheme(
@@ -71,7 +90,7 @@ fun APatchMaterialTheme(
                     isDark = darkTheme,
                     style = resolvedStyle,
                     contrastLevel = 0.0,
-                    specVersion = ColorSpec.SpecVersion.SPEC_2025,
+                    specVersion = resolvedSpec,
                 )
 
             isMonet && darkTheme && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
@@ -88,7 +107,7 @@ fun APatchMaterialTheme(
                     isDark = darkTheme,
                     style = resolvedStyle,
                     contrastLevel = 0.0,
-                    specVersion = ColorSpec.SpecVersion.SPEC_2025,
+                    specVersion = resolvedSpec,
                 )
         }
     }
