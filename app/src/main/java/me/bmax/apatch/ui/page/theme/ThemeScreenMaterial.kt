@@ -66,9 +66,18 @@ fun ThemeScreenMaterial(
     var showThemeDialog by remember { mutableStateOf(false) }
     var showPaletteDialog by remember { mutableStateOf(false) }
 
+    // Material 3 is Monet-based, so map the Miuix-only fixed modes
+    // (0/1/2) to their Monet equivalents for display
+    val monetMode = when (state.themeMode) {
+        0 -> 3
+        1 -> 4
+        2 -> 5
+        else -> state.themeMode
+    }
+
     if (showThemeDialog) {
         ThemeModeDialogMaterial(
-            state.themeMode,
+            monetMode,
             { showThemeDialog = false },
             actions.onSetThemeMode
         )
@@ -176,13 +185,10 @@ fun ThemeScreenMaterial(
                     )
                 }
                 item {
-                    val currentMode = when (state.themeMode) {
-                        1 -> stringResource(R.string.settings_theme_mode_light)
-                        2 -> stringResource(R.string.settings_theme_mode_dark)
-                        3 -> stringResource(R.string.settings_theme_mode_monet_system)
+                    val currentMode = when (monetMode) {
                         4 -> stringResource(R.string.settings_theme_mode_monet_light)
                         5 -> stringResource(R.string.settings_theme_mode_monet_dark)
-                        else -> stringResource(R.string.settings_theme_mode_system)
+                        else -> stringResource(R.string.settings_theme_mode_monet_system)
                     }
                     BaseWidget(
                         icon = Icons.Filled.DarkMode,
@@ -191,7 +197,7 @@ fun ThemeScreenMaterial(
                         onClick = { showThemeDialog = true }
                     )
                 }
-                if (state.themeMode in 3..5) {
+                if (monetMode in 3..5) {
                     item {
                         val keyColorItems = listOf(
                             stringResource(R.string.settings_key_color_default),
@@ -271,9 +277,6 @@ private fun ThemeModeDialogMaterial(current: Int, onDismiss: () -> Unit, onSelec
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 listOf(
-                    0 to R.string.settings_theme_mode_system,
-                    1 to R.string.settings_theme_mode_light,
-                    2 to R.string.settings_theme_mode_dark,
                     3 to R.string.settings_theme_mode_monet_system,
                     4 to R.string.settings_theme_mode_monet_light,
                     5 to R.string.settings_theme_mode_monet_dark,
