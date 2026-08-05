@@ -29,12 +29,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
@@ -136,6 +138,11 @@ class WebUIActivity : ComponentActivity() {
                     }
                     lifecycleOwner.lifecycle.addObserver(observer)
                     onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+                }
+
+                val configuration = LocalConfiguration.current
+                LaunchedEffect(configuration.fontScale) {
+                    webView?.settings?.textZoom = (configuration.fontScale * 100).toInt()
                 }
             }
         }
@@ -275,6 +282,7 @@ class WebUIActivity : ComponentActivity() {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             settings.allowFileAccess = false
+            settings.textZoom = (resources.configuration.fontScale * 100).toInt()
             webViewInterface = WebViewInterface(this@WebUIActivity, this)
             addJavascriptInterface(webViewInterface, "ksu")
             setWebViewClient(webViewClient)
