@@ -148,17 +148,18 @@ fun ThemeScreenMiuix(
                             val supportsSpec2025 =
                                 PaletteStyle.entries.getOrElse(state.paletteStyleIndex) { PaletteStyle.TonalSpot }
                                     .supportsSpec2025
+                            val colorSpecItems = listOf(
+                                stringResource(R.string.settings_color_spec_2021),
+                                stringResource(R.string.settings_color_spec_2025),
+                            )
                             DropdownItem(
                                 title = stringResource(R.string.settings_color_spec),
                                 summary = if (supportsSpec2025) {
-                                    stringResource(R.string.settings_color_spec_summary)
+                                    colorSpecItems.getOrElse(state.colorSpecIndex) { colorSpecItems.first() }
                                 } else {
                                     stringResource(R.string.settings_color_spec_only_2021)
                                 },
-                                items = listOf(
-                                    stringResource(R.string.settings_color_spec_2021),
-                                    stringResource(R.string.settings_color_spec_2025),
-                                ),
+                                items = colorSpecItems,
                                 selectedIndex = if (supportsSpec2025) state.colorSpecIndex else 0,
                                 icon = Icons.Rounded.Style,
                                 enabled = supportsSpec2025,

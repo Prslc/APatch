@@ -268,7 +268,6 @@
     <string name="settings_key_color">强调色</string>
     <string name="settings_palette_style">色板风格</string>
     <string name="settings_color_spec">颜色规格</string>
-    <string name="settings_color_spec_summary">选择 Monet 主题的颜色规格版本。</string>
     <string name="settings_color_spec_2021">Material 3（2021）</string>
     <string name="settings_color_spec_2025">Expressive（2025）</string>
     <string name="settings_color_spec_only_2021">当前色板风格仅支持 Spec 2021</string>

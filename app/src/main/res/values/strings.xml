@@ -309,7 +309,6 @@
     <string name="settings_key_color">Key color</string>
     <string name="settings_palette_style">Palette Style</string>
     <string name="settings_color_spec">Color Spec</string>
-    <string name="settings_color_spec_summary">Choose color specification version for Monet theme.</string>
     <string name="settings_color_spec_2021">Material 3 (2021)</string>
     <string name="settings_color_spec_2025">Expressive (2025)</string>
     <string name="settings_color_spec_only_2021">Current palette style only supports Spec 2021</string>
