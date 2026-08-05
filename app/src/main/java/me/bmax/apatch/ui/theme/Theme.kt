@@ -85,7 +85,9 @@ fun APatchMaterialTheme(
             .effectiveFor(resolvedStyle)
     }
 
-    val isMonet = colorMode in 3..5
+    // Material 3 is Monet-based; the fixed System/Light/Dark modes (0/1/2)
+    // are only meaningful for Miuix, so always use the Monet color path
+    val isMonet = true
     val colorScheme = remember(keyColor, darkTheme, colorMode, resolvedStyle, resolvedSpec) {
         when {
             isMonet && keyColor != null ->
