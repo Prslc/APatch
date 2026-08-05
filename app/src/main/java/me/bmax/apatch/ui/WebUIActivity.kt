@@ -5,7 +5,6 @@ import android.app.ActivityManager
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
-import androidx.compose.ui.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -27,7 +26,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.view.ViewCompat
@@ -40,8 +39,8 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.data.AppRepository
 import me.bmax.apatch.ui.component.loadingindicator.LoadingIndicator
-import me.bmax.apatch.ui.theme.APatchMaterialTheme
-import me.bmax.apatch.ui.theme.APatchTheme
+import me.bmax.apatch.ui.theme.APatchAppTheme
+import me.bmax.apatch.ui.theme.readAppThemeSettings
 import me.bmax.apatch.ui.webui.AppIconUtil
 import me.bmax.apatch.ui.webui.Insets
 import me.bmax.apatch.ui.webui.SuFilePathHandler
@@ -83,34 +82,20 @@ class WebUIActivity : ComponentActivity() {
         })
 
         setContent {
-            val prefs = getSharedPreferences("config", MODE_PRIVATE)
-            val colorMode = prefs.getInt("color_mode", 0)
-            val keyColorInt = prefs.getInt("key_color", 0)
-            val keyColor = if (keyColorInt == 0) null else Color(keyColorInt)
-            val uiMode = UiMode.fromValue(prefs.getString("ui_mode", "miuix") ?: "miuix")
+            val settings = remember {
+                readAppThemeSettings(getSharedPreferences("config", MODE_PRIVATE))
+            }
 
-            when (uiMode) {
-                UiMode.Miuix -> APatchTheme(colorMode = colorMode, keyColor = keyColor) {
-                    CompositionLocalProvider(LocalUiMode provides uiMode) {
-                        Box(
-                            modifier = Modifier.fillMaxSize().background(MiuixTheme.colorScheme.background),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            LoadingIndicator()
-                        }
-                    }
+            APatchAppTheme(settings) {
+                val background = when (LocalUiMode.current) {
+                    UiMode.Miuix -> MiuixTheme.colorScheme.background
+                    UiMode.Material -> MaterialTheme.colorScheme.surfaceContainer
                 }
-                UiMode.Material -> APatchMaterialTheme(colorMode = colorMode, keyColor = keyColor) {
-                    CompositionLocalProvider(LocalUiMode provides uiMode) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(MaterialTheme.colorScheme.surfaceContainer),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            LoadingIndicator()
-                        }
-                    }
+                Box(
+                    modifier = Modifier.fillMaxSize().background(background),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LoadingIndicator()
                 }
             }
         }

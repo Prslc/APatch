@@ -5,13 +5,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.graphics.Color
-import me.bmax.apatch.ui.page.crash.CrashScreenMaterial
-import me.bmax.apatch.ui.page.crash.CrashScreenMiuix
+import androidx.compose.runtime.remember
+import me.bmax.apatch.ui.page.crash.CrashScreen
 import me.bmax.apatch.ui.page.crash.buildCrashLog
-import me.bmax.apatch.ui.theme.APatchMaterialTheme
-import me.bmax.apatch.ui.theme.APatchTheme
+import me.bmax.apatch.ui.theme.APatchAppTheme
+import me.bmax.apatch.ui.theme.readAppThemeSettings
 
 class CrashHandleActivity : ComponentActivity() {
 
@@ -27,23 +25,11 @@ class CrashHandleActivity : ComponentActivity() {
         val message = buildCrashLog(intent)
 
         setContent {
-            val prefs = getSharedPreferences("config", MODE_PRIVATE)
-            val colorMode = prefs.getInt("color_mode", 0)
-            val keyColorInt = prefs.getInt("key_color", 0)
-            val keyColor = if (keyColorInt == 0) null else Color(keyColorInt)
-            val uiMode = UiMode.fromValue(prefs.getString("ui_mode", "miuix") ?: "miuix")
-
-            when (uiMode) {
-                UiMode.Miuix -> APatchTheme(colorMode = colorMode, keyColor = keyColor) {
-                    CompositionLocalProvider(LocalUiMode provides uiMode) {
-                        CrashScreenMiuix(message)
-                    }
-                }
-                UiMode.Material -> APatchMaterialTheme(colorMode = colorMode, keyColor = keyColor) {
-                    CompositionLocalProvider(LocalUiMode provides uiMode) {
-                        CrashScreenMaterial(message)
-                    }
-                }
+            val settings = remember {
+                readAppThemeSettings(getSharedPreferences("config", MODE_PRIVATE))
+            }
+            APatchAppTheme(settings) {
+                CrashScreen(message)
             }
         }
     }

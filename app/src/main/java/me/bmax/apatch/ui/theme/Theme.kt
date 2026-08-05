@@ -1,5 +1,6 @@
 package me.bmax.apatch.ui.theme
 
+import android.content.SharedPreferences
 import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -8,6 +9,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
@@ -18,6 +20,8 @@ import androidx.core.view.WindowCompat
 import com.materialkolor.PaletteStyle
 import com.materialkolor.dynamicColorScheme
 import com.materialkolor.dynamiccolor.ColorSpec
+import me.bmax.apatch.ui.LocalUiMode
+import me.bmax.apatch.ui.UiMode
 import me.bmax.apatch.ui.webui.MonetColorsProvider.UpdateCss
 import top.yukonga.miuix.kmp.theme.ColorSchemeMode
 import top.yukonga.miuix.kmp.theme.MiuixTheme
@@ -129,6 +133,44 @@ fun APatchMaterialTheme(
             content()
         }
     )
+}
+
+data class AppThemeSettings(
+    val uiMode: UiMode,
+    val colorMode: Int,
+    val keyColor: Color?,
+    val paletteStyle: String,
+    val colorSpec: String,
+)
+
+fun readAppThemeSettings(prefs: SharedPreferences): AppThemeSettings = AppThemeSettings(
+    uiMode = UiMode.fromValue(prefs.getString("ui_mode", "miuix") ?: "miuix"),
+    colorMode = prefs.getInt("color_mode", 0),
+    keyColor = prefs.getInt("key_color", 0).takeIf { it != 0 }?.let { Color(it) },
+    paletteStyle = prefs.getString("palette_style", "TonalSpot") ?: "TonalSpot",
+    colorSpec = prefs.getString("color_spec", "SPEC_2025") ?: "SPEC_2025",
+)
+
+@Composable
+fun APatchAppTheme(
+    settings: AppThemeSettings,
+    content: @Composable () -> Unit
+) {
+    CompositionLocalProvider(LocalUiMode provides settings.uiMode) {
+        when (settings.uiMode) {
+            UiMode.Miuix -> APatchTheme(colorMode = settings.colorMode, keyColor = settings.keyColor) {
+                content()
+            }
+            UiMode.Material -> APatchMaterialTheme(
+                colorMode = settings.colorMode,
+                keyColor = settings.keyColor,
+                paletteStyle = settings.paletteStyle,
+                colorSpec = settings.colorSpec,
+            ) {
+                content()
+            }
+        }
+    }
 }
 
 @Composable

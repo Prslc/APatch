@@ -27,8 +27,8 @@ import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.NavGraph
 import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.page.theme.pageScale
-import me.bmax.apatch.ui.theme.APatchMaterialTheme
-import me.bmax.apatch.ui.theme.APatchTheme
+import me.bmax.apatch.ui.theme.APatchAppTheme
+import me.bmax.apatch.ui.theme.AppThemeSettings
 import me.bmax.apatch.ui.theme.blurEnabled
 
 
@@ -117,27 +117,19 @@ class MainActivity : ComponentActivity() {
                 Density(density.density * scale, density.fontScale)
             }
 
-            CompositionLocalProvider(
-                LocalDensity provides scaledDensity,
-                LocalUiMode provides UiMode.fromValue(uiMode)
-            ) {
-                when (UiMode.fromValue(uiMode)) {
-                    UiMode.Miuix -> APatchTheme(colorMode = colorMode, keyColor = keyColor) {
-                        CompositionLocalProvider(LocalNavigator provides navigator) {
-                            NavGraph()
-                            LaunchedEffect(Unit) { navigator.onNewIntent(intent) }
-                        }
-                    }
-                    UiMode.Material -> APatchMaterialTheme(
+            CompositionLocalProvider(LocalDensity provides scaledDensity) {
+                APatchAppTheme(
+                    settings = AppThemeSettings(
+                        uiMode = UiMode.fromValue(uiMode),
                         colorMode = colorMode,
                         keyColor = keyColor,
                         paletteStyle = paletteStyle,
                         colorSpec = colorSpec,
-                    ) {
-                        CompositionLocalProvider(LocalNavigator provides navigator) {
-                            NavGraph()
-                            LaunchedEffect(Unit) { navigator.onNewIntent(intent) }
-                        }
+                    )
+                ) {
+                    CompositionLocalProvider(LocalNavigator provides navigator) {
+                        NavGraph()
+                        LaunchedEffect(Unit) { navigator.onNewIntent(intent) }
                     }
                 }
             }
