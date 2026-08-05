@@ -4,8 +4,6 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,23 +46,21 @@ fun NavGraph() {
             enterTransition = {
                 slideInHorizontally(
                     initialOffsetX = { it },
-                    animationSpec = tween(500, easing = FastOutSlowInEasing)
+                    animationSpec = tween(300, easing = FastOutSlowInEasing)
                 )
             },
             exitTransition = {
-                slideOutHorizontally(targetOffsetX = { -it / 5 }, animationSpec = tween(500)) +
-                        scaleOut(targetScale = 0.92f, animationSpec = tween(500)) +
-                        fadeOut(targetAlpha = 0f, animationSpec = tween(500))
+                slideOutHorizontally(targetOffsetX = { -it / 5 }, animationSpec = tween(300)) +
+                        fadeOut(targetAlpha = 0f, animationSpec = tween(300))
             },
             popEnterTransition = {
-                slideInHorizontally(initialOffsetX = { -it / 5 }, animationSpec = tween(500)) +
-                        scaleIn(initialScale = 0.92f, animationSpec = tween(500)) +
-                        fadeIn(initialAlpha = 0f, animationSpec = tween(500))
+                slideInHorizontally(initialOffsetX = { -it / 5 }, animationSpec = tween(300)) +
+                        fadeIn(initialAlpha = 0f, animationSpec = tween(300))
             },
             popExitTransition = {
                 slideOutHorizontally(
                     targetOffsetX = { it },
-                    animationSpec = tween(500, easing = FastOutSlowInEasing)
+                    animationSpec = tween(300, easing = FastOutSlowInEasing)
                 )
             }
         ) {
