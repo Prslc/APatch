@@ -146,6 +146,7 @@
     <string name="module_info_version_code">版本号:</string>
     <string name="module_info_author">作者:</string>
     <string name="module_info_description">模块描述:</string>
+    <string name="module_install_prompt_with_name">将安装以下模块：%1$s</string>
     <string name="module_error_no_prop">没有在zip文件根目录中找到 module.prop 文件</string>
     <string name="module_error_open_zip">从 URI 中打开 zip 文件失败</string>
     <string name="module_error_invalid_zip">无效的 zip 文件</string>
