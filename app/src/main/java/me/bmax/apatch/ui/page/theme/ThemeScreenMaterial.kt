@@ -193,20 +193,21 @@ fun ThemeScreenMaterial(
                 }
                 if (state.themeMode in 3..5) {
                     item {
+                        val keyColorItems = listOf(
+                            stringResource(R.string.settings_key_color_default),
+                            stringResource(R.string.color_red),
+                            stringResource(R.string.color_green),
+                            stringResource(R.string.color_blue),
+                            stringResource(R.string.color_purple),
+                            stringResource(R.string.color_orange),
+                            stringResource(R.string.color_teal),
+                            stringResource(R.string.color_pink),
+                            stringResource(R.string.color_brown),
+                        )
                         DropdownItem(
                             title = stringResource(R.string.settings_key_color),
-                            summary = stringResource(R.string.settings_key_color_summary),
-                            items = listOf(
-                                stringResource(R.string.settings_key_color_default),
-                                stringResource(R.string.color_red),
-                                stringResource(R.string.color_green),
-                                stringResource(R.string.color_blue),
-                                stringResource(R.string.color_purple),
-                                stringResource(R.string.color_orange),
-                                stringResource(R.string.color_teal),
-                                stringResource(R.string.color_pink),
-                                stringResource(R.string.color_brown),
-                            ),
+                            summary = keyColorItems.getOrElse(state.keyColorIndex) { keyColorItems.first() },
+                            items = keyColorItems,
                             selectedIndex = state.keyColorIndex,
                             icon = Icons.Rounded.Colorize,
                             onSelectedIndexChange = { actions.onSetKeyColor(it) }

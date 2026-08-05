@@ -265,9 +265,7 @@
     <string name="settings_use_system_color_theme">系统颜色主题</string>
     <string name="settings_use_system_color_theme_summary">使用由系统由壁纸取色生成的主题</string>
     <string name="settings_key_color">强调色</string>
-    <string name="settings_key_color_summary">在使用 Monet 时自定义种子色。</string>
     <string name="settings_palette_style">色板风格</string>
-    <string name="settings_palette_style_summary">选择 Monet 主题的色板风格。</string>
     <string name="settings_color_spec">颜色规格</string>
     <string name="settings_color_spec_summary">选择 Monet 主题的颜色规格版本。</string>
     <string name="settings_color_spec_2021">Material 3（2021）</string>
