@@ -37,8 +37,6 @@ import androidx.webkit.WebViewAssetLoader
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import me.bmax.apatch.ui.LocalUiMode
-import me.bmax.apatch.ui.UiMode
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.data.AppRepository
 import me.bmax.apatch.ui.component.loadingindicator.LoadingIndicator

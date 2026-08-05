@@ -1,46 +1,17 @@
 package me.bmax.apatch.ui
 
-import android.content.ClipData
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.ClipEntry
-import androidx.compose.ui.platform.LocalClipboard
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
-import me.bmax.apatch.BuildConfig
-import me.bmax.apatch.R
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.Color
+import me.bmax.apatch.ui.page.crash.CrashScreenMaterial
+import me.bmax.apatch.ui.page.crash.CrashScreenMiuix
+import me.bmax.apatch.ui.page.crash.buildCrashLog
+import me.bmax.apatch.ui.theme.APatchMaterialTheme
 import me.bmax.apatch.ui.theme.APatchTheme
-import top.yukonga.miuix.kmp.basic.FloatingActionButton
-import top.yukonga.miuix.kmp.basic.Icon
-import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
-import top.yukonga.miuix.kmp.basic.Scaffold
-import top.yukonga.miuix.kmp.basic.Text
-import top.yukonga.miuix.kmp.basic.TopAppBar
-import top.yukonga.miuix.kmp.icon.MiuixIcons
-import top.yukonga.miuix.kmp.icon.extended.Copy
-import top.yukonga.miuix.kmp.theme.MiuixTheme
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 class CrashHandleActivity : ComponentActivity() {
 
@@ -53,98 +24,27 @@ class CrashHandleActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
-        val appName = getString(R.string.app_name)
-        val versionName = BuildConfig.VERSION_NAME
-        val versionCode = BuildConfig.VERSION_CODE
-
-        val deviceBrand = Build.BRAND
-        val deviceModel = Build.MODEL
-        val sdkLevel = Build.VERSION.SDK_INT
-        val currentDateTime = Calendar.getInstance().time
-        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        val formattedDateTime = formatter.format(currentDateTime)
-
-        val exceptionMessage = intent.getStringExtra("exception_message")
-        val threadName = intent.getStringExtra("thread")
-
-        val message = buildString {
-            append(appName).append(" version: ").append(versionName).append(" ($versionCode)")
-                .append("\n\n")
-            append("Brand: ").append(deviceBrand).append("\n")
-            append("Model: ").append(deviceModel).append("\n")
-            append("SDK Level: ").append(sdkLevel).append("\n")
-            append("Time: ").append(formattedDateTime).append("\n\n")
-            append("Thread: ").append(threadName).append("\n")
-            append("Crash Info: \n").append(exceptionMessage)
-        }
+        val message = buildCrashLog(intent)
 
         setContent {
-            APatchTheme {
-                CrashHandleScreen(message)
-            }
-        }
-    }
-}
+            val prefs = getSharedPreferences("config", MODE_PRIVATE)
+            val colorMode = prefs.getInt("color_mode", 0)
+            val keyColorInt = prefs.getInt("key_color", 0)
+            val keyColor = if (keyColorInt == 0) null else Color(keyColorInt)
+            val uiMode = UiMode.fromValue(prefs.getString("ui_mode", "miuix") ?: "miuix")
 
-@Composable
-private fun CrashHandleScreen(
-    message: String
-) {
-    val clipboard = LocalClipboard.current
-    val scope = rememberCoroutineScope()
-
-    val scrollBehavior = MiuixScrollBehavior()
-
-    Scaffold(
-        contentWindowInsets = WindowInsets.safeDrawing,
-        topBar = {
-            TopAppBar(
-                title = stringResource(R.string.crash_handle_title),
-                scrollBehavior = scrollBehavior
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                modifier = Modifier.padding(bottom = 30.dp),
-                onClick = {
-                    scope.launch {
-                        clipboard.setClipEntry(
-                            ClipEntry(ClipData.newPlainText("CrashLog", message))
-                        )
+            when (uiMode) {
+                UiMode.Miuix -> APatchTheme(colorMode = colorMode, keyColor = keyColor) {
+                    CompositionLocalProvider(LocalUiMode provides uiMode) {
+                        CrashScreenMiuix(message)
                     }
                 }
-            ) {
-                Icon(
-                    imageVector = MiuixIcons.Copy,
-                    contentDescription = "copy",
-                    tint = MiuixTheme.colorScheme.onPrimary
-                )
+                UiMode.Material -> APatchMaterialTheme(colorMode = colorMode, keyColor = keyColor) {
+                    CompositionLocalProvider(LocalUiMode provides uiMode) {
+                        CrashScreenMaterial(message)
+                    }
+                }
             }
         }
-    ) { paddingValues ->
-        SelectionContainer(
-            modifier = Modifier
-                .fillMaxSize()
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
-                .verticalScroll(rememberScrollState())
-                .padding(paddingValues)
-                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
-        ) {
-            Text(
-                text = message,
-                style = TextStyle(
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 11.sp
-                )
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-fun CrashHandleScreenPreview() {
-    APatchTheme {
-        CrashHandleScreen("Crash log here")
     }
 }
