@@ -14,7 +14,7 @@
     <string name="home_need_update">Доступна новая версия</string>
     <string name="kpatch_version">Версия: %s</string>
     <string name="apatch_version">Версия: %s</string>
-    <string name="apatch_version_update" formatted="false">Версия: %s → %s</string>
+    <string name="apatch_version_update">Версия: %s → %s</string>
     <string name="home_su_path">Исполняемый файл su</string>
     <string name="home_apatch_version">Версия APatch</string>
     <string name="home_kernel">Версия ядра</string>
@@ -26,12 +26,12 @@
     <string name="home_selinux_status_permissive">Разрешающий</string>
     <string name="home_selinux_status_unknown">Неизвестно</string>
     <string name="su_title">SuperUser</string>
-    <string name="apm_failed_to_enable">Не удалось включить модуль \"%s\"</string>
-    <string name="apm_failed_to_disable">Не удалось отключить модуль \"%s\"</string>
+    <string name="apm_failed_to_enable">Не удалось включить модуль \&quot;%s\&quot;</string>
+    <string name="apm_failed_to_disable">Не удалось отключить модуль \&quot;%s\&quot;</string>
     <string name="apm_empty">Модуль не установлен</string>
     <string name="kpm">Модули KP</string>
     <string name="apm">Модули AP</string>
-    <string name="apm_uinstall">Удалить</string>
+    <string name="apm_remove">Удалить</string>
     <string name="kpm_load">Загрузить</string>
     <string name="apm_install">Установить</string>
     <string name="reboot">Перезагрузить</string>
@@ -41,7 +41,7 @@
     <string name="reboot_download">Перезагрузить в Download</string>
     <string name="reboot_edl">Перезагрузить в EDL</string>
     <string name="about">О приложении</string>
-    <string name="apm_uninstall_confirm">Удалить модуль \"%s\"?</string>
+    <string name="apm_uninstall_confirm">Удалить модуль \&quot;%s\&quot;?</string>
     <string name="apm_uninstall_success">%s удален</string>
     <string name="apm_uninstall_failed">Не удалось удалить %s</string>
     <string name="apm_version">Версия</string>
@@ -57,9 +57,9 @@
     <string name="apm_magisk_conflict">Модули недоступны из-за конфликта с Magisk!</string>
     <string name="home_learn_apatch">Узнать больше про APatch</string>
     <string name="home_click_to_learn_apatch">Узнайте о возможностях APatch и о том, как его использовать</string>
-    <string name="about_source_code"><![CDATA[<p>Посмотрите исходный код на %1$s<p/>Присоединяйтесь к нашему каналу %2$s</p>Присоединяйтесь к нашей группе %3$s]]></string>
+    <string name="about_source_code">&lt;p&gt;Посмотрите исходный код на %1$s&lt;p/&gt;Присоединяйтесь к нашему каналу %2$s&lt;/p&gt;Присоединяйтесь к нашей группе %3$s</string>
     <string name="apm_update">Обновить</string>
-    <string name="apm_downloading">Скачивание модуля \"%s\"…</string>
+    <string name="apm_downloading">Скачивание модуля \&quot;%s\&quot;…</string>
     <string name="apm_start_downloading">Начало скачивания %s</string>
     <string name="apm_new_version_available">Доступна новая версия %s, нажмите для обновления.</string>
     <string name="apm_changelog">Список изменений</string>
@@ -84,14 +84,14 @@
     <string name="home_ap_cando_install">Установить</string>
     <string name="home_ap_cando_update">Обновить</string>
     <string name="home_ap_cando_uninstall">Деинсталлировать</string>
-    <string name="kpm_unload_confirm">Выгрузить модуль \"%s\"?</string>
+    <string name="kpm_unload_confirm">Выгрузить модуль \&quot;%s\&quot;?</string>
     <string name="apm_not_installed">AndroidPatch не установлен</string>
     <string name="settings_app_language">Язык</string>
     <string name="system_default">Как в системе</string>
     <string name="patch">Патч</string>
     <string name="settings_global_namespace_mode">Режим глобального пространства имён</string>
     <string name="settings_global_namespace_mode_summary">Все сеансы суперпользователя root используют монтирование глобального пространства имён</string>
-    <string name="kpatch_version_update" formatted="false">Версия: %s → %s</string>
+    <string name="kpatch_version_update">Версия: %s → %s</string>
     <string name="home_kpatch_info_title">Подробнее</string>
     <string name="home_ap_cando_reboot">Перезагрузить</string>
     <string name="patch_config_title">Патчи</string>
@@ -106,22 +106,22 @@
     <string name="patch_item_bootimg_dev">устройство:</string>
     <string name="patch_item_kernel">Ядро</string>
     <string name="patch_item_kpimg">kpimg</string>
-    <string name="patch_item_kpimg_comile_time">"Время:"</string>
-    <string name="patch_item_kpimg_config">"Настройка:"</string>
+    <string name="patch_item_kpimg_comile_time">&quot;Время:&quot;</string>
+    <string name="patch_item_kpimg_config">&quot;Настройка:&quot;</string>
     <string name="patch_item_new_extra_kpm">Встроить новый</string>
     <string name="patch_item_existed_extra_kpm">Встраиваемый</string>
-    <string name="patch_item_extra_kpm_desciption">"Описание:"</string>
-    <string name="patch_item_extra_args">"Аргументы:"</string>
-    <string name="patch_item_extra_event">"Событие:"</string>
+    <string name="patch_item_extra_kpm_desciption">&quot;Описание:&quot;</string>
+    <string name="patch_item_extra_args">&quot;Аргументы:&quot;</string>
+    <string name="patch_item_extra_event">&quot;Событие:&quot;</string>
     <string name="patch_item_skey">СуперКлюч</string>
     <string name="kpatch_shadow_path_title">kpatch</string>
     <string name="patch_mode_bootimg_patch">Режим: Патч</string>
     <string name="patch_mode_patch_and_install">Режим: Патчить и установить</string>
-    <string name="patch_item_kpimg_version">"Версия:"</string>
+    <string name="patch_item_kpimg_version">&quot;Версия:&quot;</string>
     <string name="patch_item_extra_name">Название:</string>
-    <string name="patch_item_extra_version">"Версия:"</string>
-    <string name="patch_item_extra_author">"Автор:"</string>
-    <string name="patch_item_extra_kpm_license">"Лицензия:"</string>
+    <string name="patch_item_extra_version">&quot;Версия:&quot;</string>
+    <string name="patch_item_extra_author">&quot;Автор:&quot;</string>
+    <string name="patch_item_extra_kpm_license">&quot;Лицензия:&quot;</string>
     <string name="settings_clear_super_key_dialog">Вы действительно хотите продолжить?</string>
     <string name="patch_item_set_skey_label">Длина СуперКлюч должна быть не менее 8 символов и включать только цифры и буквы.</string>
     <string name="failure">Ошибка</string>
@@ -136,6 +136,9 @@
     <string name="setting_reset_su_path">Изменить путь к su</string>
     <string name="hide_apatch_manager_summary">Установите прокси-приложение со случайным ID пакета и польз. ярлыком приложения</string>
     <string name="setting_reset_su_new_path">Новый полный путь</string>
+    <string name="cyan_theme">Бирюзовая</string>
+    <string name="pink_theme">Розовая</string>
+    <string name="lime_theme">Лаймовая</string>
     <string name="mode_select_page_select_file">Выберите образ boot, который следует пропатчить</string>
     <string name="mode_select_page_install_inactive_slot_warning">Ваше устройство будет **ПРИНУДЕТЕЛЬНО** загружено в текущий неактивный слот после перезагрузки!\nИспользуйте эту опцию только после успешной установки OTA.\nПродолжить?</string>
     <string name="kpm_control">Управление</string>
@@ -144,6 +147,7 @@
     <string name="home_dialog_uninstall_ap_only">Удалить AndroidPatch</string>
     <string name="kpm_control_dialog_title">Управление KPModule</string>
     <string name="kpm_control_ok">Операция выполнена успешно!</string>
+    <string name="orange_theme">Оранжевая</string>
     <string name="settings_night_mode_follow_sys_summary">Автоматически переключаться на тёмную тему, соблюдая системные настройки</string>
     <string name="about_app_desc">Решение для получения прав суперпользователя, работающее на уровне ядра, предоставляющее возможность монтировать модули системы и модифицировать функции ядра.</string>
     <string name="about_telegram_channel">Канал в Telegram</string>
@@ -164,6 +168,18 @@
     <string name="settings_night_mode_follow_sys">Придерживаться тёмной темы системы</string>
     <string name="settings_use_system_color_theme">Системная цветовая тема</string>
     <string name="settings_use_system_color_theme_summary">Использовать цветовую тему, созданную системой на основе текущих обоев</string>
+    <string name="settings_custom_color_theme">Цветовая тема</string>
+    <string name="deep_orange_theme">Тёмно-оранжевая</string>
+    <string name="deep_purple_theme">Тёмно-фиолетовая</string>
+    <string name="light_blue_theme">Голубая</string>
+    <string name="light_green_theme">Салатовая</string>
+    <string name="purple_theme">Фиолетовая</string>
+    <string name="red_theme">Красная</string>
+    <string name="sakura_theme">Сакура</string>
+    <string name="teal_theme">Морская</string>
+    <string name="yellow_theme">Жёлтая</string>
+    <string name="green_theme">Зелёная</string>
+    <string name="indigo_theme">Индиго</string>
     <string name="patch_mode_install_to_next_slot">Режим: Установить в неактивный слот (После OTA)</string>
     <string name="about_app_version">Версия %1$s</string>
     <string name="apm_webui_open">Открыть</string>
@@ -173,6 +189,10 @@
     <string name="home_system_version">Версия системы</string>
     <string name="settings_night_theme_enabled">Включить темную тему</string>
     <string name="enable_web_debugging">Включить отладку WebView</string>
+    <string name="amber_theme">Янтарная</string>
+    <string name="brown_theme">Коричневая</string>
+    <string name="blue_grey_theme">Сине-серая</string>
+    <string name="blue_theme">Синяя</string>
     <string name="enable_web_debugging_summary">Используется для отладки WebUI. Пожалуйста, включайте только при необходимости.</string>
     <string name="save_log">Сохранить журналы</string>
     <string name="apm_action">Действие</string>
@@ -180,4 +200,24 @@
     <string name="crash_handle_copied">Журнал сбоев скопирован в буфер обмена.</string>
     <string name="log_saved">Логи сохранены</string>
     <string name="crash_handle_title">Сбой приложения…</string>
+    <string name="about_github" translatable="false">GitHub</string>
+    <string name="about_weblate" translatable="false">Weblate</string>
+    <string name="apm_module_undo_uninstall_failed">Failed to undo uninstall: %s</string>
+    <string name="apm_module_undo_uninstall_success">Successfully canceled uninstall of %s</string>
+    <string name="apm_undo">Undo</string>
+    <string name="back">Back</string>
+    <string name="learn_more">Learn more</string>
+    <string name="meta_module_disabled">module not mounted, because metamodule disabled</string>
+    <string name="meta_module_removed">module not mounted, because metamodule being delete</string>
+    <string name="metamodule_uninstall_confirm">&quot;Are you sure you want to uninstall module %s? This action will affect all modules, and certain features provided by the metamodule (such as mounting) will no longer work.  &quot;</string>
+    <string name="no_meta_module_installed">module not mounted, because metamodule not installed</string>
+    <string name="patch_custom_superkey">Custom SuperKey</string>
+    <string name="patch_custom_superkey_summary">still can use superkey manager root, now we are verify manager signature by kernel</string>
+    <string name="search">Search</string>
+    <string name="search_apps">Search Apps</string>
+    <string name="search_modules">Search modules</string>
+    <string name="settings_sucompat">Legacy su compatibility</string>
+    <string name="settings_sucompat_summary">Enable path_probe hooks for legacy su compatibility</string>
+    <string name="warning_of_meta_module_summary">This module want to mount /system, meta module will handle that. Otherwise, it might not work.</string>
+    <string name="warning_of_meta_module_title">Require Meta module</string>
 </resources>

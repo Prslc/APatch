@@ -51,11 +51,11 @@
     <string name="su_hide_system_apps">시스템 앱 숨기기</string>
     <string name="su_refresh">새로 고침</string>
     <string name="apm">APModule</string>
-    <string name="apm_failed_to_disable">\"%s\" 모듈을 끌 수 없습니다</string>
+    <string name="apm_failed_to_disable">\&quot;%s\&quot; 모듈을 끌 수 없습니다</string>
     <string name="apm_empty">설치된 모듈이 없습니다</string>
     <string name="apm_uinstall">제거</string>
     <string name="apm_install">설치</string>
-    <string name="apm_uninstall_confirm">\"%s\" 모듈을 제거하시겠습니까?</string>
+    <string name="apm_uninstall_confirm">\&quot;%s\&quot; 모듈을 제거하시겠습니까?</string>
     <string name="apm_uninstall_success">%s이 제거되었습니다</string>
     <string name="apm_uninstall_failed">%s 을 제거하지 못했습니다</string>
     <string name="apm_version">버전</string>
@@ -63,7 +63,7 @@
     <string name="apm_overlay_fs_not_available">커널에 의해 OverlayFS가 비활성화되어 모듈을 사용할 수 없습니다.</string>
     <string name="system_default">시스템 기본값</string>
     <string name="home_click_to_learn_apatch">APatch의 기능 및 사용 방법 알아보기</string>
-    <string name="about_source_code"><![CDATA[<p>%1$s에서 소스 코드 보기.<p/>%2$s 채널 참여<p/>%3$s 그룹 참여]]></string>
+    <string name="about_source_code">&lt;p&gt;%1$s에서 소스 코드 보기.&lt;p/&gt;%2$s 채널 참여&lt;p/&gt;%3$s 그룹 참여</string>
     <string name="safe_mode">안전 모드</string>
     <string name="kpm_load_toast_succ">불러오기 성공</string>
     <string name="home_learn_apatch">APatch 알아보기</string>
@@ -74,16 +74,16 @@
     <string name="su_title">슈퍼유저</string>
     <string name="reboot_recovery">리커버리로 재시작</string>
     <string name="su_selinux_via_hook">훅으로 우회하기</string>
-    <string name="kpm_unload_confirm">\"%s\" 모듈을 제거하시겠습니까?</string>
+    <string name="kpm_unload_confirm">\&quot;%s\&quot; 모듈을 제거하시겠습니까?</string>
     <string name="su_pkg_excluded_label">제외</string>
     <string name="su_pkg_excluded_setting_title">변경 제외</string>
     <string name="apm_not_installed">AndroidPatch가 설치되지 않음</string>
-    <string name="apm_failed_to_enable">\"%s\" 모듈을 키지 못했습니다</string>
+    <string name="apm_failed_to_enable">\&quot;%s\&quot; 모듈을 키지 못했습니다</string>
     <string name="apm_magisk_conflict">Magisk와 충돌이 발생해 모듈이 비활성화되었습니다.</string>
     <string name="apm_reboot_to_apply">적용하려면 재시작하세요</string>
     <string name="apm_changelog">변경 기록</string>
     <string name="apm_update">업데이트</string>
-    <string name="apm_downloading">\"%s\"모듈 내려받는 중…</string>
+    <string name="apm_downloading">\&quot;%s\&quot;모듈 내려받는 중…</string>
     <string name="apm_start_downloading">%s 내려받기를 시작합니다</string>
     <string name="apm_new_version_available">새 버전 %s을 설치하려면 클릭하세요.</string>
     <string name="kpm_desc">설명</string>
@@ -182,4 +182,24 @@
     <string name="crash_handle_copy">충돌 로그 복사</string>
     <string name="apm_action">동작</string>
     <string name="crash_handle_copied">충돌 로그가 클립보드에 복사됨.</string>
+    <string name="about_github" translatable="false">GitHub</string>
+    <string name="about_weblate" translatable="false">Weblate</string>
+    <string name="apm_module_undo_uninstall_failed">Failed to undo uninstall: %s</string>
+    <string name="apm_module_undo_uninstall_success">Successfully canceled uninstall of %s</string>
+    <string name="apm_undo">Undo</string>
+    <string name="back">Back</string>
+    <string name="learn_more">Learn more</string>
+    <string name="meta_module_disabled">module not mounted, because metamodule disabled</string>
+    <string name="meta_module_removed">module not mounted, because metamodule being delete</string>
+    <string name="metamodule_uninstall_confirm">&quot;Are you sure you want to uninstall module %s? This action will affect all modules, and certain features provided by the metamodule (such as mounting) will no longer work.  &quot;</string>
+    <string name="no_meta_module_installed">module not mounted, because metamodule not installed</string>
+    <string name="patch_custom_superkey">Custom SuperKey</string>
+    <string name="patch_custom_superkey_summary">still can use superkey manager root, now we are verify manager signature by kernel</string>
+    <string name="search">Search</string>
+    <string name="search_apps">Search Apps</string>
+    <string name="search_modules">Search modules</string>
+    <string name="settings_sucompat">Legacy su compatibility</string>
+    <string name="settings_sucompat_summary">Enable path_probe hooks for legacy su compatibility</string>
+    <string name="warning_of_meta_module_summary">This module want to mount /system, meta module will handle that. Otherwise, it might not work.</string>
+    <string name="warning_of_meta_module_title">Require Meta module</string>
 </resources>

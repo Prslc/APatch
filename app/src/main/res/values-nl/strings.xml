@@ -13,7 +13,7 @@
     <string name="settings_global_namespace_mode">Globale naamruimtemodus</string>
     <string name="settings_global_namespace_mode_summary">Alle rootsessies gebruiken de globale mount-naamruimte</string>
     <string name="home_learn_apatch">Leer APatch</string>
-    <string name="about_source_code"><![CDATA[<p>Bekijk de broncode op %1$s<p/>Word lid van ons%2$s kanaal<p/>Word lid van ons%3$s groep]]></string>
+    <string name="about_source_code">&lt;p&gt;Bekijk de broncode op %1$s&lt;p/&gt;Word lid van ons%2$s kanaal&lt;p/&gt;Word lid van ons%3$s groep</string>
     <string name="send_log">Logbestanden versturen</string>
     <string name="safe_mode">Veilige modus</string>
     <string name="super_key">SuperKey</string>
@@ -33,7 +33,7 @@
     <string name="home_selinux_status_permissive">Permissief</string>
     <string name="home_selinux_status_unknown">Onbekend</string>
     <string name="kpm">KPModule</string>
-    <string name="kpm_unload_confirm">Module \"%s\" ontladen?</string>
+    <string name="kpm_unload_confirm">Module \&quot;%s\&quot; ontladen?</string>
     <string name="kpm_unload">Ontladen</string>
     <string name="kpm_apm_empty">Geen module geladen</string>
     <string name="kpm_author">Auteur</string>
@@ -46,7 +46,7 @@
     <string name="apm_reboot_to_apply">Start opnieuw op om van kracht te gaan</string>
     <string name="apm_changelog">Wijzigingslog</string>
     <string name="home">Thuis</string>
-    <string name="patch_warnning">Installatie brengt risico\'s met zich mee. Zorg ervoor dat er een back-up van uw gegevens wordt gemaakt.</string>
+    <string name="patch_warnning">Installatie brengt risico\&apos;s met zich mee. Zorg ervoor dat er een back-up van uw gegevens wordt gemaakt.</string>
     <string name="reboot_bootloader">Start opnieuw op naar Bootloader</string>
     <string name="home_click_to_learn_apatch">Leer meer over de functies van APatch en hoe u deze kunt gebruiken</string>
     <string name="reboot_download">Start opnieuw op naar Download</string>
@@ -54,7 +54,7 @@
     <string name="apatch_version">Versie: %s</string>
     <string name="home_su_path">Uitvoerbare su</string>
     <string name="home_ap_cando_update">Werk bij</string>
-    <string name="apatch_version_update" formatted="false">Versie: %s -&gt; %s</string>
+    <string name="apatch_version_update">Versie: %s -&gt; %s</string>
     <string name="home_apatch_version">APatch versie</string>
     <string name="home_ap_cando_install">Installeer</string>
     <string name="home_manager_version">Managerversie</string>
@@ -73,16 +73,16 @@
     <string name="su_refresh">Vernieuwen</string>
     <string name="apm_not_installed">AndroidPatch niet geïnstalleerd</string>
     <string name="apm">APModule</string>
-    <string name="apm_failed_to_disable">Kon de module \"%s\" niet uitschakelen</string>
-    <string name="apm_failed_to_enable">Kon de module \"%s\" niet inschakelen</string>
+    <string name="apm_failed_to_disable">Kon de module \&quot;%s\&quot; niet uitschakelen</string>
+    <string name="apm_failed_to_enable">Kon de module \&quot;%s\&quot; niet inschakelen</string>
     <string name="apm_update">Update</string>
-    <string name="apm_uinstall">Verwijderen</string>
+    <string name="apm_remove">Verwijderen</string>
     <string name="apm_install">Installeren</string>
-    <string name="apm_uninstall_confirm">De module \"%s\" verwijderen?</string>
+    <string name="apm_uninstall_confirm">De module \&quot;%s\&quot; verwijderen?</string>
     <string name="apm_version">Versie</string>
     <string name="apm_desc">Beschr.</string>
     <string name="apm_author">Auteur</string>
-    <string name="apm_downloading">Downloaden \"%s\" module…</string>
+    <string name="apm_downloading">Downloaden \&quot;%s\&quot; module…</string>
     <string name="apm_start_downloading">Begin met downloaden %s</string>
     <string name="apm_new_version_available">Een nieuwe versie %s is beschikbaar, klik om te upgraden.</string>
     <string name="apm_overlay_fs_not_available">Modules zijn onbereikbaar als OverlayFS wordt uitgeschakeld door de kern!</string>
@@ -92,9 +92,24 @@
     <string name="failure">Mislukking</string>
     <string name="settings_check_update">Naar updates zoeken</string>
     <string name="settings_check_update_summary">Automatisch controleren op updates als je de app opent</string>
+    <string name="blue_theme">Blauw Theme</string>
+    <string name="brown_theme">Brown Theme</string>
+    <string name="cyan_theme">Cyan Theem</string>
+    <string name="indigo_theme">Indigo Theme</string>
+    <string name="deep_purple_theme">Diep Purple Theem</string>
+    <string name="light_blue_theme">Licht Theem</string>
+    <string name="green_theme">Groen Theem</string>
+    <string name="light_green_theme">Licht Theem</string>
+    <string name="purple_theme">Purple Theme</string>
+    <string name="red_theme">Red Theem</string>
+    <string name="sakura_theme">Sakura Theem</string>
+    <string name="deep_orange_theme">Diepe Orange Theem</string>
+    <string name="lime_theme">Lime Theme</string>
+    <string name="orange_theme">Orange Theme</string>
+    <string name="pink_theme">Pink Theem</string>
     <string name="save_log">Logboek opslaan</string>
     <string name="log_saved">Logboek opgeslagen</string>
-    <string name="kpatch_version_update" formatted="false">Versie: %s -&gt; %s</string>
+    <string name="kpatch_version_update">Versie: %s -&gt; %s</string>
     <string name="kpatch_shadow_path_title">kpatch</string>
     <string name="home_kpatch_info_title">Info</string>
     <string name="home_install_unknown_summary">Klik om te installeren</string>
@@ -107,6 +122,7 @@
     <string name="patch_mode_patch_and_install">Modus: Patchen en installeren</string>
     <string name="patch_set_superkey">SuperKey instellen</string>
     <string name="mode_select_page_install_inactive_slot_warning">Uw apparaat zal **GEFORCEERD** worden om op te starten aan de huidige inactieve gleuf na een heropstarting!\nDeze optie enkel gebruiken nadat OTA gedaan is.\nDoorgaan?</string>
+    <string name="teal_theme">Blauwgroen Thema</string>
     <string name="crash_handle_title">Applicatie gecrasht…</string>
     <string name="crash_handle_copy">Kopieer crash logboek</string>
     <string name="crash_handle_copied">Crash logboek gekopieerd naar klembord.</string>
@@ -172,12 +188,36 @@
     <string name="settings_night_mode_follow_sys">Volg Systeems Donkere Thema</string>
     <string name="settings_night_mode_follow_sys_summary">Verander automatisch naar donkere thema met systeems instelling</string>
     <string name="home_dialog_uninstall_ap_only">Verwijder AndroidPatch</string>
+    <string name="amber_theme">Amber Thema</string>
     <string name="settings_night_theme_enabled">Donkere Thema Inschakelen</string>
+    <string name="blue_grey_theme">BlauwGrijs Thema</string>
+    <string name="settings_custom_color_theme">Kleur Thema</string>
     <string name="about_app_desc">Kernel Root-oplossing met alleen een gestripte kernel afbeelding, die de mogelijkheid biedt om een systeemmodule te mounten en een kernelfunctie te koppelen.</string>
+    <string name="yellow_theme">Geel Thema</string>
     <string name="about_app_version">Versie %1$s</string>
     <string name="about_telegram_group">Telegram Groep</string>
     <string name="about_powered_by">Aangedreven door %1$s</string>
     <string name="patch_item_extra_kpm_license">Licentie:</string>
     <string name="kpm_control">Controle</string>
     <string name="patch_start_unpatch_btn">Ontsnipperen</string>
+    <string name="about_github" translatable="false">GitHub</string>
+    <string name="about_weblate" translatable="false">Weblate</string>
+    <string name="apm_module_undo_uninstall_failed">Failed to undo uninstall: %s</string>
+    <string name="apm_module_undo_uninstall_success">Successfully canceled uninstall of %s</string>
+    <string name="apm_undo">Undo</string>
+    <string name="back">Back</string>
+    <string name="learn_more">Learn more</string>
+    <string name="meta_module_disabled">module not mounted, because metamodule disabled</string>
+    <string name="meta_module_removed">module not mounted, because metamodule being delete</string>
+    <string name="metamodule_uninstall_confirm">&quot;Are you sure you want to uninstall module %s? This action will affect all modules, and certain features provided by the metamodule (such as mounting) will no longer work.  &quot;</string>
+    <string name="no_meta_module_installed">module not mounted, because metamodule not installed</string>
+    <string name="patch_custom_superkey">Custom SuperKey</string>
+    <string name="patch_custom_superkey_summary">still can use superkey manager root, now we are verify manager signature by kernel</string>
+    <string name="search">Search</string>
+    <string name="search_apps">Search Apps</string>
+    <string name="search_modules">Search modules</string>
+    <string name="settings_sucompat">Legacy su compatibility</string>
+    <string name="settings_sucompat_summary">Enable path_probe hooks for legacy su compatibility</string>
+    <string name="warning_of_meta_module_summary">This module want to mount /system, meta module will handle that. Otherwise, it might not work.</string>
+    <string name="warning_of_meta_module_title">Require Meta module</string>
 </resources>

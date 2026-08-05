@@ -56,7 +56,7 @@
     <string name="kpatch_version">Verze: %s</string>
     <string name="kpatch_version_update" formatted="false">Verze: %s -&gt; %s</string>
     <string name="home_install_unknown_summary">Kliknutím nainstalovat</string>
-    <string name="about_source_code"><![CDATA[<p>Zobrazit zdrojový kód na %1$s<p/> Připojit se k našemu kanálu %2$s<p/> Připojit se k naší skupině %3$s]]></string>
+    <string name="about_source_code">&lt;p&gt;Zobrazit zdrojový kód na %1$s&lt;p/&gt; Připojit se k našemu kanálu %2$s&lt;p/&gt; Připojit se k naší skupině %3$s</string>
     <string name="home_learn_apatch">Prozkoumat APatch</string>
     <string name="patch_start_unpatch_btn">Odstranit záplatu</string>
     <string name="apm_uninstall_success">%s odinstalován</string>
@@ -85,7 +85,7 @@
     <string name="kpm_load">Načíst</string>
     <string name="kpm_install">Instalovat</string>
     <string name="kpm_embed">Vložit</string>
-    <string name="kpm_unload_confirm">Vyjmout modul \"%s\"?</string>
+    <string name="kpm_unload_confirm">Vyjmout modul \&quot;%s\&quot;?</string>
     <string name="kpm_control">Ovládání</string>
     <string name="kpm_version">Verze</string>
     <string name="kpm_license">Licence</string>
@@ -96,8 +96,8 @@
     <string name="su_hide_system_apps">Skrýt systémové aplikace</string>
     <string name="su_refresh">Оbnovit</string>
     <string name="apm">APModul</string>
-    <string name="apm_failed_to_enable">Nelze zapnout modul \"%s\"</string>
-    <string name="apm_downloading">Stahování modulu \"%s\"…</string>
+    <string name="apm_failed_to_enable">Nelze zapnout modul \&quot;%s\&quot;</string>
+    <string name="apm_downloading">Stahování modulu \&quot;%s\&quot;…</string>
     <string name="hide_apatch_dialog_summary">Nový název bude zobrazen ve spouštěči</string>
     <string name="setting_reset_su_path">Obnovit cestu su</string>
     <string name="setting_reset_su_new_path">Nová úplná cesta</string>
@@ -134,10 +134,10 @@
     <string name="apm_uninstall_failed">Nelze odinstalovat %s</string>
     <string name="enable_web_debugging_summary">Může být použito k ladění WebUI. Prosím, tuto možnost povolte pouze v případě potřeby.</string>
     <string name="apm_empty">Není nainstalován žádný modul</string>
-    <string name="apm_uninstall_confirm">Odinstalovat modul \"%s?</string>
+    <string name="apm_uninstall_confirm">Odinstalovat modul \&quot;%s?</string>
     <string name="apm_magisk_conflict">Moduly nejsou k dispozici kvůli konfliktu s Magiskem!</string>
     <string name="hide_apatch_dialog_new_manager_name">Nový název manažera</string>
-    <string name="apm_failed_to_disable">Nelze vypnout modul \"%s\"</string>
+    <string name="apm_failed_to_disable">Nelze vypnout modul \&quot;%s\&quot;</string>
     <string name="hide_apatch_manager">Skrýt manažera APatch</string>
     <string name="apm_version">Verze</string>
     <string name="apm_changelog">Seznam změn</string>
@@ -179,4 +179,25 @@
     <string name="crash_handle_title">Aplikace selhala…</string>
     <string name="crash_handle_copy">Kopírovat protokol o selhání</string>
     <string name="crash_handle_copied">Kopírovat protokol o selhání do schránky.</string>
+    <string name="about_github" translatable="false">GitHub</string>
+    <string name="about_weblate" translatable="false">Weblate</string>
+    <string name="apm_module_undo_uninstall_failed">Failed to undo uninstall: %s</string>
+    <string name="apm_module_undo_uninstall_success">Successfully canceled uninstall of %s</string>
+    <string name="apm_undo">Undo</string>
+    <string name="app_name" translatable="false">APatch</string>
+    <string name="back">Back</string>
+    <string name="learn_more">Learn more</string>
+    <string name="meta_module_disabled">module not mounted, because metamodule disabled</string>
+    <string name="meta_module_removed">module not mounted, because metamodule being delete</string>
+    <string name="metamodule_uninstall_confirm">&quot;Are you sure you want to uninstall module %s? This action will affect all modules, and certain features provided by the metamodule (such as mounting) will no longer work.  &quot;</string>
+    <string name="no_meta_module_installed">module not mounted, because metamodule not installed</string>
+    <string name="patch_custom_superkey">Custom SuperKey</string>
+    <string name="patch_custom_superkey_summary">still can use superkey manager root, now we are verify manager signature by kernel</string>
+    <string name="search">Search</string>
+    <string name="search_apps">Search Apps</string>
+    <string name="search_modules">Search modules</string>
+    <string name="settings_sucompat">Legacy su compatibility</string>
+    <string name="settings_sucompat_summary">Enable path_probe hooks for legacy su compatibility</string>
+    <string name="warning_of_meta_module_summary">This module want to mount /system, meta module will handle that. Otherwise, it might not work.</string>
+    <string name="warning_of_meta_module_title">Require Meta module</string>
 </resources>

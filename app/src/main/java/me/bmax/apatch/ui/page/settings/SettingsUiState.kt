@@ -14,6 +14,7 @@ data class SettingsUiState(
     val isKpatchReady: Boolean = false,
     val isApatchReady: Boolean = false,
     val isGlobalNamespaceEnabled: Boolean = false,
+    val sucompatEnabled: Boolean = false,
     val enableWebDebugging: Boolean = false,
     val checkUpdate: Boolean = true,
     val cacheSize: Long = 0L,

@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.Commit
 import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.Engineering
+import androidx.compose.material.icons.filled.FeaturedPlayList
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.Update
@@ -100,6 +101,17 @@ fun SettingScreenMiuix(
                             icon = Icons.Filled.Engineering,
                             checked = uiState.isGlobalNamespaceEnabled,
                             onCheckedChange = { viewModel.toggleGlobalNamespace(it) }
+                        )
+                    }
+
+                    // Legacy sucompat (path_probe) support
+                    if (uiState.isKpatchReady && uiState.isApatchReady) {
+                        SwitchItem(
+                            icon = Icons.Filled.FeaturedPlayList,
+                            title = stringResource(R.string.settings_sucompat),
+                            summary = stringResource(R.string.settings_sucompat_summary),
+                            checked = uiState.sucompatEnabled,
+                            onCheckedChange = { viewModel.toggleSucompat(it) }
                         )
                     }
 

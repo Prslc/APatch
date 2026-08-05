@@ -5,6 +5,7 @@ import android.app.LocaleManager
 import android.content.Context
 import android.os.Build
 import android.os.LocaleList
+import android.util.Log
 import androidx.core.app.LocaleManagerCompat
 import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
@@ -17,10 +18,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bmax.apatch.APApplication
+import me.bmax.apatch.Natives
 import me.bmax.apatch.R
 import me.bmax.apatch.apApp
 import me.bmax.apatch.data.repository.SettingsRepository
 import me.bmax.apatch.data.repository.SettingsRepositoryImpl
+import me.bmax.apatch.util.rootShellForResult
 
 class SettingsViewModel(
     private val settingsRepo: SettingsRepository = SettingsRepositoryImpl
@@ -41,6 +44,7 @@ class SettingsViewModel(
 
         _uiState.update {
             it.copy(
+                sucompatEnabled = settingsRepo.getBoolean("sucompat_enabled", false),
                 enableWebDebugging = settingsRepo.getBoolean("enable_web_debugging", false),
                 checkUpdate = settingsRepo.getBoolean("check_update", true),
                 currentLanguageIndex = languagesValues.indexOf(tag).coerceAtLeast(0)
@@ -87,6 +91,25 @@ class SettingsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             settingsRepo.setGlobalNamespaceEnabled(enabled)
             _uiState.update { it.copy(isGlobalNamespaceEnabled = enabled) }
+        }
+    }
+
+    fun toggleSucompat(enabled: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = if (enabled) {
+                // Enable: create marker file and register hooks via supercall
+                rootShellForResult("touch ${APApplication.SUCOMPAT_FILE}")
+                Natives.controlFeature("sucompat_extra", true)
+            } else {
+                // Disable: remove marker file and unregister hooks via supercall
+                rootShellForResult("rm -f ${APApplication.SUCOMPAT_FILE}")
+                Natives.controlFeature("sucompat_extra", false)
+            }
+            Log.d("SucompatToggle", "sucompat_extra ${if (enabled) "enable" else "disable"} result: $result")
+            if (result == 0L) {
+                settingsRepo.setBoolean("sucompat_enabled", enabled)
+                _uiState.update { it.copy(sucompatEnabled = enabled) }
+            }
         }
     }
 

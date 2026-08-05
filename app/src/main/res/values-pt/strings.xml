@@ -14,7 +14,7 @@
     <string name="super_key">Chave de Segurança</string>
     <string name="patch_set_superkey">Definir Chave de Segurança</string>
     <string name="home_patch_next_step">Próximo passo</string>
-    <string name="home_install_unknown">"Não foi instalado ou autenticado "</string>
+    <string name="home_install_unknown">&quot;Não foi instalado ou autenticado &quot;</string>
     <string name="home_click_to_install">Clique para instalar</string>
     <string name="home_need_update">Nova versão Disponível</string>
     <string name="apatch_version">Versão: %s</string>
@@ -35,7 +35,7 @@
     <string name="kpatch_version">Versão: %s</string>
     <string name="home_working">Funcionado</string>
     <string name="home_installing">Instalando</string>
-    <string name="apatch_version_update" formatted="false">Versão: %s -&gt; %s</string>
+    <string name="apatch_version_update">Versão: %s -&gt; %s</string>
     <string name="home_ap_cando_install">Instalar</string>
     <string name="home_selinux_status_unknown">Desconhecido</string>
     <string name="kpm_load">Carregar</string>
@@ -47,13 +47,13 @@
     <string name="home_selinux_status">Estado do SELinux</string>
     <string name="home_selinux_status_enforcing">A impor</string>
     <string name="home_selinux_status_permissive">Permissivo</string>
-    <string name="kpm_unload_confirm">Descarregar \"%s\" módulo ?</string>
+    <string name="kpm_unload_confirm">Descarregar \&quot;%s\&quot; módulo ?</string>
     <string name="kpm_unload">Descarregar</string>
     <string name="kpm_apm_empty">Nenhum módulo carregado</string>
     <string name="su_selinux_via_hook">ignorar via hook</string>
     <string name="kpm_version">Versão</string>
-    <string name="apm_downloading">Baixando o módulo \"%s\"…</string>
-    <string name="about_source_code"><![CDATA[<p>Veja o código-fonte em %1$s<p/>Participe do nosso canal %2$s<p/>Participe do nosso grupo %3$s]]></string>
+    <string name="apm_downloading">Baixando o módulo \&quot;%s\&quot;…</string>
+    <string name="about_source_code">&lt;p&gt;Veja o código-fonte em %1$s&lt;p/&gt;Participe do nosso canal %2$s&lt;p/&gt;Participe do nosso grupo %3$s</string>
     <string name="home_apatch_version">Versão APatch</string>
     <string name="kpm_license">Licença</string>
     <string name="kpm_author">Autor</string>
@@ -68,11 +68,11 @@
     <string name="su_refresh">Atualizar</string>
     <string name="apm">APMódulo</string>
     <string name="apm_failed_to_enable">Não foi possível ativar o módulo %s</string>
-    <string name="apm_failed_to_disable">Não foi possível desligar o módulo \"%s\"</string>
+    <string name="apm_failed_to_disable">Não foi possível desligar o módulo \&quot;%s\&quot;</string>
     <string name="apm_empty">Nenhum módulo instalado</string>
-    <string name="apm_uinstall">Remover</string>
+    <string name="apm_remove">Remover</string>
     <string name="apm_install">Instalar</string>
-    <string name="apm_uninstall_confirm">Desinstalar o módulo \"%s\"?</string>
+    <string name="apm_uninstall_confirm">Desinstalar o módulo \&quot;%s\&quot;?</string>
     <string name="apm_uninstall_success">%s desinstalado</string>
     <string name="apm_uninstall_failed">Não foi possível desinstalar %s</string>
     <string name="apm_version">Versão</string>
@@ -97,7 +97,7 @@
     <string name="settings_clear_super_key_dialog">Você realmente quer prosseguir?</string>
     <string name="settings_check_update_summary">Verifique automaticamente as atualizações ao abrir o aplicativo</string>
     <string name="home_install_unknown_summary">Clique para instalar</string>
-    <string name="kpatch_version_update" formatted="false">Versão: %s -&gt; %s</string>
+    <string name="kpatch_version_update">Versão: %s -&gt; %s</string>
     <string name="home_kpatch_info_title">Informação</string>
     <string name="patch_select_bootimg_btn">Selecione a inicialização</string>
     <string name="patch_start_patch_btn">Início</string>
@@ -112,6 +112,25 @@
     <string name="patch_item_extra_author">Autor:</string>
     <string name="patch_item_extra_kpm_license">Licença:</string>
     <string name="patch_item_extra_kpm_desciption">Descrição:</string>
+    <string name="settings_custom_color_theme">Tema de cores</string>
+    <string name="blue_grey_theme">Cinzento-azul</string>
+    <string name="blue_theme">Azul</string>
+    <string name="brown_theme">Castanho</string>
+    <string name="cyan_theme">Ciano</string>
+    <string name="deep_orange_theme">Laranja profundo</string>
+    <string name="deep_purple_theme">Roxo profundo</string>
+    <string name="green_theme">Verde</string>
+    <string name="indigo_theme">Azul-anil</string>
+    <string name="light_blue_theme">Azul claro</string>
+    <string name="light_green_theme">Verde claro</string>
+    <string name="lime_theme">Verde-limão</string>
+    <string name="orange_theme">Laranja</string>
+    <string name="pink_theme">Rosa</string>
+    <string name="purple_theme">Roxo</string>
+    <string name="red_theme">Vermelho</string>
+    <string name="sakura_theme">Sakura</string>
+    <string name="teal_theme">Verde-azulado</string>
+    <string name="yellow_theme">Amarelo</string>
     <string name="about_telegram_channel">Canal do Telegram</string>
     <string name="about_telegram_group">Grupo do Telegram</string>
     <string name="about_app_version">Versão %1$s</string>
@@ -177,9 +196,30 @@
     <string name="settings_night_mode_follow_sys_summary">Mude automaticamente para o tema escuro com base nas configurações do sistema</string>
     <string name="settings_use_system_color_theme">Tema de cores do sistema</string>
     <string name="settings_use_system_color_theme_summary">Use um tema de cores gerado pelo sistema com base no plano de fundo atual</string>
+    <string name="amber_theme">Âmbar</string>
     <string name="apm_action">Ação</string>
     <string name="log_saved">Logs salvos</string>
     <string name="crash_handle_title">A app travou…</string>
     <string name="crash_handle_copy">Copiar registro de falha</string>
     <string name="crash_handle_copied">Registo de falhas copiado.</string>
+    <string name="about_github" translatable="false">GitHub</string>
+    <string name="about_weblate" translatable="false">Weblate</string>
+    <string name="apm_module_undo_uninstall_failed">Failed to undo uninstall: %s</string>
+    <string name="apm_module_undo_uninstall_success">Successfully canceled uninstall of %s</string>
+    <string name="apm_undo">Undo</string>
+    <string name="back">Back</string>
+    <string name="learn_more">Learn more</string>
+    <string name="meta_module_disabled">module not mounted, because metamodule disabled</string>
+    <string name="meta_module_removed">module not mounted, because metamodule being delete</string>
+    <string name="metamodule_uninstall_confirm">&quot;Are you sure you want to uninstall module %s? This action will affect all modules, and certain features provided by the metamodule (such as mounting) will no longer work.  &quot;</string>
+    <string name="no_meta_module_installed">module not mounted, because metamodule not installed</string>
+    <string name="patch_custom_superkey">Custom SuperKey</string>
+    <string name="patch_custom_superkey_summary">still can use superkey manager root, now we are verify manager signature by kernel</string>
+    <string name="search">Search</string>
+    <string name="search_apps">Search Apps</string>
+    <string name="search_modules">Search modules</string>
+    <string name="settings_sucompat">Legacy su compatibility</string>
+    <string name="settings_sucompat_summary">Enable path_probe hooks for legacy su compatibility</string>
+    <string name="warning_of_meta_module_summary">This module want to mount /system, meta module will handle that. Otherwise, it might not work.</string>
+    <string name="warning_of_meta_module_title">Require Meta module</string>
 </resources>
