@@ -74,7 +74,11 @@ fun ThemeScreenMiuix(
                 Card(modifier = Modifier.padding(horizontal = 16.dp)) {
                     DropdownItem(
                         title = stringResource(R.string.settings_ui_mode),
-                        summary = stringResource(R.string.settings_ui_mode_summary),
+                        summary = if (state.uiMode == UiMode.Material.value) {
+                            stringResource(R.string.settings_ui_mode_material_summary)
+                        } else {
+                            stringResource(R.string.settings_ui_mode_miuix_summary)
+                        },
                         items = UiMode.entries.map { it.name },
                         selectedIndex = if (state.uiMode == UiMode.Material.value) 1 else 0,
                         icon = Icons.Rounded.Dashboard,

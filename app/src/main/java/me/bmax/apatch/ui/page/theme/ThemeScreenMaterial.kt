@@ -125,7 +125,7 @@ fun ThemeScreenMaterial(
                     BaseWidget(
                         iconPlaceholder = false,
                         title = "MIUIX",
-                        description = stringResource(R.string.settings_ui_mode_summary),
+                        description = stringResource(R.string.settings_ui_mode_miuix_summary),
                         selected = isMiuix,
                         onClick = { if (!isMiuix) actions.onSetUiMode(UiMode.Miuix.value) },
                         trailingContent = {
@@ -147,7 +147,7 @@ fun ThemeScreenMaterial(
                     BaseWidget(
                         iconPlaceholder = false,
                         title = "Material Design 3",
-                        description = stringResource(R.string.settings_ui_mode_summary),
+                        description = stringResource(R.string.settings_ui_mode_material_summary),
                         selected = isMaterial,
                         onClick = { if (!isMaterial) actions.onSetUiMode(UiMode.Material.value) },
                         trailingContent = {
