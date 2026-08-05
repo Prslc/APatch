@@ -60,7 +60,7 @@ object MonetColorsProvider {
                 "onSurface" to colorScheme.onSurface.toCssValue(),
                 "surfaceVariant" to colorScheme.surfaceVariant.toCssValue(),
                 "onSurfaceVariant" to colorScheme.onSurfaceVariantSummary.toCssValue(),
-                "surfaceTint" to colorScheme.surface.toCssValue(),
+                "surfaceTint" to colorScheme.primary.toCssValue(),
                 "inverseSurface" to colorScheme.disabledOnSurface.toCssValue(),
                 "inverseOnSurface" to colorScheme.surfaceContainer.toCssValue(),
                 "error" to colorScheme.error.toCssValue(),
