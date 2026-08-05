@@ -9,6 +9,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.ViewGroup
+import android.webkit.JsPromptResult
+import android.webkit.JsResult
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
@@ -26,7 +28,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.view.ViewCompat
@@ -42,8 +47,11 @@ import me.bmax.apatch.ui.component.loadingindicator.LoadingIndicator
 import me.bmax.apatch.ui.theme.APatchAppTheme
 import me.bmax.apatch.ui.theme.readAppThemeSettings
 import me.bmax.apatch.ui.webui.AppIconUtil
+import me.bmax.apatch.ui.webui.HandleWebUIEventMaterial
+import me.bmax.apatch.ui.webui.HandleWebUIEventMiuix
 import me.bmax.apatch.ui.webui.Insets
 import me.bmax.apatch.ui.webui.SuFilePathHandler
+import me.bmax.apatch.ui.webui.WebUIEvent
 import me.bmax.apatch.ui.webui.WebViewInterface
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -61,6 +69,7 @@ class WebUIActivity : ComponentActivity() {
     private var webCanGoBack = false
     private lateinit var fileChooserLauncher: ActivityResultLauncher<Intent>
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
+    private var uiEvent by mutableStateOf<WebUIEvent?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -96,6 +105,20 @@ class WebUIActivity : ComponentActivity() {
                     contentAlignment = Alignment.Center
                 ) {
                     LoadingIndicator()
+                }
+                when (LocalUiMode.current) {
+                    UiMode.Miuix -> HandleWebUIEventMiuix(
+                        event = uiEvent,
+                        onAlertResult = ::dismissAlert,
+                        onConfirmResult = ::dismissConfirm,
+                        onPromptResult = ::dismissPrompt,
+                    )
+                    UiMode.Material -> HandleWebUIEventMaterial(
+                        event = uiEvent,
+                        onAlertResult = ::dismissAlert,
+                        onConfirmResult = ::dismissConfirm,
+                        onPromptResult = ::dismissPrompt,
+                    )
                 }
             }
         }
@@ -179,7 +202,10 @@ class WebUIActivity : ComponentActivity() {
             cont.invokeOnCancellation {
                 insetsContinuation = null
             }
-            setContentView(container)
+            addContentView(
+                container,
+                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            )
 
             if (insets != Insets(0, 0, 0, 0)) {
                 cont.resumeWith(Result.success(Unit))
@@ -236,6 +262,30 @@ class WebUIActivity : ComponentActivity() {
             addJavascriptInterface(webViewInterface, "ksu")
             setWebViewClient(webViewClient)
             webChromeClient = object : WebChromeClient() {
+                override fun onJsAlert(view: WebView?, url: String?, message: String?, result: JsResult?): Boolean {
+                    if (result == null) return false
+                    uiEvent = WebUIEvent.ShowAlert(message.orEmpty(), result)
+                    return true
+                }
+
+                override fun onJsConfirm(view: WebView?, url: String?, message: String?, result: JsResult?): Boolean {
+                    if (result == null) return false
+                    uiEvent = WebUIEvent.ShowConfirm(message.orEmpty(), result)
+                    return true
+                }
+
+                override fun onJsPrompt(
+                    view: WebView?,
+                    url: String?,
+                    message: String?,
+                    defaultValue: String?,
+                    result: JsPromptResult?
+                ): Boolean {
+                    if (result == null) return false
+                    uiEvent = WebUIEvent.ShowPrompt(message.orEmpty(), defaultValue.orEmpty(), result)
+                    return true
+                }
+
                 override fun onShowFileChooser(
                     webView: WebView?,
                     filePathCallback: ValueCallback<Array<Uri>>?,
@@ -259,6 +309,25 @@ class WebUIActivity : ComponentActivity() {
             }
             loadUrl("https://mui.kernelsu.org/index.html")
         }
+    }
+
+    private fun dismissAlert() {
+        (uiEvent as? WebUIEvent.ShowAlert)?.result?.confirm()
+        uiEvent = null
+    }
+
+    private fun dismissConfirm(confirmed: Boolean) {
+        (uiEvent as? WebUIEvent.ShowConfirm)?.result?.let {
+            if (confirmed) it.confirm() else it.cancel()
+        }
+        uiEvent = null
+    }
+
+    private fun dismissPrompt(value: String?) {
+        (uiEvent as? WebUIEvent.ShowPrompt)?.result?.let {
+            if (value != null) it.confirm(value) else it.cancel()
+        }
+        uiEvent = null
     }
 
     fun enableInsets(enable: Boolean = true) {
