@@ -20,7 +20,7 @@ import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.Commit
 import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.Engineering
-import androidx.compose.material.icons.filled.FeaturedPlayList
+import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.Update
@@ -154,7 +154,7 @@ fun SettingScreenMaterial(
                     if (uiState.isKpatchReady && uiState.isApatchReady) {
                         item {
                             SwitchItem(
-                                icon = Icons.Filled.FeaturedPlayList,
+                                icon = Icons.Filled.Terminal,
                                 title = stringResource(R.string.settings_sucompat),
                                 summary = stringResource(R.string.settings_sucompat_summary),
                                 checked = uiState.sucompatEnabled,
