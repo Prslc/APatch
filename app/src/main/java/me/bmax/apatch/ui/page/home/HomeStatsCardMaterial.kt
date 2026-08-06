@@ -111,7 +111,8 @@ internal fun KStatusCardMaterial(
                     cardState.badge?.let {
                         LabelText(
                             label = it,
-                            containerColor = MaterialTheme.colorScheme.primary
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
                 }
