@@ -25,10 +25,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.InstallMobile
-import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Memory
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Tag
@@ -72,7 +71,6 @@ import me.bmax.apatch.ui.component.WarningCard
 import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
 import me.bmax.apatch.ui.component.material.SegmentedColumn
 import me.bmax.apatch.ui.navigation.LocalNavigator
-import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.theme.LocalEnableBlur
 import me.bmax.apatch.ui.theme.getMaterial3AppBarColor
 import me.bmax.apatch.ui.theme.material3BlurEffect
@@ -80,7 +78,6 @@ import me.bmax.apatch.ui.theme.rememberMaterial3BlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
 import me.bmax.apatch.util.Version.getManagerVersion
 import me.bmax.apatch.util.reboot
-
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -135,8 +132,6 @@ fun HomeScreenMaterial(
                         if (kpState != APApplication.State.UNKNOWN_STATE) {
                             RebootDropdown()
                         }
-
-                        MoreMenu(navigator)
                     },
                     scrollBehavior = scrollBehavior,
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -215,44 +210,6 @@ private fun RebootDropdown() {
                         text = { Text(text = stringResource(res)) }
                     )
                 }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun MoreMenu(navigator: Navigator) {
-    val uriHandler = LocalUriHandler.current
-    var expanded by remember { mutableStateOf(false) }
-    Box {
-        IconButton(onClick = { expanded = true }) {
-            Icon(
-                imageVector = Icons.Filled.MoreVert,
-                contentDescription = stringResource(id = R.string.settings)
-            )
-        }
-        DropdownMenuPopup(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            DropdownMenuGroup(
-                shapes = MenuDefaults.groupShape(index = 0, count = 1)
-            ) {
-                DropdownMenuItem(
-                    onClick = {
-                        expanded = false
-                        uriHandler.openUri("https://github.com/bmax121/APatch/issues/new/choose")
-                    },
-                    text = { Text(text = stringResource(R.string.home_more_menu_feedback_or_suggestion)) }
-                )
-                DropdownMenuItem(
-                    onClick = {
-                        expanded = false
-                        navigator.navigateToAbout()
-                    },
-                    text = { Text(text = stringResource(R.string.home_more_menu_about)) }
-                )
             }
         }
     }
