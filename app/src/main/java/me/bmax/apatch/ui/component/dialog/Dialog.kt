@@ -1,50 +1,17 @@
-package me.bmax.apatch.ui.component
+package me.bmax.apatch.ui.component.dialog
 
-import android.graphics.text.LineBreaker
-import android.os.Build
 import android.os.Parcelable
-import android.text.Layout
-import android.text.method.LinkMovementMethod
 import android.util.Log
-import android.view.ViewGroup
-import android.widget.TextView
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.DialogWindowProvider
-import io.noties.markwon.Markwon
-import io.noties.markwon.utils.NoCopySpannableFactory
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -56,14 +23,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.parcelize.Parcelize
-import me.bmax.apatch.util.ui.APDialogBlurBehindUtils.Companion.setupWindowBlurListener
-import top.yukonga.miuix.kmp.basic.ButtonDefaults
-import top.yukonga.miuix.kmp.basic.CircularProgressIndicator
-import top.yukonga.miuix.kmp.basic.Surface
-import top.yukonga.miuix.kmp.basic.Text
-import top.yukonga.miuix.kmp.basic.TextButton
-import top.yukonga.miuix.kmp.theme.MiuixTheme
-import top.yukonga.miuix.kmp.window.WindowDialog
+import me.bmax.apatch.ui.LocalUiMode
+import me.bmax.apatch.ui.UiMode
 import kotlin.coroutines.resume
 
 private const val TAG = "DialogComponent"
@@ -202,9 +163,12 @@ private class ConfirmDialogHandleImpl(
     visible: MutableState<Boolean>,
     coroutineScope: CoroutineScope,
     callback: ConfirmCallback,
-    override var visuals: ConfirmDialogVisuals = ConfirmDialogVisualsImpl.Empty,
+    visuals: ConfirmDialogVisuals = ConfirmDialogVisualsImpl.Empty,
     private val resultFlow: ReceiveChannel<ConfirmResult>
 ) : ConfirmDialogHandle, DialogHandleBase(visible, coroutineScope) {
+    // State-backed so updateVisuals() triggers recomposition of readers
+    // (plain property would leave M3 dialogs showing stale/Empty visuals)
+    override var visuals: ConfirmDialogVisuals by mutableStateOf(visuals)
     private class ResultCollector(
         private val callback: ConfirmCallback
     ) : FlowCollector<ConfirmResult> {
@@ -337,13 +301,13 @@ private class CustomDialogHandleImpl(
 
 @Composable
 fun rememberLoadingDialog(): LoadingDialogHandle {
-    val visible = remember {
-        mutableStateOf(false)
-    }
+    val visible = remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
-    if (visible.value) {
-        LoadingDialog()
+    val uiMode = LocalUiMode.current
+    when (uiMode) {
+        UiMode.Miuix -> if (visible.value) LoadingDialogMiuix()
+        UiMode.Material -> LoadingDialogMaterial(visible)
     }
 
     return remember {
@@ -356,13 +320,9 @@ private fun rememberConfirmDialog(
     visuals: ConfirmDialogVisuals,
     callback: ConfirmCallback
 ): ConfirmDialogHandle {
-    val visible = rememberSaveable {
-        mutableStateOf(false)
-    }
+    val visible = rememberSaveable { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
-    val resultChannel = remember {
-        Channel<ConfirmResult>()
-    }
+    val resultChannel = remember { Channel<ConfirmResult>() }
 
     val handle = rememberSaveable(
         saver = ConfirmDialogHandleImpl.Saver(visible, coroutineScope, callback, resultChannel),
@@ -371,8 +331,15 @@ private fun rememberConfirmDialog(
         }
     )
 
-    if (visible.value) {
-        ConfirmDialog(
+    val uiMode = LocalUiMode.current
+    when (uiMode) {
+        UiMode.Miuix -> if (visible.value) ConfirmDialogMiuix(
+            handle.visuals,
+            confirm = { coroutineScope.launch { resultChannel.send(ConfirmResult.Confirmed) } },
+            dismiss = { coroutineScope.launch { resultChannel.send(ConfirmResult.Canceled) } },
+            showDialog = visible
+        )
+        UiMode.Material -> if (visible.value) ConfirmDialogMaterial(
             handle.visuals,
             confirm = { coroutineScope.launch { resultChannel.send(ConfirmResult.Confirmed) } },
             dismiss = { coroutineScope.launch { resultChannel.send(ConfirmResult.Canceled) } },
@@ -408,140 +375,71 @@ fun rememberConfirmDialog(callback: ConfirmCallback): ConfirmDialogHandle {
     return rememberConfirmDialog(ConfirmDialogVisualsImpl.Empty, callback)
 }
 
+/**
+ * A reusable settings-style dialog that dispatches to the right shell
+ * based on [me.bmax.apatch.ui.LocalUiMode].
+ *
+ * Call [EditableDialogHandle.show] to display, or use the returned handle
+ * directly. The dialog includes a title, a custom body composable, and
+ * confirm / dismiss buttons with callbacks.
+ */
+interface EditableDialogHandle {
+    fun show()
+    fun hide()
+}
+
+private class EditableDialogHandleImpl(
+    private val visible: MutableState<Boolean>
+) : EditableDialogHandle {
+    override fun show() { visible.value = true }
+    override fun hide() { visible.value = false }
+}
+
 @Composable
-fun rememberCustomDialog(composable: @Composable (dismiss: () -> Unit) -> Unit): DialogHandle {
-    val visible = rememberSaveable {
-        mutableStateOf(false)
-    }
-    val coroutineScope = rememberCoroutineScope()
+fun rememberEditableDialog(
+    title: String,
+    confirmText: String? = null,
+    dismissText: String? = null,
+    onConfirm: () -> Unit = {},
+    onDismiss: () -> Unit = {},
+    content: @Composable () -> Unit,
+): EditableDialogHandle {
+    val visible = rememberSaveable { mutableStateOf(false) }
+
+    val uiMode = LocalUiMode.current
     if (visible.value) {
-        composable { visible.value = false }
-    }
-    return remember {
-        CustomDialogHandleImpl(visible, coroutineScope)
-    }
-}
-
-@Composable
-private fun LoadingDialog() {
-    Dialog(
-        onDismissRequest = {},
-        properties = DialogProperties(
-            dismissOnClickOutside = false,
-            dismissOnBackPress = false,
-            usePlatformDefaultWidth = false
-        )
-    ) {
-        Surface(
-            modifier = Modifier.size(100.dp), shape = RoundedCornerShape(8.dp)
-        ) {
-            Box(
-                contentAlignment = Alignment.Center,
-            ) {
-                CircularProgressIndicator()
-            }
-        }
-        val dialogWindowProvider = LocalView.current.parent as DialogWindowProvider
-        setupWindowBlurListener(dialogWindowProvider.window)
-    }
-}
-
-@Composable
-private fun ConfirmDialog(
-    visuals: ConfirmDialogVisuals,
-    confirm: () -> Unit,
-    dismiss: () -> Unit,
-    showDialog: MutableState<Boolean>
-) {
-    WindowDialog(
-        show = showDialog.value,
-        title = visuals.title,
-        modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top)),
-        onDismissRequest = {
-            dismiss()
-            showDialog.value = false
-        },
-        content = {
-            Layout(
-                content = {
-                    visuals.content.let { content ->
-                        if (visuals.isMarkdown) {
-                            MarkdownContent(content = visuals.content)
-                        } else {
-                            Text(
-                                text = visuals.content,
-                                style = MiuixTheme.textStyles.body2
-                            )
-                        }
-                    }
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.padding(top = 12.dp)
-                    ) {
-                        TextButton(
-                            text = visuals.dismiss ?: stringResource(id = android.R.string.cancel),
-                            onClick = {
-                                dismiss()
-                                showDialog.value = false
-                            },
-                            modifier = Modifier.weight(1f)
-                        )
-                        Spacer(Modifier.width(20.dp))
-                        TextButton(
-                            text = visuals.confirm ?: stringResource(id = android.R.string.ok),
-                            onClick = {
-                                confirm()
-                                showDialog.value = false
-                            },
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.textButtonColorsPrimary()
-                        )
-                    }
+        when (uiMode) {
+            UiMode.Miuix -> me.bmax.apatch.ui.component.dialog.EditableDialogMiuix(
+                title = title,
+                content = content,
+                confirmText = confirmText,
+                dismissText = dismissText,
+                onConfirm = {
+                    onConfirm()
+                    visible.value = false
+                },
+                onDismiss = {
+                    onDismiss()
+                    visible.value = false
                 }
-            ) { measurables, constraints ->
-                if (measurables.size != 2) {
-                    val button = measurables[0].measure(constraints)
-                    layout(constraints.maxWidth, button.height) {
-                        button.place(0, 0)
-                    }
-                } else {
-                    val button = measurables[1].measure(constraints)
-                    val lazyList = measurables[0].measure(constraints.copy(maxHeight = constraints.maxHeight - button.height))
-                    layout(constraints.maxWidth, lazyList.height + button.height) {
-                        lazyList.place(0, 0)
-                        button.place(0, lazyList.height)
-                    }
+            )
+
+            UiMode.Material -> me.bmax.apatch.ui.component.dialog.EditableDialogMaterial(
+                title = title,
+                content = content,
+                confirmText = confirmText,
+                dismissText = dismissText,
+                onConfirm = {
+                    onConfirm()
+                    visible.value = false
+                },
+                onDismiss = {
+                    onDismiss()
+                    visible.value = false
                 }
-            }
+            )
         }
-    )
-}
+    }
 
-@Composable
-private fun MarkdownContent(content: String) {
-    val contentColor = MiuixTheme.colorScheme.onBackground.toArgb()
-
-    AndroidView(
-        factory = { context ->
-            TextView(context).apply {
-                movementMethod = LinkMovementMethod.getInstance()
-                setSpannableFactory(NoCopySpannableFactory.getInstance())
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    breakStrategy = LineBreaker.BREAK_STRATEGY_SIMPLE
-                    hyphenationFrequency = Layout.HYPHENATION_FREQUENCY_NONE
-                }
-
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-            }
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        update = {
-            Markwon.create(it.context).setMarkdown(it, content)
-            it.setTextColor(contentColor)
-        }
-    )
+    return remember { EditableDialogHandleImpl(visible) }
 }

@@ -318,6 +318,9 @@ dependencies {
     implementation(libs.miuix.icons)
     implementation(libs.miuix.preference)
 
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.material.kolor)
+
     implementation(libs.com.github.topjohnwu.libsu.core)
     implementation(libs.com.github.topjohnwu.libsu.service)
     implementation(libs.com.github.topjohnwu.libsu.nio)

@@ -15,6 +15,7 @@ data class HomeUiState(
 
     val apmCount: Int = 0,
     val kpmCount: Int = 0,
+    val suCount: Int = 0,
 
     val isCheckingUpdate: Boolean = false,
     val newVersionInfo: LatestVersionInfo? = null,

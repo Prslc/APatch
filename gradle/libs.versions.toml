@@ -4,6 +4,8 @@ lsplugin-apksign = "1.4"
 lsplugin-resopt = "1.6"
 kotlin = "2.4.0"
 compose-bom = "2026.06.01"
+material3 = "1.5.0-alpha24"
+material-kolor = "5.0.0"
 activity-compose = "1.13.0"
 splashscreen = "1.2.0"
 webkit = "1.16.0"
@@ -38,7 +40,10 @@ androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
+
+material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "material-kolor" }
 
 # miuix
 miuix-ui = { group = "top.yukonga.miuix.kmp", name= "miuix-ui-android", version.ref = "miuix"}

@@ -22,6 +22,7 @@ import me.bmax.apatch.data.repository.ApModuleRepository
 import me.bmax.apatch.data.repository.ApModuleRepositoryImpl
 import me.bmax.apatch.data.repository.SettingsRepository
 import me.bmax.apatch.data.repository.SettingsRepositoryImpl
+import me.bmax.apatch.ui.page.home.ModuleCountsRefresher
 import java.text.Collator
 import java.util.Locale
 import kotlin.time.Duration.Companion.milliseconds
@@ -180,6 +181,7 @@ class APModuleViewModel(
 
             result.fold(
                 onSuccess = { newList ->
+                    ModuleCountsRefresher.requestRefresh()
                     _uiState.update {
                         it.copy(
                             modules = newList, isNeedRefresh = false, isRefreshing = false

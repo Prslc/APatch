@@ -18,6 +18,7 @@ import kotlinx.coroutines.withContext
 import me.bmax.apatch.Natives
 import me.bmax.apatch.data.repository.KPModuleRepository
 import me.bmax.apatch.data.repository.KPModuleRepositoryImpl
+import me.bmax.apatch.ui.page.home.ModuleCountsRefresher
 import java.text.Collator
 import java.util.Locale
 
@@ -59,6 +60,7 @@ class KPModuleViewModel(
         val collator = Collator.getInstance(Locale.getDefault())
         val comparator = compareBy(collator, KPModel.KPMInfo::name)
         val modules = moduleRepo.listModules().sortedWith(comparator)
+        ModuleCountsRefresher.requestRefresh()
         _uiState.update { it.copy(modules = modules) }
     }
 

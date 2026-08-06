@@ -26,6 +26,9 @@ object ModeSelectRoute
 object AboutRoute
 
 @Serializable
+object ThemeRoute
+
+@Serializable
 data class PatchesRoute(
     val mode: PatchMode,
     val bootImageUri: String? = null

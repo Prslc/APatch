@@ -5,11 +5,12 @@ import android.app.ActivityManager
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
-import androidx.compose.ui.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.ViewGroup
+import android.webkit.JsPromptResult
+import android.webkit.JsResult
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
@@ -26,10 +27,21 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.webkit.WebViewAssetLoader
 import kotlinx.coroutines.CancellableContinuation
@@ -37,11 +49,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.data.AppRepository
-import me.bmax.apatch.ui.component.LoadingIndicator
-import me.bmax.apatch.ui.theme.APatchTheme
+import me.bmax.apatch.ui.component.loadingindicator.LoadingIndicator
+import me.bmax.apatch.ui.theme.APatchAppTheme
+import me.bmax.apatch.ui.theme.readAppThemeSettings
 import me.bmax.apatch.ui.webui.AppIconUtil
+import me.bmax.apatch.ui.webui.HandleWebUIEventMaterial
+import me.bmax.apatch.ui.webui.HandleWebUIEventMiuix
 import me.bmax.apatch.ui.webui.Insets
 import me.bmax.apatch.ui.webui.SuFilePathHandler
+import me.bmax.apatch.ui.webui.WebUIEvent
 import me.bmax.apatch.ui.webui.WebViewInterface
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -59,6 +75,7 @@ class WebUIActivity : ComponentActivity() {
     private var webCanGoBack = false
     private lateinit var fileChooserLauncher: ActivityResultLauncher<Intent>
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
+    private var uiEvent by mutableStateOf<WebUIEvent?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -80,17 +97,52 @@ class WebUIActivity : ComponentActivity() {
         })
 
         setContent {
-            val prefs = getSharedPreferences("config", MODE_PRIVATE)
-            val colorMode = prefs.getInt("color_mode", 0)
-            val keyColorInt = prefs.getInt("key_color", 0)
-            val keyColor = if (keyColorInt == 0) null else Color(keyColorInt)
+            val settings = remember {
+                readAppThemeSettings(getSharedPreferences("config", MODE_PRIVATE))
+            }
 
-            APatchTheme(colorMode = colorMode, keyColor = keyColor) {
+            APatchAppTheme(settings) {
+                val background = when (LocalUiMode.current) {
+                    UiMode.Miuix -> MiuixTheme.colorScheme.background
+                    UiMode.Material -> MaterialTheme.colorScheme.surfaceContainer
+                }
                 Box(
-                    modifier = Modifier.fillMaxSize().background(MiuixTheme.colorScheme.background),
+                    modifier = Modifier.fillMaxSize().background(background),
                     contentAlignment = Alignment.Center
                 ) {
                     LoadingIndicator()
+                }
+                when (LocalUiMode.current) {
+                    UiMode.Miuix -> HandleWebUIEventMiuix(
+                        event = uiEvent,
+                        onAlertResult = ::dismissAlert,
+                        onConfirmResult = ::dismissConfirm,
+                        onPromptResult = ::dismissPrompt,
+                    )
+                    UiMode.Material -> HandleWebUIEventMaterial(
+                        event = uiEvent,
+                        onAlertResult = ::dismissAlert,
+                        onConfirmResult = ::dismissConfirm,
+                        onPromptResult = ::dismissPrompt,
+                    )
+                }
+
+                val lifecycleOwner = LocalLifecycleOwner.current
+                DisposableEffect(lifecycleOwner) {
+                    val observer = LifecycleEventObserver { _, event ->
+                        when (event) {
+                            Lifecycle.Event.ON_RESUME -> webView?.onResume()
+                            Lifecycle.Event.ON_PAUSE -> webView?.onPause()
+                            else -> {}
+                        }
+                    }
+                    lifecycleOwner.lifecycle.addObserver(observer)
+                    onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+                }
+
+                val configuration = LocalConfiguration.current
+                LaunchedEffect(configuration.fontScale) {
+                    webView?.settings?.textZoom = (configuration.fontScale * 100).toInt()
                 }
             }
         }
@@ -174,7 +226,10 @@ class WebUIActivity : ComponentActivity() {
             cont.invokeOnCancellation {
                 insetsContinuation = null
             }
-            setContentView(container)
+            addContentView(
+                container,
+                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            )
 
             if (insets != Insets(0, 0, 0, 0)) {
                 cont.resumeWith(Result.success(Unit))
@@ -227,10 +282,35 @@ class WebUIActivity : ComponentActivity() {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             settings.allowFileAccess = false
+            settings.textZoom = (resources.configuration.fontScale * 100).toInt()
             webViewInterface = WebViewInterface(this@WebUIActivity, this)
             addJavascriptInterface(webViewInterface, "ksu")
             setWebViewClient(webViewClient)
             webChromeClient = object : WebChromeClient() {
+                override fun onJsAlert(view: WebView?, url: String?, message: String?, result: JsResult?): Boolean {
+                    if (result == null) return false
+                    uiEvent = WebUIEvent.ShowAlert(message.orEmpty(), result)
+                    return true
+                }
+
+                override fun onJsConfirm(view: WebView?, url: String?, message: String?, result: JsResult?): Boolean {
+                    if (result == null) return false
+                    uiEvent = WebUIEvent.ShowConfirm(message.orEmpty(), result)
+                    return true
+                }
+
+                override fun onJsPrompt(
+                    view: WebView?,
+                    url: String?,
+                    message: String?,
+                    defaultValue: String?,
+                    result: JsPromptResult?
+                ): Boolean {
+                    if (result == null) return false
+                    uiEvent = WebUIEvent.ShowPrompt(message.orEmpty(), defaultValue.orEmpty(), result)
+                    return true
+                }
+
                 override fun onShowFileChooser(
                     webView: WebView?,
                     filePathCallback: ValueCallback<Array<Uri>>?,
@@ -254,6 +334,25 @@ class WebUIActivity : ComponentActivity() {
             }
             loadUrl("https://mui.kernelsu.org/index.html")
         }
+    }
+
+    private fun dismissAlert() {
+        (uiEvent as? WebUIEvent.ShowAlert)?.result?.confirm()
+        uiEvent = null
+    }
+
+    private fun dismissConfirm(confirmed: Boolean) {
+        (uiEvent as? WebUIEvent.ShowConfirm)?.result?.let {
+            if (confirmed) it.confirm() else it.cancel()
+        }
+        uiEvent = null
+    }
+
+    private fun dismissPrompt(value: String?) {
+        (uiEvent as? WebUIEvent.ShowPrompt)?.result?.let {
+            if (value != null) it.confirm(value) else it.cancel()
+        }
+        uiEvent = null
     }
 
     fun enableInsets(enable: Boolean = true) {

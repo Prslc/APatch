@@ -53,12 +53,17 @@ class HomeViewModel(
 
         refreshCounts()
         refreshSystemInfoAsync()
+
+        viewModelScope.launch {
+            ModuleCountsRefresher.events.collect { refreshCounts() }
+        }
     }
 
     fun refreshCounts() = viewModelScope.launch(Dispatchers.IO) {
         val apm = apRepo.getModuleCount().coerceAtLeast(0)
         val kpm = kpRepo.getModuleCount().coerceAtLeast(0)
-        _uiState.update { it.copy(apmCount = apm, kpmCount = kpm) }
+        val su = Natives.suUids().size
+        _uiState.update { it.copy(apmCount = apm, kpmCount = kpm, suCount = su) }
     }
 
     private fun refreshSystemInfoAsync() = viewModelScope.launch(Dispatchers.IO) {
