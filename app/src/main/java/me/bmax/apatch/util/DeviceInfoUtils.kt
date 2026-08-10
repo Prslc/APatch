@@ -1,34 +1,18 @@
 package me.bmax.apatch.util
 
+import android.os.Build
 import android.util.Log
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import com.topjohnwu.superuser.Shell
-import me.bmax.apatch.R
 
-@Composable
 fun getSELinuxStatus(): String {
-    val shell = Shell.Builder.create()
-        .build("sh")
-
+    val shell = Shell.Builder.create().build("sh")
     val list = ArrayList<String>()
     val result = shell.newJob().add("getenforce").to(list, list).exec()
     val output = result.out.joinToString("\n").trim()
 
-    if (result.isSuccess) {
-        return when (output) {
-            "Enforcing" -> stringResource(R.string.home_selinux_status_enforcing)
-            "Permissive" -> stringResource(R.string.home_selinux_status_permissive)
-            "Disabled" -> stringResource(R.string.home_selinux_status_disabled)
-            else -> stringResource(R.string.home_selinux_status_unknown)
-        }
-    }
-
-    return if (output.endsWith("Permission denied")) {
-        stringResource(R.string.home_selinux_status_enforcing)
-    } else {
-        stringResource(R.string.home_selinux_status_unknown)
-    }
+    return if (result.isSuccess) output
+    else if (output.endsWith("Permission denied")) "Enforcing"
+    else "Unknown"
 }
 
 private fun getSystemProperty(key: String): Boolean {
@@ -49,4 +33,16 @@ private fun getSystemProperty(key: String): Boolean {
 // Check to see if device supports A/B (seamless) system updates
 fun isABDevice(): Boolean {
     return getSystemProperty("ro.build.ab_update")
+}
+
+fun getSystemVersion(): String {
+    return "${Build.VERSION.RELEASE} ${if (Build.VERSION.PREVIEW_SDK_INT != 0) "Preview" else ""} (API ${Build.VERSION.SDK_INT})"
+}
+
+fun getDeviceInfo(): String {
+    var manufacturer = Build.MANUFACTURER.replaceFirstChar { it.uppercase() }
+    if (!Build.BRAND.equals(Build.MANUFACTURER, ignoreCase = true)) {
+        manufacturer += " " + Build.BRAND.replaceFirstChar { it.uppercase() }
+    }
+    return "$manufacturer ${Build.MODEL} "
 }

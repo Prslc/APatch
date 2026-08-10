@@ -7,8 +7,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.LruCache
 import androidx.core.graphics.createBitmap
-import androidx.core.graphics.scale
-import me.bmax.apatch.ui.viewmodel.SuperUserViewModel.Companion.getAppIconDrawable
+import me.bmax.apatch.data.AppRepository
 
 object AppIconUtil {
     // Limit cache size to 200 icons
@@ -20,14 +19,17 @@ object AppIconUtil {
         val cached = iconCache.get(packageName)
         if (cached != null) return cached
 
-        try {
-            val drawable = getAppIconDrawable(context, packageName) ?: return null
-            val raw = drawableToBitmap(drawable, sizePx)
-            val icon = raw.scale(sizePx, sizePx)
+        val appFromRepo = AppRepository.apps.value.find { it.packageName == packageName }
+        val appInfo = appFromRepo?.packageInfo?.applicationInfo ?: return null
+
+        return try {
+            val pm = context.packageManager
+            val drawable = appInfo.loadIcon(pm)
+            val icon = drawableToBitmap(drawable, sizePx)
             iconCache.put(packageName, icon)
-            return icon
+            icon
         } catch (_: Exception) {
-            return null
+            null
         }
     }
 

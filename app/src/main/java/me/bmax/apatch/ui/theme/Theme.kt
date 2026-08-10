@@ -1,178 +1,186 @@
 package me.bmax.apatch.ui.theme
 
+import android.content.SharedPreferences
 import android.os.Build
 import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.MutableLiveData
-import me.bmax.apatch.APApplication
-import me.bmax.apatch.ui.webui.MonetColorsProvider
-
-@Composable
-private fun SystemBarStyle(
-    darkMode: Boolean,
-    statusBarScrim: Color = Color.Transparent,
-    navigationBarScrim: Color = Color.Transparent
-) {
-    val context = LocalContext.current
-    val activity = context as ComponentActivity
-
-    SideEffect {
-        activity.enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.auto(
-                statusBarScrim.toArgb(),
-                statusBarScrim.toArgb(),
-            ) { darkMode }, navigationBarStyle = when {
-                darkMode -> SystemBarStyle.dark(
-                    navigationBarScrim.toArgb()
-                )
-
-                else -> SystemBarStyle.light(
-                    navigationBarScrim.toArgb(),
-                    navigationBarScrim.toArgb(),
-                )
-            }
-        )
-    }
-}
-
-val refreshTheme = MutableLiveData(false)
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
+import com.materialkolor.PaletteStyle
+import com.materialkolor.dynamicColorScheme
+import com.materialkolor.dynamiccolor.ColorSpec
+import me.bmax.apatch.ui.LocalUiMode
+import me.bmax.apatch.ui.UiMode
+import me.bmax.apatch.ui.webui.MonetColorsProvider.UpdateCss
+import top.yukonga.miuix.kmp.theme.ColorSchemeMode
+import top.yukonga.miuix.kmp.theme.MiuixTheme
+import top.yukonga.miuix.kmp.theme.ThemeController
 
 @Composable
 fun APatchTheme(
+    colorMode: Int = 0,
+    keyColor: Color? = null,
     content: @Composable () -> Unit
 ) {
-    val context = LocalContext.current
-    val prefs = APApplication.sharedPreferences
-
-    var darkThemeFollowSys by remember {
-        mutableStateOf(
-            prefs.getBoolean(
-                "night_mode_follow_sys",
-                true
-            )
-        )
+    val isDark = isSystemInDarkTheme()
+    val controller = when (colorMode) {
+        1 -> ThemeController(ColorSchemeMode.Light)
+        2 -> ThemeController(ColorSchemeMode.Dark)
+        3 -> ThemeController(ColorSchemeMode.MonetSystem, keyColor = keyColor, isDark = isDark)
+        4 -> ThemeController(ColorSchemeMode.MonetLight, keyColor = keyColor)
+        5 -> ThemeController(ColorSchemeMode.MonetDark, keyColor = keyColor)
+        else -> ThemeController(ColorSchemeMode.System)
     }
-    var nightModeEnabled by remember {
-        mutableStateOf(
-            prefs.getBoolean(
-                "night_mode_enabled",
-                false
-            )
-        )
-    }
-    // Dynamic color is available on Android 12+, and custom 1t!
-    var dynamicColor by remember {
-        mutableStateOf(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) prefs.getBoolean(
-                "use_system_color_theme",
-                true
-            ) else false
-        )
-    }
-    var customColorScheme by remember { mutableStateOf(prefs.getString("custom_color", "blue")) }
-
-    val refreshThemeObserver by refreshTheme.observeAsState(false)
-    if (refreshThemeObserver == true) {
-        darkThemeFollowSys = prefs.getBoolean("night_mode_follow_sys", true)
-        nightModeEnabled = prefs.getBoolean("night_mode_enabled", false)
-        dynamicColor = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) prefs.getBoolean(
-            "use_system_color_theme",
-            true
-        ) else false
-        customColorScheme = prefs.getString("custom_color", "blue")
-        refreshTheme.postValue(false)
-    }
-
-    val darkTheme = if (darkThemeFollowSys) {
-        isSystemInDarkTheme()
-    } else {
-        nightModeEnabled
-    }
-
-    val colorScheme = if (!dynamicColor) {
-        if (darkTheme) {
-            when (customColorScheme) {
-                "amber" -> DarkAmberTheme
-                "blue_grey" -> DarkBlueGreyTheme
-                "blue" -> DarkBlueTheme
-                "brown" -> DarkBrownTheme
-                "cyan" -> DarkCyanTheme
-                "deep_orange" -> DarkDeepOrangeTheme
-                "deep_purple" -> DarkDeepPurpleTheme
-                "green" -> DarkGreenTheme
-                "indigo" -> DarkIndigoTheme
-                "light_blue" -> DarkLightBlueTheme
-                "light_green" -> DarkLightGreenTheme
-                "lime" -> DarkLimeTheme
-                "orange" -> DarkOrangeTheme
-                "pink" -> DarkPinkTheme
-                "purple" -> DarkPurpleTheme
-                "red" -> DarkRedTheme
-                "sakura" -> DarkSakuraTheme
-                "teal" -> DarkTealTheme
-                "yellow" -> DarkYellowTheme
-                else -> DarkBlueTheme
-            }
-        } else {
-            when (customColorScheme) {
-                "amber" -> LightAmberTheme
-                "blue_grey" -> LightBlueGreyTheme
-                "blue" -> LightBlueTheme
-                "brown" -> LightBrownTheme
-                "cyan" -> LightCyanTheme
-                "deep_orange" -> LightDeepOrangeTheme
-                "deep_purple" -> LightDeepPurpleTheme
-                "green" -> LightGreenTheme
-                "indigo" -> LightIndigoTheme
-                "light_blue" -> LightLightBlueTheme
-                "light_green" -> LightLightGreenTheme
-                "lime" -> LightLimeTheme
-                "orange" -> LightOrangeTheme
-                "pink" -> LightPinkTheme
-                "purple" -> LightPurpleTheme
-                "red" -> LightRedTheme
-                "sakura" -> LightSakuraTheme
-                "teal" -> LightTealTheme
-                "yellow" -> LightYellowTheme
-                else -> LightBlueTheme
-            }
-        }
-    } else {
-        when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-            }
-
-            darkTheme -> DarkBlueTheme
-            else -> LightBlueTheme
-        }
-    }
-
-    SystemBarStyle(
-        darkMode = darkTheme
-    )
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
+    return MiuixTheme(
+        controller = controller,
         content = {
-            MonetColorsProvider.UpdateCss()
+            UpdateCss()
             content()
         }
     )
+}
+
+val PaletteStyle.supportsSpec2025: Boolean
+    get() = this == PaletteStyle.TonalSpot ||
+            this == PaletteStyle.Neutral ||
+            this == PaletteStyle.Vibrant ||
+            this == PaletteStyle.Expressive
+
+fun ColorSpec.SpecVersion.effectiveFor(style: PaletteStyle): ColorSpec.SpecVersion =
+    if (this == ColorSpec.SpecVersion.SPEC_2025 && !style.supportsSpec2025) {
+        ColorSpec.SpecVersion.SPEC_2021
+    } else {
+        this
+    }
+
+@Composable
+fun APatchMaterialTheme(
+    colorMode: Int = 0,
+    keyColor: Color? = null,
+    paletteStyle: String = "TonalSpot",
+    colorSpec: String = "SPEC_2025",
+    content: @Composable () -> Unit
+) {
+    val context = LocalContext.current
+    val view = LocalView.current
+    val darkTheme = isInDarkTheme(colorMode)
+
+    val resolvedStyle = remember(paletteStyle) {
+        runCatching { PaletteStyle.valueOf(paletteStyle) }.getOrDefault(PaletteStyle.TonalSpot)
+    }
+    val resolvedSpec = remember(colorSpec, resolvedStyle) {
+        runCatching { ColorSpec.SpecVersion.valueOf(colorSpec) }
+            .getOrDefault(ColorSpec.SpecVersion.SPEC_2025)
+            .effectiveFor(resolvedStyle)
+    }
+
+    // Material 3 is Monet-based; the fixed System/Light/Dark modes (0/1/2)
+    // are only meaningful for Miuix, so always use the Monet color path
+    val isMonet = true
+    val colorScheme = remember(keyColor, darkTheme, colorMode, resolvedStyle, resolvedSpec) {
+        when {
+            isMonet && keyColor != null ->
+                dynamicColorScheme(
+                    seedColor = keyColor,
+                    isDark = darkTheme,
+                    style = resolvedStyle,
+                    contrastLevel = 0.0,
+                    specVersion = resolvedSpec,
+                )
+
+            isMonet && darkTheme && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
+                @Suppress("DEPRECATION")
+                dynamicDarkColorScheme(context)
+
+            isMonet && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
+                @Suppress("DEPRECATION")
+                dynamicLightColorScheme(context)
+
+            else ->
+                dynamicColorScheme(
+                    seedColor = Color.Unspecified,
+                    isDark = darkTheme,
+                    style = resolvedStyle,
+                    contrastLevel = 0.0,
+                    specVersion = resolvedSpec,
+                )
+        }
+    }
+
+    if (!view.isInEditMode) {
+        LaunchedEffect(darkTheme) {
+            val window = (context as? ComponentActivity)?.window ?: return@LaunchedEffect
+            WindowCompat
+                .getInsetsController(window, view)
+                .isAppearanceLightStatusBars = !darkTheme
+        }
+    }
+
+    MaterialExpressiveTheme(
+        colorScheme = colorScheme,
+        motionScheme = MotionScheme.expressive(),
+        content = {
+            UpdateCss()
+            content()
+        }
+    )
+}
+
+data class AppThemeSettings(
+    val uiMode: UiMode,
+    val colorMode: Int,
+    val keyColor: Color?,
+    val paletteStyle: String,
+    val colorSpec: String,
+)
+
+fun readAppThemeSettings(prefs: SharedPreferences): AppThemeSettings = AppThemeSettings(
+    uiMode = UiMode.fromValue(prefs.getString("ui_mode", "miuix") ?: "miuix"),
+    colorMode = prefs.getInt("color_mode", 0),
+    keyColor = prefs.getInt("key_color", 0).takeIf { it != 0 }?.let { Color(it) },
+    paletteStyle = prefs.getString("palette_style", "TonalSpot") ?: "TonalSpot",
+    colorSpec = prefs.getString("color_spec", "SPEC_2025") ?: "SPEC_2025",
+)
+
+@Composable
+fun APatchAppTheme(
+    settings: AppThemeSettings,
+    content: @Composable () -> Unit
+) {
+    CompositionLocalProvider(LocalUiMode provides settings.uiMode) {
+        when (settings.uiMode) {
+            UiMode.Miuix -> APatchTheme(colorMode = settings.colorMode, keyColor = settings.keyColor) {
+                content()
+            }
+            UiMode.Material -> APatchMaterialTheme(
+                colorMode = settings.colorMode,
+                keyColor = settings.keyColor,
+                paletteStyle = settings.paletteStyle,
+                colorSpec = settings.colorSpec,
+            ) {
+                content()
+            }
+        }
+    }
+}
+
+@Composable
+@ReadOnlyComposable
+fun isInDarkTheme(themeMode: Int): Boolean {
+    return when (themeMode) {
+        1, 4 -> false  // Force light mode
+        2, 5 -> true   // Force dark mode
+        else -> isSystemInDarkTheme()  // Follow system (0 or default)
+    }
 }

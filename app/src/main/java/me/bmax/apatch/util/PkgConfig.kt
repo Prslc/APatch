@@ -4,12 +4,13 @@ import android.os.Parcelable
 import android.util.Log
 import androidx.annotation.Keep
 import androidx.compose.runtime.Immutable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.Natives
 import java.io.File
 import java.io.FileWriter
-import kotlin.concurrent.thread
 
 object PkgConfig {
     private const val TAG = "PkgConfig"
@@ -68,24 +69,22 @@ object PkgConfig {
         writer.close()
     }
 
-    fun changeConfig(config: Config) {
-        thread {
-            synchronized(PkgConfig.javaClass) {
-                Natives.su()
-                val configs = readConfigs()
-                val uid = config.profile.uid
-                // Root App should not be excluded
-                if (config.allow == 1) {
-                    config.exclude = 0
-                }
-                if (config.allow == 0 && configs[uid] != null && config.exclude != 0) {
-                    configs.remove(uid)
-                } else {
-                    Log.d(TAG, "change config: $config")
-                    configs[uid] = config
-                }
-                writeConfigs(configs)
+    suspend fun changeConfig(config: Config) = withContext(Dispatchers.IO) {
+        synchronized(PkgConfig.javaClass) {
+            Natives.su()
+            val configs = readConfigs()
+            val uid = config.profile.uid
+            // Root App should not be excluded
+            if (config.allow == 1) {
+                config.exclude = 0
             }
+            if (config.allow == 0 && configs[uid] != null && config.exclude != 0) {
+                configs.remove(uid)
+            } else {
+                Log.d(TAG, "change config: $config")
+                configs[uid] = config
+            }
+            writeConfigs(configs)
         }
     }
 }

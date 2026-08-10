@@ -33,7 +33,6 @@ public class RootServices extends RootService {
         UserManager um = (UserManager) getSystemService(Context.USER_SERVICE);
         List<UserHandle> userProfiles = um.getUserProfiles();
         for (UserHandle userProfile : userProfiles) {
-            int userId = userProfile.hashCode();
             result.add(userProfile.hashCode());
         }
         return result;
@@ -48,6 +47,7 @@ public class RootServices extends RootService {
         return packages;
     }
 
+    @SuppressWarnings("unchecked")
     List<PackageInfo> getInstalledPackagesAsUser(int flags, int userId) {
         try {
             PackageManager pm = getPackageManager();

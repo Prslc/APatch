@@ -64,6 +64,7 @@ public final class SuFilePathHandler implements WebViewAssetLoader.PathHandler {
 
     private final Shell mShell;
     private final InsetsSupplier mInsetsSupplier;
+    private final Context mContext;
     @NonNull
     private final OnInsetsRequestedListener mOnInsetsRequestedListener;
 
@@ -102,6 +103,7 @@ public final class SuFilePathHandler implements WebViewAssetLoader.PathHandler {
      */
     public SuFilePathHandler(@NonNull Context context, @NonNull File directory, @NonNull InsetsSupplier insetsSupplier, @NonNull OnInsetsRequestedListener onInsetsRequestedListener) {
         try {
+            mContext = context;
             mInsetsSupplier = insetsSupplier;
             mOnInsetsRequestedListener = onInsetsRequestedListener;
             mDirectory = new File(getCanonicalDirPath(directory));

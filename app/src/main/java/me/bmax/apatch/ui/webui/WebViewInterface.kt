@@ -16,8 +16,8 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.ShellUtils
 import com.topjohnwu.superuser.internal.UiThreadHandler
+import me.bmax.apatch.data.AppRepository
 import me.bmax.apatch.ui.WebUIActivity
-import me.bmax.apatch.ui.viewmodel.SuperUserViewModel
 import me.bmax.apatch.util.createRootShell
 import org.json.JSONArray
 import org.json.JSONObject
@@ -176,7 +176,8 @@ class WebViewInterface(val context: Context, private val webView: WebView) {
 
     @JavascriptInterface
     fun listPackages(type: String): String {
-        val packageNames = SuperUserViewModel.apps
+        val apps = AppRepository.apps.value
+        val packageNames = apps
             .filter { appInfo ->
                 val flags = appInfo.packageInfo.applicationInfo?.flags ?: 0
                 when (type.lowercase()) {
@@ -199,7 +200,7 @@ class WebViewInterface(val context: Context, private val webView: WebView) {
     fun getPackagesInfo(packageNamesJson: String): String {
         val packageNames = JSONArray(packageNamesJson)
         val jsonArray = JSONArray()
-        val appMap = SuperUserViewModel.apps.associateBy { it.packageName }
+        val appMap = AppRepository.apps.value.associateBy { it.packageName }
         for (i in 0 until packageNames.length()) {
             val pkgName = packageNames.getString(i)
             val appInfo = appMap[pkgName]

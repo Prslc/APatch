@@ -10,9 +10,9 @@ import android.net.Uri
 import android.os.Environment
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import me.bmax.apatch.apApp
-import androidx.core.content.ContextCompat
 
 @SuppressLint("Range")
 fun download(
@@ -62,7 +62,7 @@ fun checkNewVersion(): LatestVersionInfo {
                 if (!response.isSuccessful) {
                     return defaultValue
                 }
-                val body = response.body?.string() ?: return defaultValue
+                val body = response.body.string()
 
                 val json = org.json.JSONObject(body)
                 val changelog = json.optString("body")
