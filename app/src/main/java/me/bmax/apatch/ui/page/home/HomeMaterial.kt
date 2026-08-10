@@ -160,7 +160,7 @@ fun HomeScreenMaterial(
                     start = 16.dp,
                     end = 16.dp
                 ),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             BackupWarningCardMaterial()
             val isPermissive = uiState.selinux.equals("Permissive", ignoreCase = true)
@@ -291,7 +291,7 @@ private fun UpdateCardMaterial(state: HomeUiState) {
 
 @Composable
 private fun InfoCardMaterial(state: HomeUiState) {
-    SegmentedColumn(contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp)) {
+    SegmentedColumn(contentPadding = PaddingValues(0.dp)) {
         if (state.kpState != APApplication.State.UNKNOWN_STATE) {
             item { shape ->
                 Surface(shape = shape, color = MaterialTheme.colorScheme.surfaceBright) {
