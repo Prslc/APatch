@@ -18,7 +18,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.RadioButtonChecked
 import androidx.compose.material.icons.outlined.CheckBoxOutlineBlank
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
@@ -36,6 +38,7 @@ import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -166,15 +169,12 @@ fun SuperUserScreenMaterial(
                     item {
                         SegmentedColumn {
                             appList.forEach { app ->
-                                item(key = app.packageName) { shape ->
+                                item(key = app.packageName + app.uid) { shape ->
                                     AppItemMaterial(
                                         app = app,
                                         shape = shape,
                                         onToggleSu = { granted ->
-                                            viewModel.toggleSu(
-                                                app,
-                                                granted
-                                            )
+                                            viewModel.toggleSu(app, granted)
                                         },
                                         onToggleExclude = { excluded ->
                                             viewModel.toggleExclude(app, excluded)
@@ -348,7 +348,22 @@ private fun AppItemMaterial(
                         }
                     }
                 }
-                Switch(checked = isAllowed, onCheckedChange = { onToggleSu(it) })
+                Switch(
+                    checked = isAllowed,
+                    onCheckedChange = { onToggleSu(it) },
+                    thumbContent = {
+                        Icon(
+                            imageVector = if (isAllowed) Icons.Filled.Check else Icons.Filled.Close,
+                            contentDescription = null,
+                            tint = if (isAllowed) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.surfaceBright
+                            },
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
+                    }
+                )
             }
 
             AnimatedVisibility(visible = isExpanded && !isAllowed) {
@@ -378,7 +393,22 @@ private fun AppItemMaterial(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        Switch(checked = isExcluded, onCheckedChange = { onToggleExclude(it) })
+                        Switch(
+                            checked = isExcluded,
+                            onCheckedChange = { onToggleExclude(it) },
+                            thumbContent = {
+                                Icon(
+                                    imageVector = if (isExcluded) Icons.Filled.Check else Icons.Filled.Close,
+                                    contentDescription = null,
+                                    tint = if (isExcluded) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        MaterialTheme.colorScheme.surfaceBright
+                                    },
+                                    modifier = Modifier.size(SwitchDefaults.IconSize),
+                                )
+                            }
+                        )
                     }
                 }
             }
