@@ -128,14 +128,20 @@ fun SuperUserScreenMaterial(
                         .fillMaxWidth()
                         .padding(top = 8.dp, bottom = 4.dp),
                     expanded = isSearchExpanded,
-                    onExpandedChange = { isSearchExpanded = it },
+                    onExpandedChange = {
+                        isSearchExpanded = it
+                        if (!it) viewModel.updateSearch("")
+                    },
                     inputField = {
                         ExpressiveInputField(
                             query = uiState.search,
                             onQueryChange = { viewModel.updateSearch(it) },
                             onSearch = { isSearchExpanded = false },
                             expanded = isSearchExpanded,
-                            onExpandedChange = { isSearchExpanded = it },
+                            onExpandedChange = {
+                                isSearchExpanded = it
+                                if (!it) viewModel.updateSearch("")
+                            },
                         )
                     }
                 )
