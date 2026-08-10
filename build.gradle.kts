@@ -1,19 +1,19 @@
 plugins {
     alias(libs.plugins.agp.app) apply false
-    alias(libs.plugins.kotlin) apply false
     alias(libs.plugins.kotlin.compose.compiler) apply false
 }
 
-project.ext.set("kernelPatchVersion", "0.13.4")
+extra.set("kernelPatchVersion", "0.13.4")
+extra.set("kernelPatchHash", getKernelPatchHash())
+extra.set("androidMinSdkVersion", 26)
+extra.set("androidTargetSdkVersion", 37)
+extra.set("androidCompileSdkVersion", 37)
+extra.set("androidBuildToolsVersion", "36.1.0")
+extra.set("androidCompileNdkVersion", "29.0.14206865")
+extra.set("managerVersionCode", getVersionCode())
+extra.set("managerVersionName", getVersionName())
+extra.set("branchName", getBranch())
 
-val androidMinSdkVersion by extra(26)
-val androidTargetSdkVersion by extra(36)
-val androidCompileSdkVersion by extra(36)
-val androidBuildToolsVersion by extra("36.1.0")
-val androidCompileNdkVersion by extra("29.0.14206865")
-val managerVersionCode by extra(getVersionCode())
-val managerVersionName by extra(getVersionName())
-val branchName by extra(getBranch())
 fun Project.exec(command: String) = providers.exec {
     commandLine(command.split(" "))
 }.standardOutput.asText.get().trim()
@@ -40,9 +40,22 @@ fun getVersionName(): String {
     return getGitDescribe()
 }
 
+fun getKernelPatchHash(): String {
+    System.getProperty("kpHash")?.let { return it }
+    val version = extra.get("kernelPatchVersion") as String
+    return try {
+        exec("git ls-remote https://github.com/bmax121/KernelPatch.git refs/tags/$version | " +
+            "awk '{print substr(\$1,1,7)}'")
+    } catch (_: Exception) {
+        "unknown"
+    }
+}
+
 tasks.register("printVersion") {
+    group = "help"
+    description = "Prints the current project version code and name."
     doLast {
-        println("Version code: $managerVersionCode")
-        println("Version name: $managerVersionName")
+        println("Version code: ${project.extra.get("managerVersionCode")}")
+        println("Version name: ${project.extra.get("managerVersionName")}")
     }
 }

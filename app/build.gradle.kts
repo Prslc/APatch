@@ -7,23 +7,22 @@ import java.net.URI
 plugins {
     alias(libs.plugins.agp.app)
     alias(libs.plugins.kotlin.compose.compiler)
-    alias(libs.plugins.ksp)
     alias(libs.plugins.lsplugin.apksign)
     alias(libs.plugins.lsplugin.resopt)
+    alias(libs.plugins.kotlin.serialization)
     id("kotlin-parcelize")
 }
 
-val androidCompileSdkVersion: Int by rootProject.extra
-val androidCompileNdkVersion: String by rootProject.extra
-val androidBuildToolsVersion: String by rootProject.extra
-val androidMinSdkVersion: Int by rootProject.extra
-val androidTargetSdkVersion: Int by rootProject.extra
-val androidSourceCompatibility: JavaVersion by rootProject.extra
-val androidTargetCompatibility: JavaVersion by rootProject.extra
-val managerVersionCode: Int by rootProject.extra
-val managerVersionName: String by rootProject.extra
-val branchName: String by rootProject.extra
-val kernelPatchVersion: String by rootProject.extra
+val androidCompileSdkVersion = rootProject.extra.get("androidCompileSdkVersion") as Int
+val androidCompileNdkVersion = rootProject.extra.get("androidCompileNdkVersion") as String
+val androidBuildToolsVersion = rootProject.extra.get("androidBuildToolsVersion") as String
+val androidMinSdkVersion = rootProject.extra.get("androidMinSdkVersion") as Int
+val androidTargetSdkVersion = rootProject.extra.get("androidTargetSdkVersion") as Int
+val managerVersionCode = rootProject.extra.get("managerVersionCode") as Int
+val managerVersionName = rootProject.extra.get("managerVersionName") as String
+val branchName = rootProject.extra.get("branchName") as String
+val kernelPatchVersion = rootProject.extra.get("kernelPatchVersion") as String
+val kernelPatchHash = rootProject.extra.get("kernelPatchHash") as String
 
 apksign {
     storeFileProperty = "KEYSTORE_FILE"
@@ -55,11 +54,35 @@ val baseArgs = mutableListOf(
 android {
     namespace = "me.bmax.apatch"
 
+    compileSdk = androidCompileSdkVersion
+    ndkVersion = androidCompileNdkVersion
+    buildToolsVersion = androidBuildToolsVersion
+
+    defaultConfig {
+        minSdk = androidMinSdkVersion
+        targetSdk = androidTargetSdkVersion
+        versionCode = managerVersionCode
+        versionName = managerVersionName
+        ndk.abiFilters.addAll(arrayOf("arm64-v8a"))
+
+        buildConfigField("String", "buildKPV", "\"$kernelPatchVersion\"")
+        buildConfigField("String", "buildKPHash", "\"$kernelPatchHash\"")
+        base.archivesName = "APatch_${managerVersionCode}_${managerVersionName}_${branchName}"
+
+        externalNativeBuild {
+            cmake {
+                cppFlags += baseFlags + "-std=c++2b"
+                cFlags += baseFlags + "-std=c2x"
+                arguments += baseArgs
+                abiFilters("arm64-v8a")
+            }
+        }
+    }
+
     buildTypes {
         debug {
             isDebuggable = true
             isMinifyEnabled = false
-            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -105,24 +128,6 @@ android {
         prefab = true
     }
 
-    defaultConfig {
-        minSdk = androidMinSdkVersion
-        targetSdk = androidTargetSdkVersion
-        versionCode = managerVersionCode
-        versionName = managerVersionName
-        ndk.abiFilters.addAll(arrayOf("arm64-v8a"))
-        externalNativeBuild {
-            cmake {
-                cppFlags += baseFlags + "-std=c++2b"
-                cFlags += baseFlags + "-std=c2x"
-                arguments += baseArgs
-                abiFilters("arm64-v8a")
-            }
-        }
-        buildConfigField("String", "buildKPV", "\"$kernelPatchVersion\"")
-        base.archivesName = "APatch_${managerVersionCode}_${managerVersionName}_${branchName}"
-    }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
@@ -149,17 +154,12 @@ android {
         generateLocaleConfig = true
     }
 
-    compileSdk = androidCompileSdkVersion
-    ndkVersion = androidCompileNdkVersion
-    buildToolsVersion = androidBuildToolsVersion
-
     lint {
         abortOnError = false
         checkReleaseBuilds = false
     }
 
     android.sourceSets.named("main") {
-        kotlin.directories += "build/generated/ksp/$name/kotlin"
         jniLibs.directories += "libs"
     }
 }
@@ -186,8 +186,10 @@ fun registerDownloadTask(
     taskName: String, srcUrl: String, destPath: String, project: Project
 ) {
     project.tasks.register(taskName) {
-        val destFile = File(destPath)
+        group = "download"
+        description = "Downloads remote prebuilt assets for KernelPatch."
 
+        val destFile = File(destPath)
         doLast {
             if (!destFile.exists() || isFileUpdated(srcUrl, destFile)) {
                 println(" - Downloading $srcUrl to ${destFile.absolutePath}")
@@ -214,29 +216,6 @@ fun downloadFile(url: String, destFile: File) {
     }
 }
 
-/** Download with connect/read timeouts and retries (robust against flaky networks). */
-fun downloadFileRetry(url: String, destFile: File, maxRetries: Int = 5) {
-    var attempt = 0
-    while (true) {
-        try {
-            val conn = URI.create(url).toURL().openConnection()
-            conn.connectTimeout = 15000
-            conn.readTimeout = 60000
-            conn.getInputStream().use { input ->
-                destFile.outputStream().use { output ->
-                    input.copyTo(output)
-                }
-            }
-            return
-        } catch (e: Exception) {
-            attempt++
-            if (attempt >= maxRetries) throw e
-            println(" - download attempt $attempt/$maxRetries failed for $url: ${e.message}")
-            Thread.sleep(2000L * attempt)
-        }
-    }
-}
-
 registerDownloadTask(
     taskName = "downloadKpimg",
     srcUrl = "https://github.com/bmax121/KernelPatch/releases/download/$kernelPatchVersion/kpimg-android",
@@ -251,15 +230,6 @@ registerDownloadTask(
     project = project
 )
 
-// Compat kp version less than 0.10.7
-// TODO: Remove in future
-registerDownloadTask(
-    taskName = "downloadCompatKpatch",
-    srcUrl = "https://github.com/bmax121/KernelPatch/releases/download/0.10.7/kpatch-android",
-    destPath = "${project.projectDir}/libs/arm64-v8a/libkpatch.so",
-    project = project
-)
-
 // Jailbreak mode: download KernelPatch ko for every supported kernel KMI and
 // package them into the APK assets so the app can load the matching one.
 val jailbreakKmis = listOf(
@@ -268,6 +238,8 @@ val jailbreakKmis = listOf(
 )
 
 tasks.register("downloadJailbreakKo") {
+    group = "download"
+    description = "Downloads KernelPatch ko files for jailbreak mode."
     doLast {
         val assetsDir = File("${project.projectDir}/src/main/assets")
         assetsDir.mkdirs()
@@ -277,7 +249,7 @@ tasks.register("downloadJailbreakKo") {
             val destFile = File(assetsDir, "${kmi}_kernelpatch.ko")
             if (!destFile.exists()) {
                 println(" - Downloading $srcUrl to ${destFile.absolutePath}")
-                downloadFileRetry(srcUrl, destFile)
+                downloadFile(srcUrl, destFile)
             } else {
                 println(" - $kmi kernelpatch.ko already present.")
             }
@@ -286,6 +258,9 @@ tasks.register("downloadJailbreakKo") {
 }
 
 tasks.register<Copy>("mergeScripts") {
+    group = "build"
+    description = "Merges update-binary scripts into the assets package metadata."
+
     into("${project.projectDir}/src/main/resources/META-INF/com/google/android")
     from(rootProject.file("${project.rootDir}/scripts/update_binary.sh")) {
         rename { "update-binary" }
@@ -298,7 +273,6 @@ tasks.register<Copy>("mergeScripts") {
 tasks.getByName("preBuild").dependsOn(
     "downloadKpimg",
     "downloadKptools",
-    "downloadCompatKpatch",
     "downloadJailbreakKo",
     "mergeScripts",
 )
@@ -306,31 +280,39 @@ tasks.getByName("preBuild").dependsOn(
 // https://github.com/bbqsrc/cargo-ndk
 // cargo ndk -t arm64-v8a build --release
 tasks.register<Exec>("cargoBuild") {
+    group = "build"
+    description = "Compiles the core Rust apd daemon using cargo-ndk."
+
     executable("cargo")
     args("ndk", "-t", "arm64-v8a", "build", "--release")
     workingDir("${project.rootDir}/apd")
 }
 
 tasks.register<Copy>("buildApd") {
+    group = "build"
+    description = "Copies and renames the compiled Rust binary to the local JNI folder."
+
     dependsOn("cargoBuild")
     from("${project.rootDir}/apd/target/aarch64-linux-android/release/apd")
     into("${project.projectDir}/libs/arm64-v8a")
     rename("apd", "libapd.so")
 }
 
-tasks.configureEach {
-    if (name == "mergeDebugJniLibFolders" || name == "mergeReleaseJniLibFolders") {
-        dependsOn("buildApd")
-    }
-}
+tasks.getByName("preBuild").dependsOn("buildApd")
 
 tasks.register<Exec>("cargoClean") {
+    group = "cleanup"
+    description = "Cleans up the Cargo build artifacts inside apd module."
+
     executable("cargo")
     args("clean")
     workingDir("${project.rootDir}/apd")
 }
 
 tasks.register<Delete>("apdClean") {
+    group = "cleanup"
+    description = "Cleans up the compiled libapd binary inside the project's libs folder."
+
     dependsOn("cargoClean")
     delete(file("${project.projectDir}/libs/arm64-v8a/libapd.so"))
 }
@@ -339,22 +321,17 @@ tasks.clean {
     dependsOn("apdClean")
 }
 
-ksp {
-    arg("compose-destinations.defaultTransitions", "none")
-}
-
 dependencies {
-    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.webkit)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material.icons.extended)
-    implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.runtime.livedata)
+    implementation(libs.androidx.navigation.compose)
 
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
@@ -363,28 +340,24 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    implementation(libs.compose.destinations.core)
-    ksp(libs.compose.destinations.ksp)
+    implementation(libs.miuix.ui)
+    implementation(libs.miuix.blur)
+    implementation(libs.miuix.icons)
+    implementation(libs.miuix.preference)
+
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.material.kolor)
 
     implementation(libs.com.github.topjohnwu.libsu.core)
     implementation(libs.com.github.topjohnwu.libsu.service)
     implementation(libs.com.github.topjohnwu.libsu.nio)
     implementation(libs.com.github.topjohnwu.libsu.io)
 
+    implementation(libs.okhttp)
     implementation(libs.dev.rikka.rikkax.parcelablelist)
-
-    implementation(libs.io.coil.kt.coil.compose)
-
     implementation(libs.kotlinx.coroutines.core)
-
-    implementation(libs.me.zhanghai.android.appiconloader.coil)
-
-    implementation(libs.sheet.compose.dialogs.core)
-    implementation(libs.sheet.compose.dialogs.list)
-    implementation(libs.sheet.compose.dialogs.input)
-
+    implementation(libs.me.zhanghai.android.appiconloader)
     implementation(libs.markdown)
-
     implementation(libs.ini4j)
 
     compileOnly(libs.cxx)
