@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.UiMode
@@ -42,8 +43,8 @@ private fun ClearDialog(cacheSize: Long, viewModel: SettingsViewModel) {
     val loading = rememberLoadingDialog()
     var confirmed by remember { mutableStateOf(false) }
 
-    val title = context.getString(R.string.clear_cache_title)
-    val message = context.getString(R.string.clear_cache_message, formatSize(cacheSize))
+    val title = stringResource(R.string.clear_cache_title)
+    val message = stringResource(R.string.clear_cache_message, formatSize(cacheSize))
 
     if (confirmed) {
         LaunchedEffect(Unit) {
@@ -55,12 +56,14 @@ private fun ClearDialog(cacheSize: Long, viewModel: SettingsViewModel) {
     }
 
     val confirmDialog = rememberConfirmDialog()
+    val okText = stringResource(android.R.string.ok)
+    val cancelText = stringResource(android.R.string.cancel)
     LaunchedEffect(Unit) {
         val result = confirmDialog.awaitConfirm(
             title = title,
             content = message,
-            confirm = context.getString(android.R.string.ok),
-            dismiss = context.getString(android.R.string.cancel)
+            confirm = okText,
+            dismiss = cancelText
         )
         if (result == ConfirmResult.Confirmed) {
             confirmed = true
