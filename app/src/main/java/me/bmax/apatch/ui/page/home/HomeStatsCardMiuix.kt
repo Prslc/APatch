@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
+import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.page.patch.PatchMode
 import me.bmax.apatch.ui.theme.isInDarkTheme
@@ -66,6 +67,15 @@ fun KStatusCard(
     val cardState = remember(kpState, apState) {
         kpState.toKPatchCardState(apState, managerVersion)
     }
+
+    val softRebootDialog = rememberConfirmDialog(
+        onConfirm = { softReboot() }
+    )
+    val jailbreakLoaded = stringResource(R.string.settings_jailbreak_loaded)
+    val jailbreakSoftRebootMessage =
+        stringResource(R.string.settings_jailbreak_soft_reboot_message)
+    val jailbreakSoftReboot =
+        stringResource(R.string.settings_jailbreak_soft_reboot)
 
     val onMainCardClick = {
         when (cardState.buttonAction) {
@@ -112,7 +122,11 @@ fun KStatusCard(
                 ),
                 onClick = {
                     if (isJailbreak) {
-                        softReboot()
+                        softRebootDialog.showConfirm(
+                            title = jailbreakLoaded,
+                            content = jailbreakSoftRebootMessage,
+                            confirm = jailbreakSoftReboot
+                        )
                     } else {
                         onMainCardClick()
                     }
