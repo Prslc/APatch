@@ -746,7 +746,7 @@ private fun ModuleList(
         }
 
         val result = snackBarHost.showSnackbar(
-            message = message, actionLabel = actionLabel, duration = SnackbarDuration.Short
+            message = message, actionLabel = actionLabel, duration = SnackbarDuration.Long
         )
         if (result) {
             reboot()
@@ -777,7 +777,7 @@ private fun ModuleList(
         }
 
         val result = snackBarHost.showSnackbar(
-            message = message, actionLabel = actionLabel, duration = SnackbarDuration.Short
+            message = message, actionLabel = actionLabel, duration = SnackbarDuration.Long
         )
         if (result) {
             reboot()
@@ -905,7 +905,7 @@ private fun ModuleList(
                                         val result = snackBarHost.showSnackbar(
                                             message = rebootToApply,
                                             actionLabel = reboot,
-                                            duration = SnackbarDuration.Short
+                                            duration = SnackbarDuration.Long
                                         )
 
                                         if (result) {
