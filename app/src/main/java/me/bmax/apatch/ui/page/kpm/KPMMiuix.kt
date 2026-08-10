@@ -445,7 +445,7 @@ private fun KPModuleList(
                 )
             ) {
                 when {
-                    uiState.modules.isEmpty() -> {
+                    filteredModules.isEmpty() -> {
                         item {
                             Box(
                                 modifier = Modifier.fillParentMaxSize(),

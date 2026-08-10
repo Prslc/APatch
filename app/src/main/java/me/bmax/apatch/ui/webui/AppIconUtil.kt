@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.LruCache
 import androidx.core.graphics.createBitmap
+import androidx.core.graphics.scale
 import me.bmax.apatch.data.AppRepository
 
 object AppIconUtil {
@@ -25,7 +26,7 @@ object AppIconUtil {
         return try {
             val pm = context.packageManager
             val drawable = appInfo.loadIcon(pm)
-            val icon = drawableToBitmap(drawable, sizePx)
+            val icon = drawableToBitmap(drawable, sizePx).scale(sizePx, sizePx)
             iconCache.put(packageName, icon)
             icon
         } catch (_: Exception) {

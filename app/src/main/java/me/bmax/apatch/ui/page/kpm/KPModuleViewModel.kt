@@ -19,6 +19,7 @@ import me.bmax.apatch.Natives
 import me.bmax.apatch.data.repository.KPModuleRepository
 import me.bmax.apatch.data.repository.KPModuleRepositoryImpl
 import me.bmax.apatch.ui.page.home.ModuleCountsRefresher
+import me.bmax.apatch.util.HanziToPinyin
 import java.text.Collator
 import java.util.Locale
 
@@ -37,7 +38,9 @@ class KPModuleViewModel(
             trimmed.isEmpty() ||
                     it.name.contains(trimmed, true) ||
                     it.author.contains(trimmed, true) ||
-                    it.description.contains(trimmed, true)
+                    it.description.contains(trimmed, true) ||
+                    HanziToPinyin.getInstance().toPinyinString(it.name)
+                        ?.contains(trimmed, true) == true
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
