@@ -12,8 +12,6 @@ import me.bmax.apatch.ui.navigation.MODULE_TYPE
 import me.bmax.apatch.ui.page.apm.ModuleInfo
 import me.bmax.apatch.util.HanziToPinyin
 import me.bmax.apatch.util.createRootShell
-import me.bmax.apatch.util.dataDir
-import me.bmax.apatch.util.getRootShell
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -24,7 +22,7 @@ object ApModuleRepositoryImpl : ApModuleRepository {
 
     override suspend fun listModules(): Result<List<ModuleInfo>> {
         return runCatching {
-            val result = listModulesRaw()
+            val result = listModules()
             val array = JSONArray(result)
             val h2p = HanziToPinyin.getInstance()
 
@@ -35,7 +33,7 @@ object ApModuleRepositoryImpl : ApModuleRepository {
     }
 
     override suspend fun getModuleCount(): Int {
-        return listModulesRaw().let { result ->
+        return listModules().let { result ->
             runCatching {
                 JSONArray(result).length()
             }.getOrDefault(0)
@@ -154,34 +152,6 @@ object ApModuleRepositoryImpl : ApModuleRepository {
         }
         Log.i(TAG, "runAction $moduleId result: ${result.isSuccess}")
         return result.isSuccess
-    }
-
-    // --- private helpers ---
-
-    private fun listModulesRaw(): String {
-        val shell = getRootShell()
-        val out = shell.newJob()
-            .add("${APApplication.APD_PATH} module list")
-            .to(ArrayList(), null)
-            .exec().out
-
-        // legacy: move ori.img from old user-specific location
-        try {
-            val dstDir = SuFile("$dataDir/adb/ap/")
-            if (!dstDir.exists()) dstDir.mkdirs()
-            SuFile("$dataDir/user").listFiles()?.forEach { userDir ->
-                val oriFile = SuFile(userDir, "me.bmax.apatch/patch/ori.img")
-                if (oriFile.exists()) {
-                    SuFile(dstDir, oriFile.name).newOutputStream(false).use { dst ->
-                        oriFile.newInputStream().use { src -> src.copyTo(dst) }
-                    }
-                    oriFile.delete()
-                }
-            }
-        } catch (e: Throwable) {
-            Log.e("ModuleUtil", "SuFile operation failed", e)
-        }
-        return out.joinToString("\n").ifBlank { "[]" }
     }
 
     private fun execApd(args: String): Boolean {

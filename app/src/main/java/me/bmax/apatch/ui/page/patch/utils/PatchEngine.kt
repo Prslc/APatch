@@ -7,6 +7,7 @@ import android.system.Os
 import android.util.Log
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
+import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.nio.ExtendedFile
 import com.topjohnwu.superuser.nio.FileSystemManager
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +21,7 @@ import me.bmax.apatch.ui.page.patch.PatchUiState
 import me.bmax.apatch.util.Version
 import me.bmax.apatch.util.copyAndClose
 import me.bmax.apatch.util.copyAndCloseOut
+import me.bmax.apatch.util.dataDir
 import me.bmax.apatch.util.inputStream
 import me.bmax.apatch.util.shellForResult
 import me.bmax.apatch.util.writeTo
@@ -234,8 +236,36 @@ class PatchEngine(
         }
     }
 
+    // Move the ori.img backup to /data/adb/ap, where doUnpatch reads it.
+    private fun migrateOriImage() {
+        runCatching {
+            val dstDir = SuFile("$dataDir/adb/ap/")
+            if (!dstDir.exists()) dstDir.mkdirs()
+
+            val sources = mutableListOf(patchDir.getChildFile("ori.img"))
+            // Legacy locations: older versions left backups in per-user dirs.
+            SuFile("$dataDir/user").listFiles()?.forEach { userDir ->
+                sources.add(SuFile(userDir, "me.bmax.apatch/patch/ori.img"))
+            }
+
+            for (src in sources) {
+                if (!src.exists()) continue
+                val dst = SuFile(dstDir, "ori.img")
+                src.newInputStream().use { input ->
+                    dst.newOutputStream(false).use { output -> input.copyTo(output) }
+                }
+                src.delete()
+                Log.i(TAG, "migrated ori.img from ${src.path} to ${dst.path}")
+            }
+        }.onFailure {
+            Log.e(TAG, "migrate ori.img failed", it)
+        }
+    }
+
     suspend fun doUnpatch(bootDev: String) = withContext(Dispatchers.IO) {
         Log.i(TAG, "starting unpatching...")
+        // Fallback: migrate any ori.img leftover from older versions.
+        migrateOriImage()
         val logs = object : CallbackList<String>() {
             override fun onAddElement(e: String?) {
                 if (e != null) onLog(e)
@@ -345,6 +375,9 @@ class PatchEngine(
             logs.add("****************************")
             return@withContext
         }
+
+        // Persist the ori.img backup before the patch dir can be wiped later.
+        migrateOriImage()
 
         if (mode == PatchMode.PATCH_AND_INSTALL) {
             logs.add("- Reboot to finish the installation...")

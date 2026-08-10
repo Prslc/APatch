@@ -131,27 +131,6 @@ fun listModules(): String {
         .add("${APApplication.APD_PATH} module list")
         .to(ArrayList(), null)
         .exec().out
-
-    try {
-        val dstDir = SuFile("$dataDir/adb/ap/")
-        if (!dstDir.exists()) dstDir.mkdirs()
-
-        SuFile("$dataDir/user").listFiles()?.forEach { userDir ->
-            val oriFile = SuFile(userDir, "me.bmax.apatch/patch/ori.img")
-            if (oriFile.exists()) {
-                val dstFile = SuFile(dstDir, oriFile.name)
-                oriFile.newInputStream().use { input ->
-                    dstFile.newOutputStream(false).use { output ->
-                        input.copyTo(output)
-                    }
-                }
-                oriFile.delete()
-            }
-        }
-    } catch (e: Throwable) {
-        Log.e("ModuleUtil", "SuFile operation failed", e)
-    }
-
     return out.joinToString("\n").ifBlank { "[]" }
 }
 
