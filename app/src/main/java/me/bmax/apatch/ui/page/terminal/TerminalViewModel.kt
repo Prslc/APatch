@@ -23,6 +23,11 @@ class TerminalViewModel(
 
     private val clearScreenSequence = "\u001B[H\u001B[J"
 
+    private companion object {
+        // Cap the retained install log to bound memory usage on long installs.
+        const val MAX_LOG_LENGTH = 100_000
+    }
+
     fun executeTask(
         taskType: TERMINAL_TASK_TYPE,
         targetId: String,
@@ -71,6 +76,10 @@ class TerminalViewModel(
                 }
             } else {
                 fullLog.append(line).append("\n")
+            }
+            // Cap the retained log to bound memory usage on long installs.
+            if (fullLog.length > MAX_LOG_LENGTH) {
+                fullLog.delete(0, fullLog.length - MAX_LOG_LENGTH)
             }
             _uiState.update { it.copy(logs = fullLog.toString()) }
         }
