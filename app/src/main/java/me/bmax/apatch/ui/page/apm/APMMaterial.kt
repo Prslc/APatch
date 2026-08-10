@@ -190,6 +190,11 @@ fun APModuleScreenMaterial(
     val moduleListState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     var fabVisible by remember { mutableStateOf(true) }
 
+    // Clearing the search returns to the full list, so jump back to the top.
+    LaunchedEffect(uiState.search) {
+        if (uiState.search.isEmpty()) moduleListState.scrollToItem(0)
+    }
+
     if (isCurrentPage) {
         LaunchedEffect(uiState.isNeedRefresh) {
             if (uiState.modules.isEmpty() || uiState.isNeedRefresh) {

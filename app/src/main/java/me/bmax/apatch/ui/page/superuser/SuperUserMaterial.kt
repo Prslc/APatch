@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
@@ -86,6 +87,12 @@ fun SuperUserScreenMaterial(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     val pullRefreshState = rememberPullToRefreshState()
+    val listState = rememberLazyListState()
+
+    // Clearing the search returns to the full list, so jump back to the top.
+    LaunchedEffect(uiState.search) {
+        if (uiState.search.isEmpty()) listState.scrollToItem(0)
+    }
 
     if (isCurrentPage) {
         LaunchedEffect(Unit) {
@@ -145,6 +152,7 @@ fun SuperUserScreenMaterial(
             }
         ) {
             LazyColumn(
+                state = listState,
                 modifier = Modifier
                     .fillMaxSize()
                     .withBackdrop(backdrop),

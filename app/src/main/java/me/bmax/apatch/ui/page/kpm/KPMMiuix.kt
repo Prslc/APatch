@@ -115,6 +115,11 @@ fun KPModuleScreenMiuix(
     val kpModuleListState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     var fabVisible by remember { mutableStateOf(true) }
 
+    // Clearing the search returns to the full list, so jump back to the top.
+    LaunchedEffect(uiState.search) {
+        if (uiState.search.isEmpty()) kpModuleListState.scrollToItem(0)
+    }
+
     val navigator = LocalNavigator.current
     val backdrop = if (isCurrentPage) rememberBlurBackdrop() else null
 

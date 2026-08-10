@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -72,6 +73,12 @@ fun SuperUserScreenMiuix(
 
     val scrollBehavior = MiuixScrollBehavior()
     val backdrop = rememberBlurBackdrop()
+    val listState = rememberLazyListState()
+
+    // Clearing the search returns to the full list, so jump back to the top.
+    LaunchedEffect(uiState.search) {
+        if (uiState.search.isEmpty()) listState.scrollToItem(0)
+    }
 
     if (isCurrentPage) {
         LaunchedEffect(Unit) {
@@ -106,6 +113,7 @@ fun SuperUserScreenMiuix(
             ) {
                 if (appList.isNotEmpty()) {
                     LazyColumn(
+                        state = listState,
                         modifier = Modifier
                             .fillMaxSize()
                             .withBackdrop(backdrop)
