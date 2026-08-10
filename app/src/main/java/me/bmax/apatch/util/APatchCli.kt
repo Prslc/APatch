@@ -18,11 +18,22 @@ import com.topjohnwu.superuser.internal.MainShell
 import com.topjohnwu.superuser.io.SuFile
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.BuildConfig
+import me.bmax.apatch.R
 import me.bmax.apatch.apApp
 import java.io.File
 import java.security.MessageDigest
 
 private const val TAG = "APatchCli"
+
+/** Reboot destinations offered by the reboot menus. */
+enum class RebootMode(val labelRes: Int, val reason: String) {
+    NORMAL(R.string.reboot, ""),
+    SOFT(R.string.reboot_soft, "soft_reboot"),
+    RECOVERY(R.string.reboot_recovery, "recovery"),
+    BOOTLOADER(R.string.reboot_bootloader, "bootloader"),
+    DOWNLOAD(R.string.reboot_download, "download"),
+    EDL(R.string.reboot_edl, "edl"),
+}
 
 val dataDir: String
     get() = Environment.getDataDirectory().absolutePath
@@ -152,23 +163,35 @@ fun listModuleJson(): String {
     return out.joinToString("\n").ifBlank { "[]" }
 }
 
-fun reboot(reason: String = "") {
-    if (reason == "soft_reboot") {
+fun reboot(mode: RebootMode = RebootMode.NORMAL) {
+    if (mode == RebootMode.SOFT) {
         softReboot()
         return
     }
     val shell = getRootShell()
     val job = shell.newJob()
-    if (reason == "recovery") {
+    if (mode == RebootMode.RECOVERY) {
         job.add("/system/bin/input keyevent 26")
     }
-    job.add("/system/bin/svc power reboot $reason || /system/bin/reboot $reason")
+    job.add("/system/bin/svc power reboot ${mode.reason} || /system/bin/reboot ${mode.reason}")
     job.exec()
 }
 
 /** Soft reboot: restart the Android framework while keeping runtime-loaded modules. */
 fun softReboot() {
     getRootShell().newJob().add("${APApplication.APD_PATH} soft-reboot").exec()
+}
+
+/**
+ * Reboot that respects jailbreak mode: in jailbreak mode a full reboot would
+ * unload the runtime-loaded module, so fall back to a soft reboot instead.
+ */
+fun rebootJailbreakAware() {
+    if (isJailbreakMode()) {
+        softReboot()
+    } else {
+        reboot()
+    }
 }
 
 /**

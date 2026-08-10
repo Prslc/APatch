@@ -70,9 +70,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
+import me.bmax.apatch.util.RebootMode
 import me.bmax.apatch.apApp
 import me.bmax.apatch.ui.component.WarningCard
 import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
+import me.bmax.apatch.ui.component.dialog.rememberRebootAction
 import me.bmax.apatch.ui.component.material.SegmentedColumn
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.theme.LocalEnableBlur
@@ -82,7 +84,6 @@ import me.bmax.apatch.ui.theme.rememberMaterial3BlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
 import me.bmax.apatch.util.Version.getManagerVersion
 import me.bmax.apatch.util.installJailbreak
-import me.bmax.apatch.util.reboot
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -200,6 +201,7 @@ fun HomeScreenMaterial(
 @Composable
 private fun RebootDropdown() {
     var expanded by remember { mutableStateOf(false) }
+    val onReboot = rememberRebootAction()
     Box {
         IconButton(onClick = { expanded = true }) {
             Icon(
@@ -214,20 +216,13 @@ private fun RebootDropdown() {
             DropdownMenuGroup(
                 shapes = MenuDefaults.groupShape(index = 0, count = 1)
             ) {
-                listOf(
-                    R.string.reboot to "",
-                    R.string.reboot_soft to "soft_reboot",
-                    R.string.reboot_recovery to "recovery",
-                    R.string.reboot_bootloader to "bootloader",
-                    R.string.reboot_download to "download",
-                    R.string.reboot_edl to "edl",
-                ).forEach { (res, reason) ->
+                RebootMode.entries.forEach { mode ->
                     DropdownMenuItem(
                         onClick = {
-                            reboot(reason)
+                            onReboot(mode)
                             expanded = false
                         },
-                        text = { Text(text = stringResource(res)) }
+                        text = { Text(text = stringResource(mode.labelRes)) }
                     )
                 }
             }

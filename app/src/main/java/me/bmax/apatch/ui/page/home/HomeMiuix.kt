@@ -41,10 +41,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
+import me.bmax.apatch.util.RebootMode
 import me.bmax.apatch.apApp
 import me.bmax.apatch.ui.component.bottombar.BottomBarDestination
 import me.bmax.apatch.ui.component.WarningCard
 import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
+import me.bmax.apatch.ui.component.dialog.rememberRebootAction
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.Navigator
 import me.bmax.apatch.ui.theme.blurEffect
@@ -53,7 +55,6 @@ import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
 import me.bmax.apatch.util.Version.getManagerVersion
 import me.bmax.apatch.util.installJailbreak
-import me.bmax.apatch.util.reboot
 import top.yukonga.miuix.kmp.basic.BasicComponent
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.DropdownEntry
@@ -190,6 +191,7 @@ private fun TopBar(
     kpState: APApplication.State,
     scrollBehavior: ScrollBehavior
 ) {
+    val onReboot = rememberRebootAction()
     TopAppBar(
         modifier = Modifier.blurEffect(backdrop),
         color = backdrop.getAppBarColor(),
@@ -206,23 +208,9 @@ private fun TopBar(
 
             if (kpState != APApplication.State.UNKNOWN_STATE) {
                 val rebootEntry = DropdownEntry(
-                    items = listOf(
-                        stringResource(R.string.reboot),
-                        stringResource(R.string.reboot_soft),
-                        stringResource(R.string.reboot_recovery),
-                        stringResource(R.string.reboot_bootloader),
-                        stringResource(R.string.reboot_download),
-                        stringResource(R.string.reboot_edl),
-                    ).mapIndexed { index, text ->
-                        DropdownItem(text = text, onClick = {
-                            when (index) {
-                                0 -> reboot()
-                                1 -> reboot("soft_reboot")
-                                2 -> reboot("recovery")
-                                3 -> reboot("bootloader")
-                                4 -> reboot("download")
-                                5 -> reboot("edl")
-                            }
+                    items = RebootMode.entries.map { mode ->
+                        DropdownItem(text = stringResource(mode.labelRes), onClick = {
+                            onReboot(mode)
                         })
                     }
                 )

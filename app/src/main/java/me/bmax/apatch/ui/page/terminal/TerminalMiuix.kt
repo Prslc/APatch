@@ -36,7 +36,7 @@ import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
-import me.bmax.apatch.util.reboot
+import me.bmax.apatch.util.rebootJailbreakAware
 import top.yukonga.miuix.kmp.basic.FloatingActionButton
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.IconButton
@@ -123,7 +123,7 @@ fun TerminalScreenMiuix(
             if (taskType == TERMINAL_TASK_TYPE.INSTALL && state.isFinished && state.isSuccess) {
                 FloatingActionButton(
                     modifier = Modifier.padding(bottom = 30.dp),
-                    onClick = { scope.launch(Dispatchers.IO) { reboot() } }
+                    onClick = { scope.launch(Dispatchers.IO) { rebootJailbreakAware() } }
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Refresh,

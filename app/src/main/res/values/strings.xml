@@ -1,93 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">APatch</string>
-
     <string name="home">Home</string>
-
-    <string name="search">Search</string>
-    <string name="search_apps">Search Apps</string>
-    <string name="search_modules">Search modules</string>
-    <string name="back">Back</string>
     <string name="learn_more">Learn more</string>
-
     <string name="success">Success</string>
     <string name="failure">Failure</string>
-
     <string name="patch_warnning">Installation comes with risks. Please ensure your data is backed up.</string>
     <string name="patch">Patch</string>
-
     <string name="kernel_patch">KernelPatch</string>
     <string name="android_patch">AndroidPatch</string>
-
+    <string name="unofficial_warning_title">Unofficial Version</string>
+    <string name="unofficial_warning_summary">Do not submit issues to the official repository.</string>
     <string name="reboot">Reboot</string>
     <string name="settings">Settings</string>
     <string name="reboot_recovery">Reboot to Recovery</string>
     <string name="reboot_bootloader">Reboot to Bootloader</string>
     <string name="reboot_download">Reboot to Download</string>
     <string name="reboot_edl">Reboot to EDL</string>
+    <string name="refresh_pulling">Pull down to refresh</string>
+    <string name="refresh_release">Release to refresh</string>
+    <string name="refresh_refresh">Refreshing…</string>
+    <string name="refresh_complete">Refreshed successfully</string>
     <string name="about">About</string>
     <string name="settings_app_language">Language</string>
+    <string name="settings_app_language_summary">Configure the display language</string>
     <string name="system_default">System default</string>
     <string name="settings_global_namespace_mode">Global namespace mode</string>
     <string name="settings_global_namespace_mode_summary">All root sessions use the global mount namespace</string>
     <string name="settings_sucompat">Legacy su compatibility</string>
-    <string name="settings_sucompat_summary">"Enable legacy su compatibility (for when su doesn't work)"</string>
-    <string name="settings_jailbreak_mode">Jailbreak mode</string>
-    <string name="settings_jailbreak_mode_summary">"Load the KernelPatch module on a stock kernel. Patching is not allowed in this mode."</string>
-    <string name="settings_jailbreak_soft_reboot">Soft reboot</string>
-    <string name="settings_jailbreak_soft_reboot_message">"The module has been loaded. Restart the framework now?"</string>
-    <string name="settings_jailbreak_loaded">Jailbreak module loaded</string>
-    <string name="settings_jailbreak_failed">Failed to load jailbreak module</string>
-    <string name="jailbreak_no_patch">Patching is not allowed in jailbreak mode.</string>
-    <string name="jailbreak">Jailbreak</string>
-    <string name="jailbreak_triggered">Jailbreak triggered. Wait for root, then soft reboot.</string>
-    <string name="reboot_soft">Soft reboot</string>
+    <string name="settings_sucompat_summary">Enable path_probe hooks for legacy su compatibility</string>
     <string name="settings_clear_super_key_dialog">Do you really want to proceed?</string>
-
     <string name="settings_check_update">Check for updates</string>
     <string name="settings_check_update_summary">Automatically check for updates when opening the app</string>
-
+    <string name="settings_clean_cache">Clear cache</string>
+    <string name="settings_clean_cache_summary">Delete cached files to free up storage</string>
+    <string name="clear_cache_title">Clear Cache</string>
+    <string name="clear_cache_message">This will clear approximately %1$s of cached data. Continue?</string>
+    <string name="no_cache_to_clear">No cache to clear</string>
     <string name="home_learn_apatch">Learn APatch</string>
     <string name="home_click_to_learn_apatch">Learn about the features of APatch and how to use</string>
-
     <string name="about_source_code"><![CDATA[<p>View source code at %1$s<p/>Join our %2$s channel<p/>Join our %3$s group]]></string>
     <string name="send_log">Send logs</string>
+    <string name="send_log_summary">Save logs or share them with developers</string>
     <string name="save_log">Save logs</string>
     <string name="log_saved">Logs saved</string>
     <string name="safe_mode">Safe mode</string>
-
+    <string name="loading">Loading…</string>
     <string name="super_key">SuperKey</string>
+    <string name="clear_super_key_summary">Credentials must be re-entered upon next use</string>
     <string name="patch_set_superkey">Set SuperKey</string>
     <string name="home_patch_set_key_desc">Only credential for KernelPatch</string>
     <string name="home_patch_next_step">Next step</string>
-
     <string name="home_not_installed">Not installed</string>
     <string name="home_install_unknown">KernelPatch not installed</string>
     <string name="home_install_unknown_summary">Root is unavailable. The kernel may not be patched or flashed yet.</string>
     <string name="home_click_to_install">Click to install</string>
-    <string name="home_working">Working 😋</string>
-
+    <string name="home_working">Working</string>
     <string name="home_installing">Installing</string>
     <string name="home_need_update">New version available</string>
     <string name="kpatch_version">Version: %s</string>
     <string name="apatch_version">Version: %s</string>
-    <string name="apatch_version_update">Version: %1$s -&gt; %2$s</string>
-    <string name="kpatch_version_update">Version: %1$s -&gt; %2$s</string>
+    <string name="apatch_version_update" formatted="false">Version: %s -&gt; %s</string>
+    <string name="kpatch_version_update" formatted="false">Version: %s -&gt; %s</string>
     <string name="kpatch_shadow_path_title">kpatch</string>
     <string name="home_kpatch_info_title">Info</string>
-
     <string name="home_ap_cando_install">Install</string>
     <string name="home_ap_cando_update">Update</string>
     <string name="home_ap_cando_uninstall">Uninstall</string>
     <string name="home_ap_cando_reboot">Reboot</string>
-
     <string name="patch_title">Patch</string>
-
     <string name="patch_config_title">Patches</string>
     <string name="patch_mode_bootimg_patch">Mode: Patch</string>
     <string name="patch_mode_patch_and_install">Mode: Patch and install</string>
     <string name="patch_mode_install_to_next_slot">Mode: Install to inactive slot (After OTA)</string>
     <string name="patch_mode_uninstall_patch">Mode: Uninstall KPatch</string>
+    <string name="patch_patching">Patching…</string>
     <string name="patch_select_bootimg_btn">Select boot</string>
     <string name="patch_embed_kpm_btn">Embed KPM</string>
     <string name="patch_start_patch_btn">Start</string>
@@ -114,23 +101,19 @@
     <string name="patch_custom_superkey">Custom SuperKey</string>
     <string name="patch_custom_superkey_summary">still can use superkey manager root, now we are verify manager signature by kernel</string>
     <string name="patch_item_set_skey_label">The SuperKey should be 8-63 characters long and include numbers and letters, but no special characters.</string>
-
     <string name="home_kernel">Kernel version</string>
     <string name="home_manager_version">Manager version</string>
     <string name="home_fingerprint">Fingerprint</string>
-
     <string name="home_selinux_status">SELinux status</string>
     <string name="home_selinux_status_disabled">Disabled</string>
     <string name="home_selinux_status_enforcing">Enforcing</string>
     <string name="home_selinux_status_permissive">Permissive</string>
     <string name="home_selinux_status_unknown">Unknown</string>
-
     <string name="home_device_info">Device</string>
     <string name="home_system_version">System version</string>
     <string name="home_kpatch_version">KernelPatch version</string>
     <string name="home_su_path">Executable su</string>
     <string name="home_apatch_version">APatch version</string>
-
     <string name="kpm">KPModule</string>
     <string name="kpm_kp_not_installed">KernelPatch not installed</string>
     <string name="kpm_add_kpm">Add KPM</string>
@@ -148,7 +131,6 @@
     <string name="kpm_author">Author</string>
     <string name="kpm_desc">Desc</string>
     <string name="kpm_args">Args</string>
-
     <string name="su_title">Superuser</string>
     <string name="su_selinux_via_hook">Bypass via hook</string>
     <string name="su_pkg_excluded_label">Exclude</string>
@@ -156,85 +138,181 @@
     <string name="su_pkg_excluded_setting_summary">Enabling this option will allow APatch to restore any files modified by the modules of this app.</string>
     <string name="su_show_system_apps">Show system apps</string>
     <string name="su_hide_system_apps">Hide system apps</string>
+    <string name="su_sort_name">Sort by name</string>
+    <string name="su_sort_package">Sort by package name</string>
+    <string name="su_sort_install_time">Sort by install time</string>
     <string name="su_refresh">Refresh</string>
-
     <string name="apm">APModule</string>
     <string name="apm_not_installed">AndroidPatch not installed</string>
     <string name="apm_failed_to_enable">Failed to enable module: %s</string>
     <string name="apm_failed_to_disable">Failed to disable module: %s</string>
+    <string name="apm_search_count">%d module(s) found</string>
+    <string name="apm_refresh">Refresh</string>
+    <string name="apm_sort">Sort</string>
+    <string name="apm_sort_default">Default</string>
+    <string name="apm_sort_enabled_first">Enabled first</string>
+    <string name="apm_sort_action_first">Action first</string>
+    <string name="apm_sort_web_first">WebUI first</string>
     <string name="apm_empty">No module installed</string>
-    <string name="apm_remove">Remove</string>
+    <string name="apm_uinstall">Uninstall</string>
     <string name="apm_undo">Undo</string>
     <string name="apm_install">Install</string>
     <string name="apm_uninstall_confirm">Uninstall the %s module?</string>
     <string name="metamodule_uninstall_confirm">"Are you sure you want to uninstall module %s? This action will affect all modules, and certain features provided by the metamodule (such as mounting) will no longer work.  "</string>
     <string name="apm_uninstall_success">%s uninstalled</string>
     <string name="apm_uninstall_failed">Failed to uninstall: %s</string>
-    <string name="apm_module_undo_uninstall_success">Successfully canceled uninstall of %s</string>
-    <string name="apm_module_undo_uninstall_failed">Failed to undo uninstall: %s</string>
+    <string name="apm_module_undo_uninstall_success">%s restored</string>
+    <string name="apm_module_undo_uninstall_failed">Failed to restore %s</string>
     <string name="apm_version">Version</string>
     <string name="apm_author">Author</string>
+    <string name="module_parse_failed">Failed to parse module information, module may be corrupted: %s</string>
+    <string name="module_parse_reason">Reason: %s</string>
+    <string name="module_install_confirm_extra">Do you still want to install this module?</string>
+    <string name="module_update_prompt_with_name">The following modules will be updated: %1$s</string>
+    <string name="module_info_id">ID:</string>
+    <string name="module_info_name">Name:</string>
+    <string name="module_info_version">Version:</string>
+    <string name="module_info_version_code">VersionCode:</string>
+    <string name="module_info_author">Author:</string>
+    <string name="module_info_description">Description:</string>
+    <string name="module_install_prompt_with_name">The following modules will be installed: %1$s</string>
+    <string name="module_error_no_prop">module.prop not found in zip root</string>
+    <string name="module_error_open_zip">Failed to open zip file from URI</string>
+    <string name="module_error_invalid_zip">Invalid zip file format</string>
+    <string name="module_error_prop_too_large">module.prop is too large (&gt; 1MiB)</string>
+    <string name="module_error_missing_id">module.prop is missing required field \'id\'</string>
+    <string name="module_error_invalid_id">Module ID \'%s\' is invalid</string>
     <string name="apm_desc">Desc</string>
     <string name="apm_overlay_fs_not_available">Modules are unavailable as OverlayFS is disabled by the kernel!</string>
     <string name="apm_magisk_conflict">Modules are unavailable due to a conflict with Magisk!</string>
     <string name="apm_reboot_to_apply">Reboot to take effect</string>
     <string name="apm_changelog">Changelog</string>
+    <string name="apm_changelog_failed">Failed to fetch changelog. Continue with the update?</string>
     <string name="apm_update">Update</string>
     <string name="apm_downloading">Downloading module: %s</string>
     <string name="apm_start_downloading">Start downloading: %s</string>
     <string name="apm_new_version_available">New version %s is available, click to upgrade.</string>
-
     <string name="warning_of_meta_module_title">Require Meta module</string>
     <string name="warning_of_meta_module_summary">This module want to mount /system, meta module will handle that. Otherwise, it might not work.</string>
     <string name="meta_module_disabled">module not mounted, because metamodule disabled</string>
     <string name="meta_module_removed">module not mounted, because metamodule being delete</string>
     <string name="no_meta_module_installed">module not mounted, because metamodule not installed</string>
-
     <string name="hide_apatch_manager">Hide APatch Manager</string>
     <string name="hide_apatch_manager_summary">Install a proxy app with a random package ID and custom app label</string>
     <string name="hide_apatch_dialog_new_manager_name">New manager name</string>
     <string name="hide_apatch_dialog_summary">It will be used as the new app label shown in launcher</string>
     <string name="hide_apatch_manager_failure">Failed to hide. Please report the bug!</string>
-
     <string name="setting_reset_su_path">Reset su path</string>
+    <string name="setting_reset_su_path_summary">Customize the path for the SuperUser binary</string>
     <string name="setting_reset_su_new_path">New full path</string>
-
     <string name="apm_webui_open">Open</string>
     <string name="apm_action">Action</string>
     <string name="enable_web_debugging">Enable WebView debugging</string>
-    <string name="enable_web_debugging_summary">Can be used to debug WebUI. Please enable only when needed.</string>
-
+    <string name="enable_web_debugging_summary">Can be used to debug WebUI. Please enable only when needed</string>
+    <string name="settings_blur_enabled">Enable blur effects</string>
+    <string name="settings_blur_enabled_summary">Apply background blur for visual style</string>
+    <string name="settings_page_scale">Page scale</string>
+    <string name="settings_page_scale_summary">Adjust the display size of the UI</string>
+    <string name="apm_shortcut_title">Create shortcut</string>
+    <string name="apm_shortcut_name_label">Shortcut name</string>
+    <string name="apm_shortcut_icon_pick">Choose custom icon</string>
+    <string name="apm_shortcut_add">Add shortcut</string>
+    <string name="apm_shortcut_not_supported">Launcher does not support desktop shortcuts.</string>
+    <string name="apm_shortcut_created">Shortcut created on desktop.</string>
+    <string name="apm_shortcut_updated">Shortcut updated.</string>
+    <string name="apm_shortcut_delete">Delete shortcut</string>
+    <string name="apm_shortcut_type_title">Select type</string>
+    <string name="apm_shortcut_permission_tip_xiaomi">Please enable \"Create desktop shortcuts\" permission for this app in Xiaomi settings.</string>
+    <string name="apm_shortcut_permission_tip_oppo">Please enable \"Desktop shortcut\" permission for this app in OPPO settings.</string>
+    <string name="apm_shortcut_permission_tip_default">If shortcut creation fails, please enable desktop shortcut permission for this app in system settings.</string>
     <string name="home_new_apatch_found">New version %s is available, click to upgrade.</string>
-
     <string name="mode_select_page_title">Install</string>
     <string name="mode_select_page_patch_and_install">Patch and install</string>
     <string name="mode_select_page_select_file">Select a boot image to patch</string>
     <string name="mode_select_page_install_inactive_slot">Install to inactive slot (After OTA)</string>
     <string name="mode_select_page_install_inactive_slot_warning">Your device will be **FORCED** to boot to the current inactive slot after a reboot!\nOnly use this option after OTA is done.\nContinue?</string>
-
+    <string name="mode_install_method_select_file_summary">Manually select a boot image file to patch</string>
+    <string name="mode_install_method_direct_install_summary">Patch the current boot partition and install directly</string>
+    <string name="mode_install_method_inactive_slot_summary">Install to the inactive slot after an OTA update</string>
+    <string name="action_start_install">Start</string>
+    <string name="action_select_file">Select File</string>
+    <string name="mode_uninstall_method_all_summary">Restore stock images and remove all related files</string>
+    <string name="mode_uninstall_method_restore_summary">Restore the partition to stock and remove system patches</string>
+    <string name="mode_uninstall_method_ap_only_summary">Remove system patches without modifying the partition</string>
     <string name="home_more_menu_feedback_or_suggestion">Feedback or suggestion</string>
     <string name="home_more_menu_about">About</string>
-
+    <string name="about_summary">Version and support</string>
     <string name="home_dialog_uninstall_title">Uninstall</string>
-
     <string name="home_dialog_uninstall_ap_only">Remove AndroidPatch</string>
     <string name="home_dialog_uninstall_all">Uninstall all</string>
-
+    <string name="home_dialog_restore_image">Restore Images</string>
     <string name="kpm_control_dialog_title">Control KPModule</string>
     <string name="kpm_control_dialog_content">Input control parameters:</string>
     <string name="kpm_control_paramters">Parameters</string>
     <string name="kpm_control_outMsg">Message</string>
     <string name="kpm_control_ok">Operation succeeded!</string>
     <string name="kpm_control_failed">Operation failed!</string>
-
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_summary">Choose theme mode</string>
+    <string name="settings_ui_mode">UI Style</string>
+    <string name="settings_ui_mode_miuix_summary">Similar to HyperOS</string>
+    <string name="settings_ui_mode_material_summary">Standard Material Design UI</string>
+    <string name="settings_theme_mode_system">Follow system</string>
+    <string name="settings_theme_mode_light">Light</string>
+    <string name="settings_theme_mode_dark">Dark</string>
+    <string name="settings_theme_mode_monet_system">Monet (Follow system)</string>
+    <string name="settings_theme_mode_monet_light">Monet (Light)</string>
+    <string name="settings_theme_mode_monet_dark">Monet (Dark)</string>
     <string name="settings_night_mode_follow_sys">Follow system\'s dark theme</string>
     <string name="settings_night_mode_follow_sys_summary">Automatically switch to dark theme based on system settings</string>
-
     <string name="settings_night_theme_enabled">Enable dark theme</string>
-
     <string name="settings_use_system_color_theme">System color theme</string>
     <string name="settings_use_system_color_theme_summary">Use a color theme generated by the system based on the current wallpaper</string>
-
+    <string name="settings_key_color">Key color</string>
+    <string name="settings_palette_style">Palette Style</string>
+    <string name="settings_color_spec">Color Spec</string>
+    <string name="settings_color_spec_2021">Material 3 (2021)</string>
+    <string name="settings_color_spec_2025">Expressive (2025)</string>
+    <string name="settings_color_spec_only_2021">Current palette style only supports Spec 2021</string>
+    <string name="settings_key_color_default">Default</string>
+    <string name="color_red">Red</string>
+    <string name="color_green">Green</string>
+    <string name="color_blue">Blue</string>
+    <string name="color_purple">Purple</string>
+    <string name="color_orange">Orange</string>
+    <string name="color_teal">Teal</string>
+    <string name="color_pink">Pink</string>
+    <string name="color_brown">Brown</string>
+    <string name="about_app_version">Version %1$s</string>
+    <string name="about_app_desc">Kernel root solution with only a stripped kernel image, providing the ability of mounting system module and hooking kernel function.</string>
+    <string name="about_github">Source code</string>
+    <string name="about_github_summary">View the source code on GitHub</string>
+    <string name="about_weblate">Translations</string>
+    <string name="about_weblate_summary">Help us translate the app on Weblate</string>
+    <string name="about_telegram_channel">Telegram channel</string>
+    <string name="about_telegram_channel_summary">Subscribe for the latest updates and news</string>
+    <string name="about_telegram_group">Telegram group</string>
+    <string name="about_telegram_group_summary">Join our community for discussions</string>
+    <string name="about_powered_by">Powered by %1$s</string>
+    <string name="crash_handle_title">App crashed…</string>
+    <string name="crash_handle_copy">Copy crash log</string>
+    <string name="crash_handle_copied">Crash log copied to clipboard.</string>
+    <string name="search">Search</string>
+    <string name="search_apps">Search Apps</string>
+    <string name="search_modules">Search modules</string>
+    <string name="back">Back</string>
+    <string name="settings_jailbreak_mode">Jailbreak mode</string>
+    <string name="settings_jailbreak_mode_summary">"Load the KernelPatch module on a stock kernel. Patching is not allowed in this mode."</string>
+    <string name="settings_jailbreak_soft_reboot">Soft reboot</string>
+    <string name="settings_jailbreak_soft_reboot_message">"The module has been loaded. Restart the framework now?"</string>
+    <string name="settings_jailbreak_loaded">Jailbreak module loaded</string>
+    <string name="settings_jailbreak_failed">Failed to load jailbreak module</string>
+    <string name="settings_jailbreak_reboot_warning">"You are in jailbreak mode. Rebooting will lose root access, and you will have to jailbreak again after the device starts up. Reboot anyway?"</string>
+    <string name="jailbreak_no_patch">Patching is not allowed in jailbreak mode.</string>
+    <string name="jailbreak">Jailbreak</string>
+    <string name="jailbreak_triggered">Jailbreak triggered. Wait for root, then soft reboot.</string>
+    <string name="reboot_soft">Soft reboot</string>
+    <string name="apm_remove">Remove</string>
     <string name="settings_custom_color_theme">Color theme</string>
     <string name="amber_theme">Amber</string>
     <string name="blue_grey_theme">Blue grey</string>
@@ -255,14 +333,4 @@
     <string name="sakura_theme">Sakura</string>
     <string name="teal_theme">Teal</string>
     <string name="yellow_theme">Yellow</string>
-    <string name="about_app_version">Version %1$s</string>
-    <string name="about_app_desc">Kernel root solution with only a stripped kernel image, providing the ability of mounting system module and hooking kernel function.</string>
-    <string name="about_github" translatable="false">GitHub</string>
-    <string name="about_weblate" translatable="false">Weblate</string>
-    <string name="about_telegram_channel">Telegram channel</string>
-    <string name="about_telegram_group">Telegram group</string>
-    <string name="about_powered_by">Powered by %1$s</string>
-    <string name="crash_handle_title">App crashed…</string>
-    <string name="crash_handle_copy">Copy crash log</string>
-    <string name="crash_handle_copied">Crash log copied to clipboard.</string>
 </resources>

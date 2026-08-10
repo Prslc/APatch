@@ -179,6 +179,7 @@
     <string name="settings_jailbreak_soft_reboot_message">模块已加载，是否立即重启框架？</string>
     <string name="settings_jailbreak_loaded">越狱模块已加载</string>
     <string name="settings_jailbreak_failed">越狱模块加载失败</string>
+    <string name="settings_jailbreak_reboot_warning">您正处于越狱模式。重启将丢失 root 权限，设备启动后需重新越狱。确定要重启吗？</string>
     <string name="jailbreak_no_patch">越狱模式下不允许修补。</string>
     <string name="jailbreak">越狱</string>
     <string name="jailbreak_triggered">越狱已触发，等待获取 root 后软重启。</string>

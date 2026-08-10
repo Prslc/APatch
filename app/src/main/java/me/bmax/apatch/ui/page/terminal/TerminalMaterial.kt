@@ -49,7 +49,7 @@ import me.bmax.apatch.ui.theme.getMaterial3AppBarColor
 import me.bmax.apatch.ui.theme.material3BlurEffect
 import me.bmax.apatch.ui.theme.rememberMaterial3BlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
-import me.bmax.apatch.util.reboot
+import me.bmax.apatch.util.rebootJailbreakAware
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -146,7 +146,7 @@ fun TerminalScreenMaterial(
                 FloatingActionButton(
                     modifier = Modifier.padding(bottom = 30.dp),
                     containerColor = MaterialTheme.colorScheme.primary,
-                    onClick = { scope.launch(Dispatchers.IO) { reboot() } }
+                    onClick = { scope.launch(Dispatchers.IO) { rebootJailbreakAware() } }
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Refresh,

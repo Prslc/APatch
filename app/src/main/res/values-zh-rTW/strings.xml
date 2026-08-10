@@ -228,6 +228,7 @@
     <string name="settings_jailbreak_soft_reboot_message">模組已載入，是否立即重啟框架？</string>
     <string name="settings_jailbreak_loaded">越獄模組已載入</string>
     <string name="settings_jailbreak_failed">越獄模組載入失敗</string>
+    <string name="settings_jailbreak_reboot_warning">您正處於越獄模式。重啟將遺失 root 權限，裝置啟動後需重新越獄。確定要重啟嗎？</string>
     <string name="jailbreak_no_patch">越獄模式下不允許修補。</string>
     <string name="jailbreak">越獄</string>
     <string name="jailbreak_triggered">越獄已觸發，等待取得 root 後軟重啟。</string>

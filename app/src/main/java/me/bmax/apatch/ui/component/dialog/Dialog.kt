@@ -12,6 +12,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -23,8 +24,13 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.parcelize.Parcelize
+import me.bmax.apatch.R
 import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.UiMode
+import me.bmax.apatch.util.RebootMode
+import me.bmax.apatch.util.isJailbreakMode
+import me.bmax.apatch.util.reboot
+import me.bmax.apatch.util.softReboot
 import kotlin.coroutines.resume
 
 private const val TAG = "DialogComponent"
@@ -373,6 +379,71 @@ fun rememberConfirmDialog(
 @Composable
 fun rememberConfirmDialog(callback: ConfirmCallback): ConfirmDialogHandle {
     return rememberConfirmDialog(ConfirmDialogVisualsImpl.Empty, callback)
+}
+
+/**
+ * A confirm-before-soft-reboot dialog used in jailbreak mode: rebooting
+ * the framework keeps runtime-loaded modules alive, so jailbreak entry
+ * points ask for confirmation before triggering `apd soft-reboot`.
+ *
+ * Returns a handle whose [show] displays the dialog; confirming triggers
+ * the soft reboot.
+ */
+@Composable
+fun rememberJailbreakSoftRebootDialog(): DialogHandle {
+    val softRebootDialog = rememberConfirmDialog(
+        onConfirm = { softReboot() }
+    )
+    val title = stringResource(R.string.settings_jailbreak_loaded)
+    val content = stringResource(R.string.settings_jailbreak_soft_reboot_message)
+    val confirm = stringResource(R.string.settings_jailbreak_soft_reboot)
+
+    return remember {
+        object : DialogHandle {
+            override val isShown: Boolean
+                get() = softRebootDialog.isShown
+
+            override val dialogType: String
+                get() = "JailbreakSoftRebootDialog"
+
+            override fun show() {
+                softRebootDialog.showConfirm(
+                    title = title,
+                    content = content,
+                    confirm = confirm
+                )
+            }
+
+            override fun hide() {
+                softRebootDialog.hide()
+            }
+        }
+    }
+}
+
+/**
+ * Returns a reboot action for a reboot list. In jailbreak mode a plain reboot
+ * ([RebootMode.NORMAL]) drops root, so it asks for confirmation first; the soft
+ * reboot and recovery/bootloader/download/edl entries run immediately since the
+ * user picked an explicit target.
+ *
+ * Mirrors KernelSU's `rememberRebootAction`.
+ */
+@Composable
+fun rememberRebootAction(): (RebootMode) -> Unit {
+    val title = stringResource(R.string.reboot)
+    val content = stringResource(R.string.settings_jailbreak_reboot_warning)
+    val confirmDialog = rememberConfirmDialog(onConfirm = { reboot() })
+
+    return remember(title, content, confirmDialog) {
+        { mode ->
+            if (isJailbreakMode() && mode == RebootMode.NORMAL) {
+                confirmDialog.showConfirm(title = title, content = content)
+            } else {
+                reboot(mode)
+            }
+        }
+    }
 }
 
 /**

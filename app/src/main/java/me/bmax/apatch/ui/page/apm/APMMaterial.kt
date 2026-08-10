@@ -147,6 +147,7 @@ import me.bmax.apatch.util.download
 import me.bmax.apatch.util.hasMagisk
 import me.bmax.apatch.util.isJailbreakMode
 import me.bmax.apatch.util.reboot
+import me.bmax.apatch.util.rebootJailbreakAware
 import okhttp3.Request
 import top.yukonga.miuix.kmp.basic.SnackbarDuration
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
@@ -840,7 +841,7 @@ private fun ModuleListMaterial(
             message = message, actionLabel = actionLabel, duration = SnackbarDuration.Long
         )
         if (result) {
-            reboot()
+            rebootJailbreakAware()
         }
     }
 
@@ -871,7 +872,7 @@ private fun ModuleListMaterial(
             message = message, actionLabel = actionLabel, duration = SnackbarDuration.Long
         )
         if (result) {
-            reboot()
+            rebootJailbreakAware()
         }
     }
 
