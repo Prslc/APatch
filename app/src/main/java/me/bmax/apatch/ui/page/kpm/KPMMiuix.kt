@@ -123,6 +123,14 @@ fun KPModuleScreenMiuix(
     val navigator = LocalNavigator.current
     val backdrop = if (isCurrentPage) rememberBlurBackdrop() else null
 
+    // Load lazily on first visit; the pager pre-composes all pages, so this
+    // avoids scanning KPM modules at startup before the page is ever shown.
+    if (isCurrentPage) {
+        LaunchedEffect(Unit) {
+            if (uiState.modules.isEmpty()) viewModel.fetchModuleList()
+        }
+    }
+
     val moduleStr = stringResource(id = R.string.kpm)
     val moduleUninstallConfirm = stringResource(id = R.string.kpm_unload_confirm)
     val unloadText = stringResource(R.string.kpm_unload)

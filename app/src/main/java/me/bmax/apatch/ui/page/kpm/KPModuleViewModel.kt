@@ -44,10 +44,6 @@ class KPModuleViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    init {
-        fetchModuleList()
-    }
-
     fun fetchModuleList() {
         viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true) }
