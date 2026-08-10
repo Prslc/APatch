@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,6 +23,8 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import me.bmax.apatch.ui.LocalUiMode
+import me.bmax.apatch.ui.UiMode
 import me.bmax.apatch.util.ui.AppIconCache
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
@@ -79,9 +82,13 @@ fun AppIconImage(
 
 @Composable
 private fun PlaceHolderBox(modifier: Modifier = Modifier) {
+    val color = when (LocalUiMode.current) {
+        UiMode.Miuix -> MiuixTheme.colorScheme.secondaryContainer
+        UiMode.Material -> MaterialTheme.colorScheme.surfaceVariant
+    }
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(MiuixTheme.colorScheme.secondaryContainer)
+            .background(color)
     )
 }
