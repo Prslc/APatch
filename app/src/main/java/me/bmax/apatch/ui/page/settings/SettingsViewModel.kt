@@ -48,8 +48,16 @@ class SettingsViewModel(
 
     private fun loadPersistentSettings() {
         val languagesValues = apApp.resources.getStringArray(R.array.languages_values)
-        val currentLocales = LocaleManagerCompat.getApplicationLocales(apApp)
-        val tag = if (currentLocales.isEmpty) null else currentLocales.get(0)?.toLanguageTag()
+        // Read the persisted override first so the displayed language stays in
+        // sync on API < 33, where LocaleManager persistence is unavailable.
+        val tag = apApp.getSharedPreferences(APApplication.SP_NAME, Context.MODE_PRIVATE)
+            .getString("app_lang", "")
+        val currentTag = if (tag.isNullOrEmpty()) {
+            val currentLocales = LocaleManagerCompat.getApplicationLocales(apApp)
+            if (currentLocales.isEmpty) null else currentLocales.get(0)?.toLanguageTag()
+        } else {
+            tag
+        }
 
         _uiState.update {
             it.copy(
@@ -152,6 +160,12 @@ class SettingsViewModel(
     fun updateLanguage(context: Context, localeTag: String, index: Int) {
         _uiState.update { it.copy(currentLanguageIndex = index) }
 
+        // Persist the override so attachBaseContext() on MainActivity can apply
+        // it on API < 33 (LocaleManager handles persistence natively on 33+).
+        APApplication.sharedPreferences.edit {
+            putString("app_lang", localeTag)
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val localeManager = context.getSystemService(LocaleManager::class.java)
             val locales = if (localeTag.isEmpty()) {
@@ -162,12 +176,7 @@ class SettingsViewModel(
             // Native API 33+ handles persistence and lifecycle automatically.
             localeManager.applicationLocales = locales
         } else {
-            // For API 26-32, we manually persist the preference.
-            APApplication.sharedPreferences.edit {
-                putString("app_lang", localeTag)
-            }
-
-            // Recreate the activity to apply language changes on legacy API levels.
+            // Recreate the activity so attachBaseContext() re-applies the locale.
             (context as? Activity)?.recreate()
         }
     }

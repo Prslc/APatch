@@ -30,6 +30,7 @@ import me.bmax.apatch.ui.page.theme.pageScale
 import me.bmax.apatch.ui.theme.APatchAppTheme
 import me.bmax.apatch.ui.theme.AppThemeSettings
 import me.bmax.apatch.ui.theme.blurEnabled
+import me.bmax.apatch.util.ui.applyAppLocale
 
 
 class MainActivity : ComponentActivity() {
@@ -37,6 +38,10 @@ class MainActivity : ComponentActivity() {
     private var isLoading = true
     private var navigatorInstance: Navigator? = null
     private var pendingIntent: Intent? = null
+
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(applyAppLocale(newBase))
+    }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
