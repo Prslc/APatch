@@ -245,16 +245,10 @@ fun installJailbreak(): Boolean {
     }
 }
 
-/** Whether the SELinux mode is permissive (getenforce), the prerequisite for jailbreak. */
-fun isSELinuxPermissive(): Boolean {
-    val shell = Shell.Builder.create().build("sh")
-    val out = ArrayList<String>()
-    val result = shell.newJob().add("getenforce").to(out, ArrayList()).exec()
-    return result.isSuccess &&
-        out.firstOrNull()?.trim()?.equals("Permissive", ignoreCase = true) == true
-}
-
-/** Whether jailbreak mode is active (the ko has been loaded and a marker written). */
+/**
+ * Whether jailbreak mode is active (the ko has been loaded and a marker written).
+ * Permissive SELinux is a prerequisite for jailbreak.
+ */
 fun isJailbreakMode(): Boolean {
     return runCatching { SuFile(APApplication.JAILBREAK_FILE).exists() }.getOrDefault(false)
 }
