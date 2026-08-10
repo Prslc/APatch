@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
+import me.bmax.apatch.ui.component.labeltext.LabelText
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.page.patch.PatchMode
 import me.bmax.apatch.ui.theme.isInDarkTheme
@@ -164,14 +165,24 @@ fun KStatusCard(
                             .padding(all = 16.dp)
                     ) {
 
-                        Text(
+                        Row(
                             modifier = Modifier.fillMaxWidth(),
-                            text = if (isJailbreak) stringResource(R.string.settings_jailbreak_mode)
-                            else stringResource(cardState.title),
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = colorScheme.onSurface
-                        )
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = if (isJailbreak) stringResource(R.string.settings_jailbreak_mode)
+                                else stringResource(cardState.title),
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = colorScheme.onSurface
+                            )
+                            if (!isJailbreak) {
+                                cardState.badge?.let {
+                                    LabelText(label = it)
+                                }
+                            }
+                        }
 
                         Spacer(Modifier.height(2.dp))
                         if (isJailbreak) {
@@ -183,6 +194,14 @@ fun KStatusCard(
                             )
                         } else {
                             cardState.versionInfo?.let {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = it,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Medium,
+                                )
+                            }
+                            cardState.subtitle?.let {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
                                     text = it,
