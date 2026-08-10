@@ -1,7 +1,3 @@
-// SPDX-License-Identifier: GPL-3.0-only
-// Copyright (C) 2023-2026 iamr0s, InstallerX Revived contributors
-// This file includes code derived from https://github.com/wxxsfxyzm/InstallerX-Revived
-// Modified: Adapted for APatch Material3 widgets
 package me.bmax.apatch.ui.component.material
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -62,7 +58,7 @@ val LocalSegmentedItemShape = compositionLocalOf<Shape> { RoundedCornerShape(Cor
  * @param enabled Controls the enabled state of the widget.
  * If [onClick] is null, this only affects visual/semantic disabled state.
  * If [onClick] is not null, this also controls clickability.
- * @param isError If true, applies the error color to the description text// Copyright (C) 2023-2026 iamr0s, InstallerX Revived contributors.
+ * @param isError If true, applies the error color to the description text.
  * @param selected If true, highlights the widget with a primary container background.
  * @param onClick Callback to be invoked when the widget is clicked. If null, the widget is not clickable.
  * @param clickHaptic The type of haptic feedback to perform on click. Set to null to disable.

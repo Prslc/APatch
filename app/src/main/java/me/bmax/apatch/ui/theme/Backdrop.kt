@@ -1,7 +1,3 @@
-// This file includes code derived from https://github.com/wxxsfxyzm/InstallerX-Revived
-// Copyright (C) 2026 InstallerX Revived contributors
-// Modified: Adapted for Miuix surface logic and implemented safe backdrop capturing wrappers.
-
 package me.bmax.apatch.ui.theme
 
 import android.os.Build

@@ -1,6 +1,3 @@
-// This file includes code derived from KernelSU (https://github.com/tiann/KernelSU)
-// Copyright (C) The KernelSU Project Contributors
-
 package me.bmax.apatch.util.ui
 
 import android.content.Context

@@ -1,7 +1,3 @@
-// This file includes code derived from KernelSU (https://github.com/tiann/KernelSU)
-// Copyright (C) The KernelSU Project Contributors
-// Modified: Adapted for Miuix, removed Coil, and implemented manual icon loading with aspect ratio fixes.
-
 package me.bmax.apatch.ui.component
 
 import android.content.pm.ApplicationInfo

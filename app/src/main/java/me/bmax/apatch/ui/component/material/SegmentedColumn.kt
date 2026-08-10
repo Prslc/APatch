@@ -1,6 +1,3 @@
-// SPDX-License-Identifier: GPL-3.0-only
-// Copyright (C) 2023-2026 iamr0s, InstallerX Revived contributors
-// Modified: Adapted for APatch Material3 widgets
 package me.bmax.apatch.ui.component.material
 
 import android.os.Build
