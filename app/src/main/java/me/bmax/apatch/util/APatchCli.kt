@@ -143,7 +143,7 @@ fun rootShellForResult(vararg cmds: String): Shell.Result {
     return getRootShell().newJob().add(*cmds).to(out, err).exec()
 }
 
-fun listModules(): String {
+fun listModuleJson(): String {
     val shell = getRootShell()
     val out = shell.newJob()
         .add("${APApplication.APD_PATH} module list")

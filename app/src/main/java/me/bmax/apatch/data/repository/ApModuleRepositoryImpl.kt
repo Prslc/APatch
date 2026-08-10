@@ -12,6 +12,7 @@ import me.bmax.apatch.ui.navigation.MODULE_TYPE
 import me.bmax.apatch.ui.page.apm.ModuleInfo
 import me.bmax.apatch.util.HanziToPinyin
 import me.bmax.apatch.util.createRootShell
+import me.bmax.apatch.util.listModuleJson
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -22,7 +23,7 @@ object ApModuleRepositoryImpl : ApModuleRepository {
 
     override suspend fun listModules(): Result<List<ModuleInfo>> {
         return runCatching {
-            val result = listModules()
+            val result = listModuleJson()
             val array = JSONArray(result)
             val h2p = HanziToPinyin.getInstance()
 
@@ -33,7 +34,7 @@ object ApModuleRepositoryImpl : ApModuleRepository {
     }
 
     override suspend fun getModuleCount(): Int {
-        return listModules().let { result ->
+        return listModuleJson().let { result ->
             runCatching {
                 JSONArray(result).length()
             }.getOrDefault(0)
