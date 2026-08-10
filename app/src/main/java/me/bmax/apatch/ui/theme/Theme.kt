@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -158,18 +159,30 @@ fun APatchAppTheme(
     settings: AppThemeSettings,
     content: @Composable () -> Unit
 ) {
+    // Move the content across theme branches on ui_mode switch instead of
+    // rebuilding it, so NavHost/pager state survives the swap.
+    val preservedContent = remember {
+        movableContentOf<@Composable () -> Unit> { targetContent ->
+            targetContent()
+        }
+    }
+
     CompositionLocalProvider(LocalUiMode provides settings.uiMode) {
         when (settings.uiMode) {
-            UiMode.Miuix -> APatchTheme(colorMode = settings.colorMode, keyColor = settings.keyColor) {
-                content()
+            UiMode.Miuix -> APatchTheme(
+                colorMode = settings.colorMode,
+                keyColor = settings.keyColor
+            ) {
+                preservedContent(content)
             }
+
             UiMode.Material -> APatchMaterialTheme(
                 colorMode = settings.colorMode,
                 keyColor = settings.keyColor,
                 paletteStyle = settings.paletteStyle,
                 colorSpec = settings.colorSpec,
             ) {
-                content()
+                preservedContent(content)
             }
         }
     }
