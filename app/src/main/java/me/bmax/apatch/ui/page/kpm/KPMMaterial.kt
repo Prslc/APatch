@@ -93,8 +93,7 @@ import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.dialog.ConfirmResult
 import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
 import me.bmax.apatch.ui.component.dialog.rememberLoadingDialog
-import me.bmax.apatch.ui.component.material.ExpressiveInputField
-import me.bmax.apatch.ui.component.material.ExpressiveSearchBar
+import me.bmax.apatch.ui.component.searchbar.AppSearchBar
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.page.patch.PatchMode
 import me.bmax.apatch.ui.theme.LocalEnableBlur
@@ -114,7 +113,6 @@ fun KPModuleScreenMaterial(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val filteredModules by viewModel.filteredModules.collectAsStateWithLifecycle()
-    var isSearchExpanded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -187,21 +185,10 @@ fun KPModuleScreenMaterial(
                         scrolledContainerColor = backdrop.getMaterial3AppBarColor()
                     )
                 )
-                ExpressiveSearchBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp, bottom = 4.dp),
-                    expanded = isSearchExpanded,
-                    onExpandedChange = { isSearchExpanded = it },
-                    inputField = {
-                        ExpressiveInputField(
-                            query = uiState.search,
-                            onQueryChange = { viewModel.updateSearch(it) },
-                            onSearch = { isSearchExpanded = false },
-                            expanded = isSearchExpanded,
-                            onExpandedChange = { isSearchExpanded = it },
-                        )
-                    }
+                AppSearchBar(
+                    query = uiState.search,
+                    onQueryChange = { viewModel.updateSearch(it) },
+                    placeholder = stringResource(R.string.search_modules),
                 )
             }
         },

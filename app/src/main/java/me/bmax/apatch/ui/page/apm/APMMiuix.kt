@@ -93,6 +93,7 @@ import me.bmax.apatch.ui.component.miuix.ModuleStateIndicator
 import me.bmax.apatch.ui.component.WarningCard
 import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
 import me.bmax.apatch.ui.component.dialog.rememberLoadingDialog
+import me.bmax.apatch.ui.component.searchbar.AppSearchBar
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.MODULE_TYPE
 import me.bmax.apatch.ui.navigation.Navigator
@@ -159,7 +160,6 @@ fun APModuleScreenMiuix(
     val snackBarHostState = LocalSnackbarHost.current
     val scrollBehavior = MiuixScrollBehavior()
 
-    var expanded by remember { mutableStateOf(false) }
     val backdrop = if (isCurrentPage) rememberBlurBackdrop() else null
 
     val state by APApplication.apStateLiveData.observeAsState(APApplication.State.UNKNOWN_STATE)
@@ -255,25 +255,10 @@ fun APModuleScreenMiuix(
                     }
                 }
             ) {
-                SearchBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp, bottom = 4.dp),
-                    inputField = {
-                        InputField(
-                            query = uiState.search,
-                            onQueryChange = { viewModel.onSearchChange(it) },
-                            onSearch = { expanded = false },
-                            expanded = expanded,
-                            onExpandedChange = {
-                                expanded = it
-                                if (!it) viewModel.onSearchChange("")
-                            }
-                        )
-                    },
-                    expanded = expanded,
-                    onExpandedChange = { expanded = it },
-                    content = {}
+                AppSearchBar(
+                    query = uiState.search,
+                    onQueryChange = { viewModel.onSearchChange(it) },
+                    placeholder = stringResource(R.string.search_modules),
                 )
             }
         },

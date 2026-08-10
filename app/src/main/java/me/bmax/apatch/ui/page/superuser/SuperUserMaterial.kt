@@ -61,9 +61,8 @@ import me.bmax.apatch.data.AppInfo
 import me.bmax.apatch.data.AppRepository
 import me.bmax.apatch.ui.component.AppIconImage
 import me.bmax.apatch.ui.component.labeltext.LabelText
-import me.bmax.apatch.ui.component.material.ExpressiveInputField
-import me.bmax.apatch.ui.component.material.ExpressiveSearchBar
 import me.bmax.apatch.ui.component.material.SegmentedColumn
+import me.bmax.apatch.ui.component.searchbar.AppSearchBar
 import me.bmax.apatch.ui.theme.LocalEnableBlur
 import me.bmax.apatch.ui.theme.getMaterial3AppBarColor
 import me.bmax.apatch.ui.theme.material3BlurEffect
@@ -86,7 +85,6 @@ fun SuperUserScreenMaterial(
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
-    var isSearchExpanded by remember { mutableStateOf(false) }
     val pullRefreshState = rememberPullToRefreshState()
 
     if (isCurrentPage) {
@@ -123,27 +121,10 @@ fun SuperUserScreenMaterial(
                         scrolledContainerColor = backdrop.getMaterial3AppBarColor()
                     )
                 )
-                ExpressiveSearchBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp, bottom = 4.dp),
-                    expanded = isSearchExpanded,
-                    onExpandedChange = {
-                        isSearchExpanded = it
-                        if (!it) viewModel.updateSearch("")
-                    },
-                    inputField = {
-                        ExpressiveInputField(
-                            query = uiState.search,
-                            onQueryChange = { viewModel.updateSearch(it) },
-                            onSearch = { isSearchExpanded = false },
-                            expanded = isSearchExpanded,
-                            onExpandedChange = {
-                                isSearchExpanded = it
-                                if (!it) viewModel.updateSearch("")
-                            },
-                        )
-                    }
+                AppSearchBar(
+                    query = uiState.search,
+                    onQueryChange = { viewModel.updateSearch(it) },
+                    placeholder = stringResource(R.string.search_apps),
                 )
             }
         }

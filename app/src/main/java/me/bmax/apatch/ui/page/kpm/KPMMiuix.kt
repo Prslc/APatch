@@ -62,6 +62,7 @@ import me.bmax.apatch.ui.component.miuix.DropdownItem
 import me.bmax.apatch.ui.component.miuix.IconTextButton
 import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
 import me.bmax.apatch.ui.component.dialog.rememberLoadingDialog
+import me.bmax.apatch.ui.component.searchbar.AppSearchBar
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.page.patch.PatchMode
 import me.bmax.apatch.ui.theme.blurEffect
@@ -73,14 +74,12 @@ import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.FloatingActionButton
 import top.yukonga.miuix.kmp.basic.HorizontalDivider
 import top.yukonga.miuix.kmp.basic.Icon
-import top.yukonga.miuix.kmp.basic.InputField
 import top.yukonga.miuix.kmp.basic.ListPopupColumn
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.PopupPositionProvider
 import top.yukonga.miuix.kmp.basic.PullToRefresh
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.ScrollBehavior
-import top.yukonga.miuix.kmp.basic.SearchBar
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
@@ -107,7 +106,6 @@ fun KPModuleScreenMiuix(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val filteredModules by viewModel.filteredModules.collectAsStateWithLifecycle()
-    var expanded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -169,25 +167,10 @@ fun KPModuleScreenMiuix(
                 title = stringResource(R.string.kpm),
                 scrollBehavior = scrollBehavior,
             ) {
-                SearchBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp, bottom = 4.dp),
-                    inputField = {
-                        InputField(
-                            query = uiState.search,
-                            onQueryChange = { viewModel.updateSearch(it) },
-                            onSearch = { expanded = false },
-                            expanded = expanded,
-                            onExpandedChange = {
-                                expanded = it
-                                if (!it) viewModel.updateSearch("")
-                            }
-                        )
-                    },
-                    expanded = expanded,
-                    onExpandedChange = { expanded = it },
-                    content = {}
+                AppSearchBar(
+                    query = uiState.search,
+                    onQueryChange = { viewModel.updateSearch(it) },
+                    placeholder = stringResource(R.string.search_modules),
                 )
             }
         },

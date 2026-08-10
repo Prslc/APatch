@@ -35,6 +35,7 @@ import me.bmax.apatch.data.AppInfo
 import me.bmax.apatch.data.AppRepository
 import me.bmax.apatch.ui.component.AppIconImage
 import me.bmax.apatch.ui.component.labeltext.LabelText
+import me.bmax.apatch.ui.component.searchbar.AppSearchBar
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
@@ -43,12 +44,10 @@ import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.DropdownEntry
 import top.yukonga.miuix.kmp.basic.DropdownItem
 import top.yukonga.miuix.kmp.basic.Icon
-import top.yukonga.miuix.kmp.basic.InputField
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.PullToRefresh
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.ScrollBehavior
-import top.yukonga.miuix.kmp.basic.SearchBar
 import top.yukonga.miuix.kmp.basic.Switch
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TopAppBar
@@ -145,7 +144,6 @@ fun SuperTopBar(
     scrollBehavior: ScrollBehavior
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var expanded by remember { mutableStateOf(false) }
 
     TopAppBar(
         modifier = Modifier.blurEffect(backdrop),
@@ -187,25 +185,10 @@ fun SuperTopBar(
         },
         scrollBehavior = scrollBehavior
     ) {
-        SearchBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 4.dp),
-            inputField = {
-                InputField(
-                    query = uiState.search,
-                    onQueryChange = { viewModel.updateSearch(it) },
-                    onSearch = { expanded = false },
-                    expanded = expanded,
-                    onExpandedChange = {
-                        expanded = it
-                        if (!it) viewModel.updateSearch("")
-                    }
-                )
-            },
-            expanded = expanded,
-            onExpandedChange = { expanded = it },
-            content = { }
+        AppSearchBar(
+            query = uiState.search,
+            onQueryChange = { viewModel.updateSearch(it) },
+            placeholder = stringResource(R.string.search_apps),
         )
     }
 }

@@ -132,8 +132,7 @@ import me.bmax.apatch.ui.component.dialog.ConfirmResult
 import me.bmax.apatch.ui.component.labeltext.LabelText
 import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
 import me.bmax.apatch.ui.component.dialog.rememberLoadingDialog
-import me.bmax.apatch.ui.component.material.ExpressiveInputField
-import me.bmax.apatch.ui.component.material.ExpressiveSearchBar
+import me.bmax.apatch.ui.component.searchbar.AppSearchBar
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.navigation.MODULE_TYPE
 import me.bmax.apatch.ui.navigation.Navigator
@@ -167,7 +166,6 @@ fun APModuleScreenMaterial(
     val snackBarHostState = LocalSnackbarHost.current
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
-    var isSearchExpanded by remember { mutableStateOf(false) }
     val backdrop =
         if (isCurrentPage) rememberMaterial3BlurBackdrop(LocalEnableBlur.current) else null
 
@@ -238,21 +236,10 @@ fun APModuleScreenMaterial(
                         scrolledContainerColor = backdrop.getMaterial3AppBarColor()
                     )
                 )
-                ExpressiveSearchBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp, bottom = 4.dp),
-                    expanded = isSearchExpanded,
-                    onExpandedChange = { isSearchExpanded = it },
-                    inputField = {
-                        ExpressiveInputField(
-                            query = uiState.search,
-                            onQueryChange = { viewModel.onSearchChange(it) },
-                            onSearch = { isSearchExpanded = false },
-                            expanded = isSearchExpanded,
-                            onExpandedChange = { isSearchExpanded = it },
-                        )
-                    }
+                AppSearchBar(
+                    query = uiState.search,
+                    onQueryChange = { viewModel.onSearchChange(it) },
+                    placeholder = stringResource(R.string.search_modules),
                 )
             }
         },
