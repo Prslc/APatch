@@ -12,7 +12,7 @@ use std::{
     env::var as env_var,
     fs::{self, remove_dir_all},
     io::Cursor,
-    path::{Path, PathBuf},
+    path::{Path, PathBuf, Component},
     process::Command,
     str::FromStr,
 };
@@ -698,6 +698,34 @@ pub fn disable_all_modules() -> Result<()> {
     Ok(())
 }
 
+// Resolve a module icon path to an absolute on-disk path
+fn resolve_module_icon_path(
+    module_prop_map: &mut HashMap<String, String>,
+    key: &str,
+    module_path: &Path,
+) {
+    let module_id = module_prop_map.get("id").map(|s| s.as_str()).unwrap_or("");
+
+    if let Some(icon_value) = module_prop_map.get(key).map(|v| v.trim()).filter(|v| !v.is_empty()) {
+        let path = Path::new(icon_value);
+
+        if path.is_absolute() || path.components().any(|c| matches!(c, Component::ParentDir)) {
+            log::warn!("Rejected {} (invalid path) for module {}: {}", key, module_id, icon_value);
+            return;
+        }
+
+        let candidate = module_path.join(path);
+
+        if candidate.exists() && candidate.is_file() {
+            if let Some(full_path) = candidate.to_str() {
+                module_prop_map.insert(key.to_string(), full_path.to_string());
+            }
+        } else {
+            log::debug!("{} not found for module {}: {}", key, module_id, candidate.display());
+        }
+    }
+}
+
 fn _list_modules(path: &str) -> Vec<HashMap<String, String>> {
     // Load all module configs once to minimize I/O overhead
     let all_configs = match module_config::get_all_module_configs() {
@@ -778,6 +806,10 @@ fn _list_modules(path: &str) -> Vec<HashMap<String, String>> {
                 module_prop_map.insert("description".to_owned(), desc.clone());
             }
         }
+
+        // Resolve and validate module icon paths for action and webui icons
+        resolve_module_icon_path(&mut module_prop_map, "actionIcon", &path);
+        resolve_module_icon_path(&mut module_prop_map, "webuiIcon", &path);
 
         modules.push(module_prop_map);
     }
