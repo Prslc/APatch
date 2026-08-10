@@ -33,7 +33,8 @@ fun getVersionCode(): Int {
 }
 
 fun getBranch(): String {
-    return exec("git rev-parse --abbrev-ref HEAD").trim()
+    // Avoid path separators in branch names leaking into the APK file name.
+    return exec("git rev-parse --abbrev-ref HEAD").trim().replace("/", "_")
 }
 
 fun getVersionName(): String {
