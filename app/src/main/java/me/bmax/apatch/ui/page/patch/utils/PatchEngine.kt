@@ -314,9 +314,13 @@ class PatchEngine(
         val superkeyToUse = if (useKey && state.superkey.isNotEmpty()) state.superkey else "su"
 
         if (mode == PatchMode.PATCH_AND_INSTALL || mode == PatchMode.INSTALL_TO_NEXT_SLOT) {
-            val KPCheck = shell.newJob().add("su -c whoami").exec()
+            val KPCheck = shell.newJob().add(
+                "${APApplication.SUPERCMD} ${APApplication.superKey} -Z ${APApplication.MAGISK_SCONTEXT} -c whoami"
+            ).exec()
             if (KPCheck.isSuccess && !isSuExecutable()) {
-                patchCommand.addAll(0, listOf("su -c"))
+                patchCommand.addAll(0, listOf(
+                    APApplication.SUPERCMD, APApplication.superKey, "-Z", APApplication.MAGISK_SCONTEXT, "-c"
+                ))
                 patchCommand.addAll(listOf(superkeyToUse, srcBoot.path, "true"))
             } else {
                 patchCommand = mutableListOf("./busybox", "sh", "boot_patch.sh")

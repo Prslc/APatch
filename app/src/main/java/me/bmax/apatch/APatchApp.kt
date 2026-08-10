@@ -46,6 +46,7 @@ class APApplication : Application(), Thread.UncaughtExceptionHandler {
 
     companion object {
         const val APD_PATH = "/data/adb/apd"
+        const val SUPERCMD = "/system/bin/truncate"
         const val APATCH_FOLDER = "/data/adb/ap/"
         private const val APATCH_BIN_FOLDER = APATCH_FOLDER + "bin/"
         private const val APATCH_LOG_FOLDER = APATCH_FOLDER + "log/"

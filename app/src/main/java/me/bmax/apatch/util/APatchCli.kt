@@ -44,16 +44,34 @@ private fun createShell(globalMnt: Boolean, asMain: Boolean): Shell {
         .setInitializers(RootShellInitializer::class.java)
 
     val shell = try {
+        // KernelPatch supercall is the primary root channel; the truncate
+        // binary is hooked by the kernel to raise to the magisk context.
         if (globalMnt) {
-            builder.setCommands("su", "-M")
+            builder.setCommands(
+                APApplication.SUPERCMD, APApplication.superKey,
+                "-Z", APApplication.MAGISK_SCONTEXT, "--mount-master"
+            )
         } else {
-            builder.setCommands("su")
+            builder.setCommands(
+                APApplication.SUPERCMD, APApplication.superKey,
+                "-Z", APApplication.MAGISK_SCONTEXT
+            )
         }
         builder.build()
     } catch (e: Throwable) {
-        Log.e(TAG, "su failed: ", e)
-        builder.setCommands("sh")
-        builder.build()
+        Log.e(TAG, "truncate su failed: ", e)
+        try {
+            if (globalMnt) {
+                builder.setCommands("su", "-M")
+            } else {
+                builder.setCommands("su")
+            }
+            builder.build()
+        } catch (e2: Throwable) {
+            Log.e(TAG, "su failed: ", e2)
+            builder.setCommands("sh")
+            builder.build()
+        }
     }
 
     if (asMain) MainShell.setBuilder(builder)
