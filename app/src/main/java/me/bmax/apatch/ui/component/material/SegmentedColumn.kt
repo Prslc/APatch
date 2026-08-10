@@ -1,9 +1,10 @@
 package me.bmax.apatch.ui.component.material
 
 import android.os.Build
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.VectorConverter
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -42,8 +43,11 @@ import kotlin.math.roundToInt
 private const val PADDING_HORIZONTAL = 16
 private const val PADDING_VERTICAL = 8
 
+// Near-critical damping: avoids the overshoot that makes corner radii and
+// item positions visibly bounce when the item order changes (e.g. SuperUser
+// re-sorts by grant priority after a toggle).
 private const val bouncyStiffness = 800f
-private const val bouncyDamping = 0.5f
+private const val bouncyDamping = 0.85f
 
 @DslMarker
 annotation class SegmentedColumnDsl
@@ -217,19 +221,32 @@ fun SegmentedColumn(
                         // Dynamic corner animation is only supported on Android 13 (Tiramisu) and above.
                         val isDynamicDpSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 
-                        // 3. Drive the corner transition animations. Provides a fluid shift between
-                        // rounded and flat states during expand/collapse interactions.
-                        val currentTopRadius = (if (isDynamicDpSupported) {
-                            animateDpAsState(targetTopRadius, dpSpring, label = "TopRadius").value
-                        } else {
-                            targetTopRadius
-                        }).coerceAtLeast(0.dp)
+                        // Drive the corner transitions. Keying the Animatable on `index` makes the
+                        // radius snap to its new value when an item moves position (reorder), while
+                        // keeping the smooth spring animation for expand/collapse (index unchanged).
+                        val topRadius = remember(index) { Animatable(targetTopRadius, Dp.VectorConverter) }
+                        LaunchedEffect(targetTopRadius) {
+                            if (topRadius.value != targetTopRadius) {
+                                if (isDynamicDpSupported) {
+                                    topRadius.animateTo(targetTopRadius, dpSpring)
+                                } else {
+                                    topRadius.snapTo(targetTopRadius)
+                                }
+                            }
+                        }
+                        val currentTopRadius = topRadius.value.coerceAtLeast(0.dp)
 
-                        val currentBottomRadius = (if (isDynamicDpSupported) {
-                            animateDpAsState(targetBottomRadius, dpSpring, label = "BottomRadius").value
-                        } else {
-                            targetBottomRadius
-                        }).coerceAtLeast(0.dp)
+                        val bottomRadius = remember(index) { Animatable(targetBottomRadius, Dp.VectorConverter) }
+                        LaunchedEffect(targetBottomRadius) {
+                            if (bottomRadius.value != targetBottomRadius) {
+                                if (isDynamicDpSupported) {
+                                    bottomRadius.animateTo(targetBottomRadius, dpSpring)
+                                } else {
+                                    bottomRadius.snapTo(targetBottomRadius)
+                                }
+                            }
+                        }
+                        val currentBottomRadius = bottomRadius.value.coerceAtLeast(0.dp)
 
                         val shape = RoundedCornerShape(
                             topStart = currentTopRadius,
@@ -239,11 +256,17 @@ fun SegmentedColumn(
                         )
 
                         val targetTopPadding = itemData.customTopPadding ?: (if (isFirst) 0.dp else ListItemDefaults.SegmentedGap)
-                        val currentTopPadding = (if (isDynamicDpSupported) {
-                            animateDpAsState(targetTopPadding, dpSpring, label = "TopPadding").value
-                        } else {
-                            targetTopPadding
-                        }).coerceAtLeast(0.dp)
+                        val topPaddingAnimatable = remember(index) { Animatable(targetTopPadding, Dp.VectorConverter) }
+                        LaunchedEffect(targetTopPadding) {
+                            if (topPaddingAnimatable.value != targetTopPadding) {
+                                if (isDynamicDpSupported) {
+                                    topPaddingAnimatable.animateTo(targetTopPadding, dpSpring)
+                                } else {
+                                    topPaddingAnimatable.snapTo(targetTopPadding)
+                                }
+                            }
+                        }
+                        val currentTopPadding = topPaddingAnimatable.value.coerceAtLeast(0.dp)
 
                         var hasFocus by remember { mutableStateOf(false) }
 
