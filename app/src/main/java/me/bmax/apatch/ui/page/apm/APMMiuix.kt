@@ -1151,6 +1151,7 @@ private fun ModuleItem(
                         IconTextButton(
                             iconRes = MiuixIcons.Download,
                             textRes = R.string.apm_update,
+                            enabled = !module.remove,
                             onClick = { onUpdate(module) }
                         )
                         Spacer(modifier = Modifier.width(12.dp))
