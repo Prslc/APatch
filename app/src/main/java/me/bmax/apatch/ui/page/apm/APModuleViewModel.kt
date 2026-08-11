@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,6 +39,8 @@ class APModuleViewModel(
 
     private val _uiState = MutableStateFlow(APMUiState().loadSortMode())
     val uiState = _uiState.asStateFlow()
+
+    private var refreshJob: Job? = null
 
     init {
         refreshMagiskState()
@@ -185,7 +188,8 @@ class APModuleViewModel(
     }
 
     fun fetchModuleList() {
-        viewModelScope.launch {
+        refreshJob?.cancel()
+        refreshJob = viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true) }
             val result = withContext(Dispatchers.IO) {
                 moduleRepo.listModules()
@@ -194,20 +198,26 @@ class APModuleViewModel(
             result.fold(
                 onSuccess = { newList ->
                     ModuleCountsRefresher.requestRefresh()
-                    _uiState.update {
-                        it.copy(
-                            modules = newList, isNeedRefresh = false, isRefreshing = false
-                        )
-                    }
-                    checkMetaModuleWarning(newList)
-                    launch {
-                        val updateResults = withContext(Dispatchers.IO) {
+                    val modulesChanged =
+                        _uiState.value.modules.map { it.id } != newList.map { it.id }
+                    val updateResults = if (modulesChanged) {
+                        withContext(Dispatchers.IO) {
                             newList.map { module ->
                                 async { module.id to moduleRepo.checkModuleUpdate(module) }
                             }.awaitAll().toMap()
                         }
-                        _uiState.update { it.copy(updateResults = updateResults) }
+                    } else {
+                        _uiState.value.updateResults
                     }
+                    _uiState.update {
+                        it.copy(
+                            modules = newList,
+                            isNeedRefresh = false,
+                            isRefreshing = false,
+                            updateResults = updateResults
+                        )
+                    }
+                    checkMetaModuleWarning(newList)
                 },
                 onFailure = { e ->
                     Log.e(TAG, "fetchModuleList failed", e)
