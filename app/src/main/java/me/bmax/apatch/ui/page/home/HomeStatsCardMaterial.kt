@@ -173,7 +173,7 @@ internal fun KStatusCardMaterial(
         }
     }
 
-    if (kpState == APApplication.State.UNKNOWN_STATE && isPermissive && !isJailbreak) {
+    if (kpState == APApplication.State.UNKNOWN_STATE && isPermissive) {
         Spacer(Modifier.height(8.dp))
         FilledTonalButton(
             modifier = Modifier.fillMaxWidth(),

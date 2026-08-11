@@ -257,7 +257,7 @@ fun KStatusCard(
             }
         }
 
-        if (kpState == APApplication.State.UNKNOWN_STATE && isPermissive && !isJailbreak) {
+        if (kpState == APApplication.State.UNKNOWN_STATE && isPermissive) {
             Spacer(Modifier.height(8.dp))
             Button(
                 modifier = Modifier.fillMaxWidth(),
