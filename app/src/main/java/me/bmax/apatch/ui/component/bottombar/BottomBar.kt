@@ -14,12 +14,15 @@ import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
+import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.UiMode
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 
@@ -28,6 +31,18 @@ class ModuleCounts {
     var apmCount by mutableIntStateOf(0)
     var kpmCount by mutableIntStateOf(0)
     var suCount by mutableIntStateOf(0)
+}
+
+@Composable
+fun rememberAvailablePages(): List<BottomBarDestination> {
+    val apState by APApplication.apStateLiveData.observeAsState(APApplication.State.UNKNOWN_STATE)
+    val kPatchReady = apState != APApplication.State.UNKNOWN_STATE
+    val aPatchReady = apState == APApplication.State.ANDROIDPATCH_INSTALLED
+    return remember(kPatchReady, aPatchReady) {
+        BottomBarDestination.entries.filter { d ->
+            !(d.kPatchRequired && !kPatchReady) && !(d.aPatchRequired && !aPatchReady)
+        }
+    }
 }
 
 @Composable

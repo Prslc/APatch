@@ -44,6 +44,7 @@ import me.bmax.apatch.R
 import me.bmax.apatch.util.RebootMode
 import me.bmax.apatch.apApp
 import me.bmax.apatch.ui.component.bottombar.BottomBarDestination
+import me.bmax.apatch.ui.component.bottombar.rememberAvailablePages
 import me.bmax.apatch.ui.component.WarningCard
 import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
 import me.bmax.apatch.ui.component.dialog.rememberRebootAction
@@ -88,14 +89,7 @@ fun HomeScreenMiuix(
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val kPatchReady = uiState.kpState != APApplication.State.UNKNOWN_STATE
-    val aPatchReady = uiState.apState == APApplication.State.ANDROIDPATCH_INSTALLED
-
-    val availablePages = remember(kPatchReady, aPatchReady) {
-        BottomBarDestination.entries.filter { d ->
-            !(d.kPatchRequired && !kPatchReady) && !(d.aPatchRequired && !aPatchReady)
-        }
-    }
+    val availablePages = rememberAvailablePages()
 
     if (isCurrentPage) {
         LaunchedEffect(Unit) {

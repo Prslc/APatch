@@ -2,13 +2,9 @@ package me.bmax.apatch.ui.component.bottombar
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import me.bmax.apatch.APApplication
 import me.bmax.apatch.ui.LocalSelectedPage
-import me.bmax.apatch.ui.component.bottombar.BottomBarDestination
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.theme.blurEffect
 import me.bmax.apatch.ui.theme.getAppBarColor
@@ -21,15 +17,7 @@ fun BottomBarMiuix(backdrop: LayerBackdrop?) {
     val navigator = LocalNavigator.current
     val selectedPage = LocalSelectedPage.current
 
-    val apState by APApplication.apStateLiveData.observeAsState(APApplication.State.UNKNOWN_STATE)
-    val kPatchReady = apState != APApplication.State.UNKNOWN_STATE
-    val aPatchReady = apState == APApplication.State.ANDROIDPATCH_INSTALLED
-
-    val availablePages = remember(kPatchReady, aPatchReady) {
-        BottomBarDestination.entries.filter { d ->
-            !(d.kPatchRequired && !kPatchReady) && !(d.aPatchRequired && !aPatchReady)
-        }
-    }
+    val availablePages = rememberAvailablePages()
 
     NavigationBar(
         modifier = Modifier.blurEffect(backdrop),

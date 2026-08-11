@@ -23,5 +23,5 @@ data class HomeUiState(
     val isJailbreak: Boolean = false,
 
     val kpState: APApplication.State = APApplication.State.UNKNOWN_STATE,
-    val apState: APApplication.State = APApplication.State.ANDROIDPATCH_INSTALLED,
+    val apState: APApplication.State = APApplication.State.UNKNOWN_STATE,
 )

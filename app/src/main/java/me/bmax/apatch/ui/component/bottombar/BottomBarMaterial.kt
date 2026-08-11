@@ -9,12 +9,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import me.bmax.apatch.APApplication
 import me.bmax.apatch.ui.LocalModuleCounts
 import me.bmax.apatch.ui.LocalSelectedPage
 import me.bmax.apatch.ui.navigation.LocalNavigator
@@ -27,16 +24,8 @@ fun BottomBarMaterial(backdrop: LayerBackdrop?) {
     val navigator = LocalNavigator.current
     val selectedPage = LocalSelectedPage.current
 
-    val apState by APApplication.apStateLiveData.observeAsState(APApplication.State.UNKNOWN_STATE)
-    val kPatchReady = apState != APApplication.State.UNKNOWN_STATE
-    val aPatchReady = apState == APApplication.State.ANDROIDPATCH_INSTALLED
-
     val moduleCounts = LocalModuleCounts.current
-    val availablePages = remember(kPatchReady, aPatchReady) {
-        BottomBarDestination.entries.filter { d ->
-            !(d.kPatchRequired && !kPatchReady) && !(d.aPatchRequired && !aPatchReady)
-        }
-    }
+    val availablePages = rememberAvailablePages()
 
     NavigationBar(
         modifier = Modifier.material3BlurEffect(backdrop),

@@ -16,7 +16,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,11 +34,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlin.math.abs
-import me.bmax.apatch.APApplication
 import me.bmax.apatch.ui.component.snackbar.AppSnackbarHostState
 import me.bmax.apatch.ui.component.bottombar.BottomBar
 import me.bmax.apatch.ui.component.bottombar.BottomBarDestination
 import me.bmax.apatch.ui.component.bottombar.ModuleCounts
+import me.bmax.apatch.ui.component.bottombar.rememberAvailablePages
 import me.bmax.apatch.ui.component.snackbar.SwipeableSnackbarHostMaterial
 import me.bmax.apatch.ui.component.snackbar.rememberAppSnackbarHostState
 import me.bmax.apatch.ui.navigation.LocalNavigator
@@ -66,15 +65,7 @@ fun MainScreen() {
     val coroutineScope = rememberCoroutineScope()
     val uiMode = LocalUiMode.current
 
-    val state by APApplication.apStateLiveData.observeAsState(APApplication.State.UNKNOWN_STATE)
-    val kPatchReady = state != APApplication.State.UNKNOWN_STATE
-    val aPatchReady = state == APApplication.State.ANDROIDPATCH_INSTALLED
-
-    val availablePages = remember(kPatchReady, aPatchReady) {
-        BottomBarDestination.entries.filter { d ->
-            !(d.kPatchRequired && !kPatchReady) && !(d.aPatchRequired && !aPatchReady)
-        }
-    }
+    val availablePages = rememberAvailablePages()
 
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { availablePages.size })
 
@@ -123,7 +114,7 @@ fun MainScreen() {
                     .withBackdrop(backdrop),
                 state = mainPagerState.pagerState,
                 beyondViewportPageCount = if (contentReady) availablePages.size - 1 else 0,
-                userScrollEnabled = aPatchReady,
+                userScrollEnabled = availablePages.contains(BottomBarDestination.AModule),
             ) { pageIndex ->
                 val pageModifier = Modifier
                     .fillMaxSize()
