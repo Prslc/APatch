@@ -23,6 +23,7 @@ import me.bmax.apatch.data.repository.ApModuleRepositoryImpl
 import me.bmax.apatch.data.repository.SettingsRepository
 import me.bmax.apatch.data.repository.SettingsRepositoryImpl
 import me.bmax.apatch.ui.page.home.ModuleCountsRefresher
+import me.bmax.apatch.util.hasMagisk
 import java.text.Collator
 import java.util.Locale
 import kotlin.time.Duration.Companion.milliseconds
@@ -37,6 +38,17 @@ class APModuleViewModel(
 
     private val _uiState = MutableStateFlow(APMUiState().loadSortMode())
     val uiState = _uiState.asStateFlow()
+
+    init {
+        refreshMagiskState()
+    }
+
+    private fun refreshMagiskState() {
+        viewModelScope.launch {
+            val hasMagisk = withContext(Dispatchers.IO) { hasMagisk() }
+            _uiState.update { it.copy(hasMagisk = hasMagisk) }
+        }
+    }
 
     private fun APMUiState.loadSortMode(): APMUiState =
         when (settingsRepo.getString("apm_sort_mode", "")) {

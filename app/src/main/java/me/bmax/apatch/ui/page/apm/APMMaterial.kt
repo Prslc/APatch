@@ -144,7 +144,6 @@ import me.bmax.apatch.ui.theme.withBackdrop
 import me.bmax.apatch.util.DownloadListener
 import me.bmax.apatch.util.Shortcut
 import me.bmax.apatch.util.download
-import me.bmax.apatch.util.hasMagisk
 import me.bmax.apatch.util.isJailbreakMode
 import me.bmax.apatch.util.reboot
 import me.bmax.apatch.util.rebootJailbreakAware
@@ -187,7 +186,7 @@ fun APModuleScreenMaterial(
             viewModel.fetchModuleList()
         }
 
-    val hasMagisk = hasMagisk()
+    val hasMagisk = uiState.hasMagisk
     val moduleListState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     var fabVisible by remember { mutableStateOf(true) }
 

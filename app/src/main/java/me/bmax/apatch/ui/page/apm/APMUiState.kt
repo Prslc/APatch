@@ -16,7 +16,8 @@ data class APMUiState(
 
     val shortcutState: ShortcutState? = null,
     val metaModuleWarning: String? = null,
-    val updateResults: Map<String, Triple<String, String, String>> = emptyMap()
+    val updateResults: Map<String, Triple<String, String, String>> = emptyMap(),
+    val hasMagisk: Boolean = false
 )
 
 data class ShortcutState(
