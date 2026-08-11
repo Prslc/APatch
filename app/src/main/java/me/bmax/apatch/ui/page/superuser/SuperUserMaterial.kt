@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -33,6 +34,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFlexibleTopAppBar
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Scaffold
@@ -65,7 +67,8 @@ import me.bmax.apatch.data.AppInfo
 import me.bmax.apatch.data.AppRepository
 import me.bmax.apatch.ui.component.AppIconImage
 import me.bmax.apatch.ui.component.labeltext.LabelText
-import me.bmax.apatch.ui.component.material.SegmentedColumn
+import me.bmax.apatch.ui.component.material.ConnectionRadius
+import me.bmax.apatch.ui.component.material.CornerRadius
 import me.bmax.apatch.ui.component.searchbar.AppSearchBar
 import me.bmax.apatch.ui.theme.LocalEnableBlur
 import me.bmax.apatch.ui.theme.getMaterial3AppBarColor
@@ -160,29 +163,32 @@ fun SuperUserScreenMaterial(
                     .fillMaxSize()
                     .withBackdrop(backdrop),
                 contentPadding = PaddingValues(
-                    top = paddingValues.calculateTopPadding() + 8.dp,
-                    bottom = bottomPadding + 16.dp
+                    top = paddingValues.calculateTopPadding() + 16.dp,
+                    bottom = bottomPadding + 24.dp,
+                    start = 16.dp,
+                    end = 16.dp
                 )
             ) {
-
                 if (appList.isNotEmpty()) {
-                    item {
-                        SegmentedColumn {
-                            appList.forEach { app ->
-                                item(key = app.packageName + app.uid) { shape ->
-                                    AppItemMaterial(
-                                        app = app,
-                                        shape = shape,
-                                        onToggleSu = { granted ->
-                                            viewModel.toggleSu(app, granted)
-                                        },
-                                        onToggleExclude = { excluded ->
-                                            viewModel.toggleExclude(app, excluded)
-                                        }
-                                    )
-                                }
+                    itemsIndexed(
+                        items = appList,
+                        key = { _, app -> app.packageName + app.uid }
+                    ) { index, app ->
+                        AppItemMaterial(
+                            app = app,
+                            shape = segmentedShape(index, appList.size),
+                            topPadding = if (index == 0) {
+                                0.dp
+                            } else {
+                                ListItemDefaults.SegmentedGap
+                            },
+                            onToggleSu = { granted ->
+                                viewModel.toggleSu(app, granted)
+                            },
+                            onToggleExclude = { excluded ->
+                                viewModel.toggleExclude(app, excluded)
                             }
-                        }
+                        )
                     }
                 }
             }
@@ -277,10 +283,22 @@ private fun SortDropdown(
     }
 }
 
+private fun segmentedShape(index: Int, count: Int): Shape {
+    val top = if (index == 0) CornerRadius else ConnectionRadius
+    val bottom = if (index == count - 1) CornerRadius else ConnectionRadius
+    return RoundedCornerShape(
+        topStart = top,
+        topEnd = top,
+        bottomStart = bottom,
+        bottomEnd = bottom
+    )
+}
+
 @Composable
 private fun AppItemMaterial(
     app: AppInfo,
     shape: Shape,
+    topPadding: Dp,
     onToggleSu: (Boolean) -> Unit,
     onToggleExclude: (Boolean) -> Unit
 ) {
@@ -289,7 +307,9 @@ private fun AppItemMaterial(
     val isExcluded = app.config.exclude == 1
 
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = topPadding),
         shape = shape,
         color = MaterialTheme.colorScheme.surfaceBright
     ) {
