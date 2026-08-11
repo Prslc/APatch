@@ -23,7 +23,6 @@ import me.bmax.apatch.R
 import me.bmax.apatch.apApp
 import me.bmax.apatch.data.repository.SettingsRepository
 import me.bmax.apatch.data.repository.SettingsRepositoryImpl
-import me.bmax.apatch.util.isJailbreakMode
 import me.bmax.apatch.util.rootShellForResult
 
 class SettingsViewModel(
@@ -36,14 +35,6 @@ class SettingsViewModel(
         loadPersistentSettings()
         observeApatchState()
         refreshCacheSize()
-        refreshJailbreakState()
-    }
-
-    private fun refreshJailbreakState() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val jailbreak = isJailbreakMode()
-            _uiState.update { it.copy(isJailbreak = jailbreak) }
-        }
     }
 
     private fun loadPersistentSettings() {

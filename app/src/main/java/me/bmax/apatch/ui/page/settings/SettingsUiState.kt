@@ -13,7 +13,6 @@ enum class SettingDialogType {
 data class SettingsUiState(
     val isKpatchReady: Boolean = false,
     val isApatchReady: Boolean = false,
-    val isJailbreak: Boolean = false,
     val isGlobalNamespaceEnabled: Boolean = false,
     val sucompatEnabled: Boolean = false,
     val enableWebDebugging: Boolean = false,

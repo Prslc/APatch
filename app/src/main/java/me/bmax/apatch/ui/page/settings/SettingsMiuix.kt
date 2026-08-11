@@ -17,7 +17,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.rounded.DeleteForever
-import androidx.compose.material.icons.rounded.LockOpen
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.bmax.apatch.R
-import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
 import me.bmax.apatch.ui.component.miuix.UninstallDialog
 import me.bmax.apatch.ui.component.settingsitem.ArrowItem
 import me.bmax.apatch.ui.component.settingsitem.DropdownItem
@@ -45,7 +43,6 @@ import me.bmax.apatch.ui.theme.getAppBarColor
 import me.bmax.apatch.ui.theme.rememberBlurBackdrop
 import me.bmax.apatch.ui.theme.withBackdrop
 import me.bmax.apatch.util.formatSize
-import me.bmax.apatch.util.softReboot
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
@@ -96,30 +93,6 @@ fun SettingScreenMiuix(
         ) {
             item {
                 Card {
-                    // Jailbreak mode
-                    if (uiState.isJailbreak) {
-                        val softRebootDialog = rememberConfirmDialog(
-                            onConfirm = { softReboot() }
-                        )
-                        val jailbreakLoaded = stringResource(R.string.settings_jailbreak_loaded)
-                        val jailbreakSoftRebootMessage =
-                            stringResource(R.string.settings_jailbreak_soft_reboot_message)
-                        val jailbreakSoftReboot =
-                            stringResource(R.string.settings_jailbreak_soft_reboot)
-                        ArrowItem(
-                            title = stringResource(R.string.settings_jailbreak_mode),
-                            summary = stringResource(R.string.settings_jailbreak_mode_summary),
-                            icon = Icons.Rounded.LockOpen,
-                            onClick = {
-                                softRebootDialog.showConfirm(
-                                    title = jailbreakLoaded,
-                                    content = jailbreakSoftRebootMessage,
-                                    confirm = jailbreakSoftReboot
-                                )
-                            }
-                        )
-                    }
-
                     // Global mount
                     if (uiState.isKpatchReady && uiState.isApatchReady) {
                         SwitchItem(
