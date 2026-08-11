@@ -10,8 +10,19 @@ import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileNotFoundException
 
+// Reject superkey chars that could break out of a root shell command.
+private val SHELL_METACHARACTERS = setOf(
+    ' ', '\t', '\n', '\r',
+    '"', '\'', '$', '`', '\\',
+    ';', '|', '&', '(', ')',
+    '<', '>', '*', '?', '[', ']', '{', '}'
+)
+
 val checkSuperKeyValidation: (superKey: String) -> Boolean = { superKey ->
-    superKey.length in 8..63 && superKey.any { it.isDigit() } && superKey.any { it.isLetter() }
+    superKey.length in 8..63 &&
+        superKey.any { it.isDigit() } &&
+        superKey.any { it.isLetter() } &&
+        superKey.none { it in SHELL_METACHARACTERS }
 }
 
 fun isSuExecutable(): Boolean {

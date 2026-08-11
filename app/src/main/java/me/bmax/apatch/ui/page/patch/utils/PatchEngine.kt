@@ -7,6 +7,7 @@ import android.system.Os
 import android.util.Log
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
+import com.topjohnwu.superuser.ShellUtils
 import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.nio.ExtendedFile
 import com.topjohnwu.superuser.nio.FileSystemManager
@@ -315,7 +316,7 @@ class PatchEngine(
 
         if (mode == PatchMode.PATCH_AND_INSTALL || mode == PatchMode.INSTALL_TO_NEXT_SLOT) {
             val KPCheck = shell.newJob().add(
-                "${APApplication.SUPERCMD} ${APApplication.superKey} -Z ${APApplication.MAGISK_SCONTEXT} -c whoami"
+                "${APApplication.SUPERCMD} ${ShellUtils.escapedString(APApplication.superKey)} -Z ${APApplication.MAGISK_SCONTEXT} -c whoami"
             ).exec()
             if (KPCheck.isSuccess && !isSuExecutable()) {
                 patchCommand.addAll(0, listOf(
@@ -352,7 +353,11 @@ class PatchEngine(
         var succ: Boolean
 
         if (isKpOld) {
-            val resultString = "\"" + patchCommand.joinToString(separator = "\" \"") + "\""
+            // boot_patch.sh must run through the root shell (it flashes the boot
+            // image), so keep that but quote every argument shell-safely instead
+            // of hand-joining with '"'. escapedString single-quotes each element,
+            // which suppresses command substitution and quote break-out.
+            val resultString = patchCommand.joinToString(" ") { ShellUtils.escapedString(it) }
             val result = shell.newJob().add(
                 "export ASH_STANDALONE=1", "cd $patchDir", resultString
             ).to(logs, logs).exec()
