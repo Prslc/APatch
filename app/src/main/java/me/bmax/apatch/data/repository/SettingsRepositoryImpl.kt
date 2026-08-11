@@ -11,6 +11,7 @@ import me.bmax.apatch.util.getRootShell
 import me.bmax.apatch.util.rootShellForResult
 import java.io.File
 import androidx.core.content.edit
+import com.topjohnwu.superuser.ShellUtils
 
 object SettingsRepositoryImpl : SettingsRepository {
     private const val TAG = "SettingsRepo"
@@ -74,7 +75,7 @@ object SettingsRepositoryImpl : SettingsRepository {
     override suspend fun resetSuPath(newPath: String): Boolean = withContext(Dispatchers.IO) {
         val success = Natives.resetSuPath(newPath)
         if (success) {
-            rootShellForResult("echo $newPath > ${APApplication.SU_PATH_FILE}")
+            rootShellForResult("echo ${ShellUtils.escapedString(newPath)} > ${APApplication.SU_PATH_FILE}")
         }
         success
     }

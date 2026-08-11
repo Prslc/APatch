@@ -83,20 +83,21 @@ object ApModuleRepositoryImpl : ApModuleRepository {
     }
 
     override suspend fun toggleModule(id: String, enable: Boolean): Boolean {
-        val cmd = if (enable) "module enable $id" else "module disable $id"
+        val cmd = if (enable) "module enable ${ShellUtils.escapedString(id)}"
+        else "module disable ${ShellUtils.escapedString(id)}"
         val result = execApd(cmd)
         Log.i(TAG, "$cmd result: $result")
         return result
     }
 
     override suspend fun uninstallModule(id: String): Boolean {
-        val result = execApd("module uninstall $id")
+        val result = execApd("module uninstall ${ShellUtils.escapedString(id)}")
         Log.i(TAG, "uninstall module $id result: $result")
         return result
     }
 
     override suspend fun undoUninstallModule(id: String): Boolean {
-        val result = execApd("module undo-uninstall $id")
+        val result = execApd("module undo-uninstall ${ShellUtils.escapedString(id)}")
         Log.i(TAG, "undo-uninstall module $id result: $result")
         return result
     }
@@ -147,7 +148,7 @@ object ApModuleRepositoryImpl : ApModuleRepository {
 
         val result = createRootShell().use { shell ->
             shell.newJob()
-                .add("${APApplication.APD_PATH} module action \"$moduleId\"")
+                .add("${APApplication.APD_PATH} module action ${ShellUtils.escapedString(moduleId)}")
                 .to(stdoutCb, stderrCb)
                 .exec()
         }
