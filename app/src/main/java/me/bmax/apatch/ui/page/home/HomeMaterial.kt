@@ -126,13 +126,15 @@ fun HomeScreenMaterial(
                         )
                     },
                     actions = {
-                        IconButton(onClick = dropUnlessResumed {
-                            navigator.navigateToModeSelect()
-                        }) {
-                            Icon(
-                                imageVector = Icons.Filled.InstallMobile,
-                                contentDescription = stringResource(id = R.string.mode_select_page_title)
-                            )
+                        if (!uiState.isJailbreak) {
+                            IconButton(onClick = dropUnlessResumed {
+                                navigator.navigateToModeSelect()
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Filled.InstallMobile,
+                                    contentDescription = stringResource(id = R.string.mode_select_page_title)
+                                )
+                            }
                         }
 
                         if (kpState != APApplication.State.UNKNOWN_STATE) {

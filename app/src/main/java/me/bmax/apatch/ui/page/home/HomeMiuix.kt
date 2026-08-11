@@ -112,6 +112,7 @@ fun HomeScreenMiuix(
                 backdrop = backdrop,
                 navigator = navigator,
                 kpState = uiState.kpState,
+                isJailbreak = uiState.isJailbreak,
                 scrollBehavior = scrollBehavior
             )
         }
@@ -189,6 +190,7 @@ private fun TopBar(
     backdrop: LayerBackdrop?,
     navigator: Navigator,
     kpState: APApplication.State,
+    isJailbreak: Boolean,
     scrollBehavior: ScrollBehavior
 ) {
     val onReboot = rememberRebootAction()
@@ -197,13 +199,15 @@ private fun TopBar(
         color = backdrop.getAppBarColor(),
         title = stringResource(R.string.app_name),
         actions = {
-            IconButton(onClick = dropUnlessResumed {
-                navigator.navigateToModeSelect()
-            }) {
-                Icon(
-                    imageVector = Icons.Filled.InstallMobile,
-                    contentDescription = stringResource(id = R.string.mode_select_page_title)
-                )
+            if (!isJailbreak) {
+                IconButton(onClick = dropUnlessResumed {
+                    navigator.navigateToModeSelect()
+                }) {
+                    Icon(
+                        imageVector = Icons.Filled.InstallMobile,
+                        contentDescription = stringResource(id = R.string.mode_select_page_title)
+                    )
+                }
             }
 
             if (kpState != APApplication.State.UNKNOWN_STATE) {

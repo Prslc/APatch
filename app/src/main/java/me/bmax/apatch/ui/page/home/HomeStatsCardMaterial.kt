@@ -125,12 +125,14 @@ internal fun KStatusCardMaterial(
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
-                    cardState.badge?.let {
-                        LabelText(
-                            label = it,
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
+                    if (!isJailbreak) {
+                        cardState.badge?.let {
+                            LabelText(
+                                label = it,
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
                     }
                 }
                 if (isJailbreak) {
