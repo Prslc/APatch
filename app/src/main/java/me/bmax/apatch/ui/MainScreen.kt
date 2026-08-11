@@ -93,6 +93,22 @@ fun MainScreen() {
             .collect { mainPagerState.syncPage() }
     }
 
+    val previousPages = remember { arrayOf(availablePages) }
+    LaunchedEffect(availablePages) {
+        val prev = previousPages[0]
+        if (prev != availablePages) {
+            val currentPage = mainPagerState.pagerState.currentPage
+            if (currentPage < prev.size) {
+                val destination = prev[currentPage]
+                val newIndex = availablePages.indexOf(destination)
+                if (newIndex != currentPage) {
+                    mainPagerState.pagerState.scrollToPage(if (newIndex != -1) newIndex else 0)
+                }
+            }
+            previousPages[0] = availablePages
+        }
+    }
+
     BackHandler {
         if (mainPagerState.selectedPage != 0) {
             mainPagerState.animateToPage(0)
