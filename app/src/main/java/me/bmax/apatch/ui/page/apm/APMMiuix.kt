@@ -353,6 +353,7 @@ fun APModuleScreenMiuix(
                         bottomPadding = bottomPadding,
                         onInstallModule = {
                             navigator.navigateToInstall(it, MODULE_TYPE.APM)
+                            viewModel.markNeedRefresh()
                         },
                         onClickModule = { id, name, hasWebUi ->
                             if (hasWebUi) {
@@ -1087,7 +1088,7 @@ private fun ModuleItem(
                     }
 
                     Switch(
-                        enabled = !module.update,
+                        enabled = !module.update && !module.remove,
                         checked = module.enabled,
                         onCheckedChange = onCheckChanged
                     )

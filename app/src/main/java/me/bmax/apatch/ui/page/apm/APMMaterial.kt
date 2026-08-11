@@ -333,6 +333,7 @@ fun APModuleScreenMaterial(
                         bottomPadding = bottomPadding,
                         onInstallModule = {
                             navigator.navigateToInstall(it, MODULE_TYPE.APM)
+                            viewModel.markNeedRefresh()
                         },
                         onClickModule = { id, name, hasWebUi ->
                             if (hasWebUi) {
@@ -1160,7 +1161,7 @@ private fun ModuleItemMaterial(
                 }
 
                 Switch(
-                    enabled = !module.update,
+                    enabled = !module.update && !module.remove,
                     checked = module.enabled,
                     onCheckedChange = onCheckChanged,
                     thumbContent = {
