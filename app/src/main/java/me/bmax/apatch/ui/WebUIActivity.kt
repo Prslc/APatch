@@ -76,6 +76,7 @@ class WebUIActivity : ComponentActivity() {
     private lateinit var fileChooserLauncher: ActivityResultLauncher<Intent>
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private var uiEvent by mutableStateOf<WebUIEvent?>(null)
+    private var isLoading by mutableStateOf(true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -107,10 +108,16 @@ class WebUIActivity : ComponentActivity() {
                     UiMode.Material -> MaterialTheme.colorScheme.surfaceContainer
                 }
                 Box(
-                    modifier = Modifier.fillMaxSize().background(background),
-                    contentAlignment = Alignment.Center
+                    modifier = Modifier.fillMaxSize().background(background)
                 ) {
-                    LoadingIndicator()
+                    if (isLoading) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            LoadingIndicator()
+                        }
+                    }
                 }
                 when (LocalUiMode.current) {
                     UiMode.Miuix -> HandleWebUIEventMiuix(
@@ -286,6 +293,10 @@ class WebUIActivity : ComponentActivity() {
             webViewInterface = WebViewInterface(this@WebUIActivity, this)
             addJavascriptInterface(webViewInterface, "ksu")
             setWebViewClient(webViewClient)
+            // WebView is set up and visible; hide the loading indicator. It must
+            // not stay stacked behind the transparent WebView or it would show
+            // through any page with a transparent background.
+            isLoading = false
             webChromeClient = object : WebChromeClient() {
                 override fun onJsAlert(view: WebView?, url: String?, message: String?, result: JsResult?): Boolean {
                     if (result == null) return false
