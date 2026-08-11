@@ -75,13 +75,11 @@ internal fun KStatusCardMaterial(
     }
     
     val containerColor = when {
-        isJailbreak -> MaterialTheme.colorScheme.tertiaryContainer
         cardState.buttonAction == KPatchAction.UPDATE -> MaterialTheme.colorScheme.errorContainer
         cardState.buttonAction == KPatchAction.UNKNOWN_STATE -> MaterialTheme.colorScheme.surfaceVariant
         else -> MaterialTheme.colorScheme.primary
     }
     val contentColor = when {
-        isJailbreak -> MaterialTheme.colorScheme.onTertiaryContainer
         cardState.buttonAction == KPatchAction.UPDATE -> MaterialTheme.colorScheme.onErrorContainer
         cardState.buttonAction == KPatchAction.UNKNOWN_STATE -> MaterialTheme.colorScheme.onSurfaceVariant
         else -> MaterialTheme.colorScheme.onPrimary

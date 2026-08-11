@@ -105,7 +105,6 @@ fun KStatusCard(
                     .fillMaxHeight(),
                 colors = CardDefaults.defaultColors(
                     color = when {
-                        isJailbreak -> colorScheme.tertiaryContainer
                         cardState.buttonAction == KPatchAction.UPDATE -> colorScheme.errorContainer
                         cardState.buttonAction == KPatchAction.UNKNOWN_STATE -> colorScheme.surfaceVariant
                         isDynamicColor -> colorScheme.secondaryContainer
@@ -138,7 +137,6 @@ fun KStatusCard(
                                 else -> Icons.Rounded.CheckCircleOutline
                             },
                             tint = when {
-                                isJailbreak -> colorScheme.onTertiaryContainer.copy(alpha = 0.6f)
                                 cardState.buttonAction == KPatchAction.UPDATE -> colorScheme.error.copy(alpha = 0.6f)
                                 cardState.buttonAction == KPatchAction.UNKNOWN_STATE -> colorScheme.onSurfaceVariantSummary.copy(alpha = 0.4f)
                                 isDynamicColor -> colorScheme.primary.copy(alpha = 0.8f)
