@@ -51,7 +51,9 @@ object ApModuleRepositoryImpl : ApModuleRepository {
             apApp.okhttpClient.newCall(request).execute()
         }.getOrNull()
 
-        val body = response?.takeIf { it.isSuccessful }?.body?.string() ?: return Triple("", "", "")
+        val body = runCatching {
+            response?.takeIf { it.isSuccessful }?.body?.string()
+        }.getOrNull() ?: return Triple("", "", "")
         val updateJson = runCatching { JSONObject(body) }.getOrNull() ?: return Triple("", "", "")
 
         val version = updateJson.optString("version", "").sanitizeVersion()

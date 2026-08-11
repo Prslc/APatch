@@ -3,6 +3,7 @@ package me.bmax.apatch.ui.page.apm
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -198,15 +199,16 @@ class APModuleViewModel(
             result.fold(
                 onSuccess = { newList ->
                     ModuleCountsRefresher.requestRefresh()
-                    val modulesChanged =
-                        _uiState.value.modules.map { it.id } != newList.map { it.id }
-                    val updateResults = if (modulesChanged) {
+                    val updateResults = try {
                         withContext(Dispatchers.IO) {
                             newList.map { module ->
                                 async { module.id to moduleRepo.checkModuleUpdate(module) }
                             }.awaitAll().toMap()
                         }
-                    } else {
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        Log.w(TAG, "update check failed", e)
                         _uiState.value.updateResults
                     }
                     _uiState.update {
