@@ -141,7 +141,7 @@ fun LogDialogMiuix(viewModel: SettingsViewModel) {
             TextButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 12.dp, bottom = 24.dp),
+                    .padding(top = 12.dp),
                 text = stringResource(id = android.R.string.cancel),
                 onClick = { viewModel.dismissDialog() }
             )
