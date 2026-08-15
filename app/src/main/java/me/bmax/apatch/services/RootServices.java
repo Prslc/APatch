@@ -40,9 +40,18 @@ public class RootServices extends RootService {
 
     ArrayList<PackageInfo> getInstalledPackagesAll(int flags) {
         ArrayList<PackageInfo> packages = new ArrayList<>();
+        boolean allFailed = true;
         for (Integer userId : getUserIds()) {
             Log.i(TAG, "getInstalledPackagesAll: " + userId);
-            packages.addAll(getInstalledPackagesAsUser(flags, userId));
+            List<PackageInfo> forUser = getInstalledPackagesAsUser(flags, userId);
+            if (forUser != null) {
+                packages.addAll(forUser);
+                allFailed = false;
+            }
+        }
+        if (allFailed) {
+            Log.w(TAG, "getInstalledPackagesAsUser failed for all users; falling back to getInstalledPackages");
+            packages.addAll(getPackageManager().getInstalledPackages(flags));
         }
         return packages;
     }
@@ -52,12 +61,15 @@ public class RootServices extends RootService {
         try {
             PackageManager pm = getPackageManager();
             Method getInstalledPackagesAsUser = pm.getClass().getDeclaredMethod("getInstalledPackagesAsUser", int.class, int.class);
-            return (List<PackageInfo>) getInstalledPackagesAsUser.invoke(pm, flags, userId);
+            List<PackageInfo> result = (List<PackageInfo>) getInstalledPackagesAsUser.invoke(pm, flags, userId);
+            if (result != null) {
+                return result;
+            }
         } catch (Throwable e) {
-            Log.e(TAG, "err", e);
+            Log.e(TAG, "getInstalledPackagesAsUser failed for user " + userId, e);
         }
 
-        return new ArrayList<>();
+        return null;
     }
 
     class Stub extends IAPRootService.Stub {
