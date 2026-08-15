@@ -162,7 +162,7 @@ fun HomeScreenMiuix(
                             }
                         }
                     )
-                    if (uiState.kpState != APApplication.State.UNKNOWN_STATE && uiState.apState != APApplication.State.ANDROIDPATCH_INSTALLED) {
+                    if (!uiState.isJailbreak && uiState.kpState != APApplication.State.UNKNOWN_STATE && uiState.apState != APApplication.State.ANDROIDPATCH_INSTALLED) {
                         AStatusCard(uiState.apState)
                     }
                     val checkUpdate =

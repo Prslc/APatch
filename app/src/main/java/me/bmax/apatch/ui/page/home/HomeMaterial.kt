@@ -183,7 +183,8 @@ fun HomeScreenMaterial(
                     }
                 }
             )
-            if (uiState.kpState != APApplication.State.UNKNOWN_STATE &&
+            if (!uiState.isJailbreak &&
+                uiState.kpState != APApplication.State.UNKNOWN_STATE &&
                 uiState.apState != APApplication.State.ANDROIDPATCH_INSTALLED
             ) {
                 AStatusCardMaterial(uiState.apState)
