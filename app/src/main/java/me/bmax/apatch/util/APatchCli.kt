@@ -250,7 +250,11 @@ fun installJailbreak(): Boolean {
  * Permissive SELinux is a prerequisite for jailbreak.
  */
 fun isJailbreakMode(): Boolean {
-    return runCatching { SuFile(APApplication.JAILBREAK_FILE).exists() }.getOrDefault(false)
+    return runCatching {
+        val file = SuFile(APApplication.JAILBREAK_FILE)
+        file.shell = getRootShell()
+        file.exists()
+    }.getOrDefault(false)
 }
 
 fun hasMagisk(): Boolean {
