@@ -4,13 +4,12 @@ import android.os.Parcelable
 import android.util.Log
 import androidx.annotation.Keep
 import androidx.compose.runtime.Immutable
+import com.topjohnwu.superuser.io.SuFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.Natives
-import java.io.File
-import java.io.FileWriter
 
 object PkgConfig {
     private const val TAG = "PkgConfig"
@@ -24,10 +23,24 @@ object PkgConfig {
         var pkg: String = "", var exclude: Int = 0, var allow: Int = 0, var profile: Natives.Profile
     ) : Parcelable {
         companion object {
-            fun fromLine(line: String): Config {
-                val sp = line.split(",")
-                val profile = Natives.Profile(sp[3].toInt(), sp[4].toInt(), sp[5])
-                return Config(sp[0], sp[1].toInt(), sp[2].toInt(), profile)
+            fun fromLine(line: String): Config? {
+                val sp = line.split(',', limit = 6)
+                if (sp.size < 6) return null
+
+                val pkg = sp[0].trim()
+                val exclude = sp[1].trim().toIntOrNull()
+                val allow = sp[2].trim().toIntOrNull()
+                val uid = sp[3].trim().toIntOrNull()
+                val toUid = sp[4].trim().toIntOrNull()
+                val scontext = sp[5].trim()
+
+                if (pkg.isEmpty() || exclude == null || allow == null ||
+                    uid == null || toUid == null || scontext.isEmpty()
+                ) {
+                    return null
+                }
+
+                return Config(pkg, exclude, allow, Natives.Profile(uid, toUid, scontext))
             }
         }
 
@@ -42,36 +55,60 @@ object PkgConfig {
 
     fun readConfigs(): HashMap<Int, Config> {
         val configs = HashMap<Int, Config>()
-        val file = File(APApplication.PACKAGE_CONFIG_FILE)
-        if (file.exists()) {
-            file.readLines().drop(1).filter { it.isNotEmpty() }.forEach {
-                Log.d(TAG, it)
-                val p = Config.fromLine(it)
-                if (!p.isDefault()) {
-                    configs[p.profile.uid] = p
-                }
+        val file = SuFile(APApplication.PACKAGE_CONFIG_FILE)
+        file.shell = getRootShell()
+
+        if (!file.exists()) return configs
+
+        try {
+            file.newInputStream().bufferedReader().use { reader ->
+                reader.lineSequence()
+                    .drop(1)
+                    .filter { it.isNotBlank() }
+                    .forEach { line ->
+                        val config = Config.fromLine(line)
+                        if (config == null) {
+                            Log.w(TAG, "Skip malformed package_config line")
+                            return@forEach
+                        }
+                        if (!config.isDefault()) {
+                            configs[config.profile.uid] = config
+                        }
+                    }
             }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to read package_config", e)
         }
+
         return configs
     }
 
     private fun writeConfigs(configs: HashMap<Int, Config>) {
-        val file = File(APApplication.PACKAGE_CONFIG_FILE)
-        if (!file.parentFile?.exists()!!) file.parentFile?.mkdirs()
-        val writer = FileWriter(file, false)
-        writer.write(CSV_HEADER + '\n')
-        configs.values.forEach {
-            if (!it.isDefault()) {
-                writer.write(it.toLine() + '\n')
+        val file = SuFile(APApplication.PACKAGE_CONFIG_FILE)
+        file.shell = getRootShell()
+
+        file.parent?.let { parentPath ->
+            val parent = SuFile(parentPath)
+            parent.shell = file.shell
+            if (!parent.exists()) {
+                parent.mkdirs()
             }
         }
-        writer.flush()
-        writer.close()
+
+        file.newOutputStream(false).writer().buffered().use { writer ->
+            writer.write(CSV_HEADER)
+            writer.newLine()
+            configs.values.forEach {
+                if (!it.isDefault()) {
+                    writer.write(it.toLine())
+                    writer.newLine()
+                }
+            }
+        }
     }
 
     suspend fun changeConfig(config: Config) = withContext(Dispatchers.IO) {
         synchronized(PkgConfig.javaClass) {
-            Natives.su()
             val configs = readConfigs()
             val uid = config.profile.uid
             // Root App should not be excluded
@@ -84,7 +121,12 @@ object PkgConfig {
                 Log.d(TAG, "change config: $config")
                 configs[uid] = config
             }
-            writeConfigs(configs)
+
+            try {
+                writeConfigs(configs)
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to write package_config", e)
+            }
         }
     }
 }
