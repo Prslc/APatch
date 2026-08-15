@@ -27,8 +27,10 @@ object ApModuleRepositoryImpl : ApModuleRepository {
             val array = JSONArray(result)
             val h2p = HanziToPinyin.getInstance()
 
-            (0 until array.length()).map { i ->
-                parseModuleInfo(array.getJSONObject(i), h2p)
+            (0 until array.length()).mapNotNull { i ->
+                runCatching { parseModuleInfo(array.getJSONObject(i), h2p) }
+                    .onFailure { Log.w(TAG, "Skip malformed module", it) }
+                    .getOrNull()
             }
         }
     }
