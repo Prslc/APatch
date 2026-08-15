@@ -4,11 +4,13 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Immutable
 import me.bmax.apatch.R
 import java.io.ByteArrayOutputStream
 import java.util.Properties
 import java.util.zip.ZipInputStream
 
+@Immutable
 @Suppress("ArrayInDataClass")
 data class ParsedModuleInfo(
     val id: String,
@@ -20,6 +22,7 @@ data class ParsedModuleInfo(
     val icon: ByteArray? = null
 )
 
+@Immutable
 @Suppress("ArrayInDataClass")
 data class InstallPreview(
     val id: String = "",

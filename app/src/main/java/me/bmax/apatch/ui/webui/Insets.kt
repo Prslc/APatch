@@ -1,5 +1,7 @@
 package me.bmax.apatch.ui.webui
 
+import androidx.compose.runtime.Immutable
+
 /**
  * Insets data class from GitHub@MMRLApp/WebUI-X-Portable
  *
@@ -14,6 +16,7 @@ package me.bmax.apatch.ui.webui
  * @property left The left inset value in pixels.
  * @property right The right inset value in pixels.
  */
+@Immutable
 data class Insets(
     val top: Int,
     val bottom: Int,
