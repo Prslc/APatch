@@ -49,7 +49,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
 import top.yukonga.miuix.kmp.theme.MiuixTheme.isDynamicColor
 import top.yukonga.miuix.kmp.utils.PressFeedbackType
 
-private val managerVersion = getManagerVersion()
+private val managerVersion: Pair<String, Long> by lazy { getManagerVersion() }
 
 @Composable
 fun KStatusCard(

@@ -19,5 +19,6 @@ data class SettingsUiState(
     val checkUpdate: Boolean = true,
     val cacheSize: Long = 0L,
     val currentLanguageIndex: Int = 0,
+    val suPath: String = "",
     val currentDialog: SettingDialogType = SettingDialogType.NONE
 )

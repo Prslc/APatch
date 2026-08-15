@@ -21,8 +21,8 @@ import me.bmax.apatch.util.formatSize
 fun SettingsDialogOverlay(uiState: SettingsUiState, viewModel: SettingsViewModel) {
     when (uiState.currentDialog) {
         SettingDialogType.RESET_SU_PATH -> when (LocalUiMode.current) {
-            UiMode.Miuix -> ResetSUPathDialogMiuix(viewModel)
-            UiMode.Material -> ResetSUPathDialogMaterial(viewModel)
+            UiMode.Miuix -> ResetSUPathDialogMiuix(uiState, viewModel)
+            UiMode.Material -> ResetSUPathDialogMaterial(uiState, viewModel)
         }
 
         SettingDialogType.CLEAR_CACHE ->

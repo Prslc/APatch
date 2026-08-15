@@ -36,7 +36,7 @@ import me.bmax.apatch.util.Version
 import me.bmax.apatch.util.Version.getManagerVersion
 import me.bmax.apatch.util.reboot
 
-private val managerVersion = getManagerVersion()
+private val managerVersion: Pair<String, Long> by lazy { getManagerVersion() }
 
 @Composable
 internal fun KStatusCardMaterial(

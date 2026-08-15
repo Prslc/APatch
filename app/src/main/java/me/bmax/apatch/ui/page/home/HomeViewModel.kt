@@ -39,8 +39,7 @@ class HomeViewModel(
                 deviceInfo = getDeviceInfo(),
                 kernelVersion = Os.uname().release,
                 androidVersion = getSystemVersion(),
-                fingerprint = Build.FINGERPRINT,
-                suPath = Natives.suPath()
+                fingerprint = Build.FINGERPRINT
             )
         }
 
@@ -81,7 +80,8 @@ class HomeViewModel(
     private fun refreshSystemInfoAsync() = viewModelScope.launch(Dispatchers.IO) {
         val seStatus = getSELinuxStatus()
         val jailbreak = isJailbreakMode()
-        _uiState.update { it.copy(selinux = seStatus, isJailbreak = jailbreak) }
+        val suPath = Natives.suPath()
+        _uiState.update { it.copy(selinux = seStatus, isJailbreak = jailbreak, suPath = suPath) }
     }
 
     fun checkUpdate() = viewModelScope.launch(Dispatchers.IO) {

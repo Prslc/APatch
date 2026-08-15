@@ -31,7 +31,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bmax.apatch.BuildConfig
-import me.bmax.apatch.Natives
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.dialog.rememberLoadingDialog
 import me.bmax.apatch.ui.page.theme.ThemeViewModel
@@ -150,9 +149,12 @@ fun LogDialogMiuix(viewModel: SettingsViewModel) {
 }
 
 @Composable
-fun ResetSUPathDialogMiuix(viewModel: SettingsViewModel) {
+fun ResetSUPathDialogMiuix(
+    uiState: SettingsUiState,
+    viewModel: SettingsViewModel
+) {
     val context = LocalContext.current
-    var suPath by remember { mutableStateOf(Natives.suPath()) }
+    val suPath = uiState.suPath
     val isPathValid = suPath.startsWith("/") && suPath.trim().length > 1
 
     WindowDialog(
@@ -162,7 +164,7 @@ fun ResetSUPathDialogMiuix(viewModel: SettingsViewModel) {
     ) {
         TextField(
             value = suPath,
-            onValueChange = { suPath = it },
+            onValueChange = { viewModel.setSuPath(it) },
             label = stringResource(R.string.setting_reset_su_new_path),
         )
 

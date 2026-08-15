@@ -35,6 +35,7 @@ class SettingsViewModel(
         loadPersistentSettings()
         observeApatchState()
         refreshCacheSize()
+        refreshSuPath()
     }
 
     private fun loadPersistentSettings() {
@@ -95,6 +96,17 @@ class SettingsViewModel(
         }
     }
 
+    fun refreshSuPath() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val suPath = Natives.suPath()
+            _uiState.update { it.copy(suPath = suPath) }
+        }
+    }
+
+    fun setSuPath(path: String) {
+        _uiState.update { it.copy(suPath = path) }
+    }
+
     fun toggleGlobalNamespace(enabled: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             settingsRepo.setGlobalNamespaceEnabled(enabled)
@@ -132,6 +144,9 @@ class SettingsViewModel(
     }
 
     fun showDialog(dialogType: SettingDialogType) {
+        if (dialogType == SettingDialogType.RESET_SU_PATH) {
+            refreshSuPath()
+        }
         _uiState.update { it.copy(currentDialog = dialogType) }
     }
 

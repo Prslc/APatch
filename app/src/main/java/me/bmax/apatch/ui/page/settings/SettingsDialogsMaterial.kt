@@ -43,7 +43,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bmax.apatch.BuildConfig
-import me.bmax.apatch.Natives
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.dialog.rememberLoadingDialog
 import me.bmax.apatch.ui.component.material.BaseWidget
@@ -100,9 +99,12 @@ fun PageScaleDialogMaterial(viewModel: ThemeViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ResetSUPathDialogMaterial(viewModel: SettingsViewModel) {
+fun ResetSUPathDialogMaterial(
+    uiState: SettingsUiState,
+    viewModel: SettingsViewModel
+) {
     val context = LocalContext.current
-    var suPath by remember { mutableStateOf(Natives.suPath()) }
+    val suPath = uiState.suPath
     val isPathValid = suPath.startsWith("/") && suPath.trim().length > 1
 
     BasicAlertDialog(
@@ -133,7 +135,7 @@ fun ResetSUPathDialogMaterial(viewModel: SettingsViewModel) {
                 Spacer(Modifier.height(16.dp))
                 OutlinedTextField(
                     value = suPath,
-                    onValueChange = { suPath = it },
+                    onValueChange = { viewModel.setSuPath(it) },
                     label = { Text(stringResource(R.string.setting_reset_su_new_path)) },
                     singleLine = true,
                     shape = RoundedCornerShape(16.dp),
