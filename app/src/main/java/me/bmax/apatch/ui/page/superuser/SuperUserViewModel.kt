@@ -19,11 +19,11 @@ import me.bmax.apatch.APApplication
 import me.bmax.apatch.apApp
 import me.bmax.apatch.data.AppInfo
 import me.bmax.apatch.data.AppRepository
-import me.bmax.apatch.ui.page.home.ModuleCountsRefresher
 import me.bmax.apatch.data.repository.SettingsRepository
 import me.bmax.apatch.data.repository.SettingsRepositoryImpl
 import me.bmax.apatch.data.repository.SuRepository
 import me.bmax.apatch.data.repository.SuRepositoryImpl
+import me.bmax.apatch.ui.page.home.ModuleCountsRefresher
 import java.text.Collator
 import java.util.Locale
 import kotlin.time.Duration.Companion.milliseconds
@@ -108,6 +108,17 @@ class SuperUserViewModel(
 
     fun toggleSu(app: AppInfo, granted: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
+            val nativeOk = if (granted) {
+                suRepo.grantSu(app.uid, 0, APApplication.MAGISK_SCONTEXT) == 0L &&
+                        suRepo.setUidExclude(app.uid, 0) == 0
+            } else {
+                suRepo.revokeSu(app.uid) == 0L
+            }
+            if (!nativeOk) {
+                Log.e("SuperUserVM", "toggleSu (granted=$granted) failed for uid ${app.uid}")
+                return@launch
+            }
+
             val newConfig = app.config.copy().apply {
                 if (granted) {
                     allow = 1
@@ -116,11 +127,8 @@ class SuperUserViewModel(
                         uid = app.uid,
                         scontext = APApplication.MAGISK_SCONTEXT
                     )
-                    suRepo.grantSu(app.uid, 0, profile.scontext)
-                    suRepo.setUidExclude(app.uid, 0)
                 } else {
                     allow = 0
-                    suRepo.revokeSu(app.uid)
                 }
             }
 
@@ -132,15 +140,22 @@ class SuperUserViewModel(
 
     fun toggleExclude(app: AppInfo, excluded: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
+            val nativeOk = if (excluded) {
+                suRepo.revokeSu(app.uid) == 0L && suRepo.setUidExclude(app.uid, 1) == 0
+            } else {
+                suRepo.setUidExclude(app.uid, 0) == 0
+            }
+            if (!nativeOk) {
+                Log.e("SuperUserVM", "toggleExclude (excluded=$excluded) failed for uid ${app.uid}")
+                return@launch
+            }
+
             val newConfig = app.config.copy().apply {
                 if (excluded) {
                     allow = 0
                     exclude = 1
-                    suRepo.revokeSu(app.uid)
-                    suRepo.setUidExclude(app.uid, 1)
                 } else {
                     exclude = 0
-                    suRepo.setUidExclude(app.uid, 0)
                 }
                 profile = profile.copy(
                     uid = app.uid,
