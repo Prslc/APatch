@@ -228,8 +228,8 @@ class APApplication : Application(), Thread.UncaughtExceptionHandler {
                         // su path
                         val suPathFile = File(SU_PATH_FILE)
                         if (suPathFile.exists()) {
-                            val suPath = suPathFile.readLines()[0].trim()
-                            if (Natives.suPath() != suPath) {
+                            val suPath = suPathFile.readText().trim()
+                            if (suPath.isNotEmpty() && Natives.suPath() != suPath) {
                                 Log.d(TAG, "su path: $suPath")
                                 Natives.resetSuPath(suPath)
                             }
