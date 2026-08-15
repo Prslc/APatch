@@ -185,8 +185,13 @@ class PatchEngine(
         val result = shellForResult(shell, "export ASH_STANDALONE=1", "cd $patchDir", "./busybox sh $cmdBuilder")
 
         if (result.isSuccess) {
-            val outSlot = if (!result.out.toString().contains("SLOT=")) "" else result.out.filter { it.startsWith("SLOT=") }[0].removePrefix("SLOT=")
-            val outDev = result.out.filter { it.startsWith("BOOTIMAGE=") }[0].removePrefix("BOOTIMAGE=")
+            val outSlot = result.out.firstOrNull { it.startsWith("SLOT=") }?.removePrefix("SLOT=") ?: ""
+            val outDevLine = result.out.firstOrNull { it.startsWith("BOOTIMAGE=") }
+            if (outDevLine == null) {
+                onError("No BOOTIMAGE= in boot_extract.sh output")
+                return@withContext
+            }
+            val outDev = outDevLine.removePrefix("BOOTIMAGE=")
 
             Log.i(TAG, "current slot: $outSlot")
             Log.i(TAG, "current bootimg: $outDev")
