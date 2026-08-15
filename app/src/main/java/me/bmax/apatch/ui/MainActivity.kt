@@ -142,4 +142,3 @@ class MainActivity : ComponentActivity() {
         isLoading = false
     }
 }
-

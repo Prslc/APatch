@@ -313,7 +313,7 @@ fun SegmentedColumn(
             var currentY = 0f
             val positions = mutableListOf<Int>()
 
-            // Calculate exact placement coordinates dynamically corresponding to the 
+            // Calculate exact placement coordinates dynamically corresponding to the
             // current phase of the visibility animations.
             placeables.forEachIndexed { index, placeable ->
                 positions.add(currentY.roundToInt())

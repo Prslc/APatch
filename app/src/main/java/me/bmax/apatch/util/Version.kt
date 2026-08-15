@@ -63,7 +63,7 @@ object Version {
             if (kpimg != null) {
                 return kpimg["compile_time"].toString()
             }
-        } 
+        }
 
         return "unknown"
     }
@@ -75,7 +75,7 @@ object Version {
             ver.and(0xffu).toInt()
         )
     }
-    
+
     fun installedKPTime(): String {
         val time = Natives.kernelPatchBuildTime()
         return if (time.startsWith("ERROR_")) "读取失败" else time

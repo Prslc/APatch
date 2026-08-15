@@ -141,7 +141,7 @@ class APApplication : Application(), Thread.UncaughtExceptionHandler {
                 "ln -s $APD_PATH $MAGISKPOLICY_BIN_PATH",
                 "rm -f $RESETPROP_BIN_PATH",
                 "ln -s $APD_PATH $RESETPROP_BIN_PATH",
-               
+
                 "cp -f ${nativeDir}/libbusybox.so $BUSYBOX_BIN_PATH",
                 "chmod +x $BUSYBOX_BIN_PATH",
                 "cp -f ${nativeDir}/libkptools.so $KPTOOLS_BIN_PATH",

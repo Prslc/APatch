@@ -73,7 +73,7 @@ internal fun KStatusCardMaterial(
             }
         }
     }
-    
+
     val containerColor = when {
         cardState.buttonAction == KPatchAction.UPDATE -> MaterialTheme.colorScheme.errorContainer
         cardState.buttonAction == KPatchAction.UNKNOWN_STATE -> MaterialTheme.colorScheme.surfaceVariant
@@ -261,5 +261,3 @@ internal fun AStatusCardMaterial(apState: APApplication.State) {
         }
     }
 }
-
-

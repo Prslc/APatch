@@ -327,4 +327,3 @@ private fun PaletteStyleDialogMaterial(
         confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) } }
     )
 }
-
