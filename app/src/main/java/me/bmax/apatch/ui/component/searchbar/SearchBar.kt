@@ -1,5 +1,6 @@
 package me.bmax.apatch.ui.component.searchbar
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,6 +37,10 @@ fun AppSearchBar(
     val onExpandedChange: (Boolean) -> Unit = {
         expanded = it
         if (!it) onQueryChange("")
+    }
+
+    BackHandler(enabled = expanded) {
+        onExpandedChange(false)
     }
 
     when (LocalUiMode.current) {
