@@ -94,23 +94,24 @@ class APApplication : Application(), Thread.UncaughtExceptionHandler {
             if (_apStateLiveData.value != State.ANDROIDPATCH_INSTALLED) return
             _apStateLiveData.value = State.ANDROIDPATCH_UNINSTALLING
 
-            Natives.resetSuPath(DEFAULT_SU_PATH)
+            thread {
+                Natives.resetSuPath(DEFAULT_SU_PATH)
 
-            val cmds = arrayOf(
-                "rm -f $APD_PATH",
-                "rm -rf $APATCH_BIN_FOLDER",
-                "rm -rf $APATCH_LOG_FOLDER",
-                "rm -rf $APATCH_VERSION_PATH",
-            )
+                val cmds = arrayOf(
+                    "rm -f $APD_PATH",
+                    "rm -rf $APATCH_BIN_FOLDER",
+                    "rm -rf $APATCH_LOG_FOLDER",
+                    "rm -rf $APATCH_VERSION_PATH",
+                )
 
-            val shell = getRootShell()
-            shell.newJob().add(*cmds).to(logCallback, logCallback).exec()
+                getRootShell().newJob().add(*cmds).to(logCallback, logCallback).exec()
 
-            Log.d(TAG, "APatch uninstalled...")
-            if (_kpStateLiveData.value == State.UNKNOWN_STATE) {
-                _apStateLiveData.postValue(State.UNKNOWN_STATE)
-            } else {
-                _apStateLiveData.postValue(State.ANDROIDPATCH_NOT_INSTALLED)
+                Log.d(TAG, "APatch uninstalled...")
+                if (_kpStateLiveData.value == State.UNKNOWN_STATE) {
+                    _apStateLiveData.postValue(State.UNKNOWN_STATE)
+                } else {
+                    _apStateLiveData.postValue(State.ANDROIDPATCH_NOT_INSTALLED)
+                }
             }
         }
 
@@ -121,11 +122,13 @@ class APApplication : Application(), Thread.UncaughtExceptionHandler {
                 return
             }
             _apStateLiveData.value = State.ANDROIDPATCH_INSTALLING
-            val nativeDir = apApp.applicationInfo.nativeLibraryDir
 
-            Natives.resetSuPath(LEGACY_SU_PATH)
+            thread {
+                val nativeDir = apApp.applicationInfo.nativeLibraryDir
 
-            val cmds = arrayOf(
+                Natives.resetSuPath(LEGACY_SU_PATH)
+
+                val cmds = arrayOf(
                 "mkdir -p $APATCH_BIN_FOLDER",
                 "mkdir -p $APATCH_LOG_FOLDER",
 
@@ -153,16 +156,16 @@ class APApplication : Application(), Thread.UncaughtExceptionHandler {
                 "restorecon -R $APATCH_FOLDER",
 
                 "${nativeDir}/libmagiskpolicy.so --magisk --live",
-            )
+                )
 
-            val shell = getRootShell()
-            shell.newJob().add(*cmds).to(logCallback, logCallback).exec()
+                getRootShell().newJob().add(*cmds).to(logCallback, logCallback).exec()
 
-            // clear shell cache
-            APatchCli.refresh()
+                // clear shell cache
+                APatchCli.refresh()
 
-            Log.d(TAG, "APatch installed...")
-            _apStateLiveData.postValue(State.ANDROIDPATCH_INSTALLED)
+                Log.d(TAG, "APatch installed...")
+                _apStateLiveData.postValue(State.ANDROIDPATCH_INSTALLED)
+            }
         }
 
         fun markNeedReboot() {
