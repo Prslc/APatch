@@ -41,14 +41,15 @@ object SettingsRepositoryImpl : SettingsRepository {
         result == "1"
     }
 
-    override suspend fun setGlobalNamespaceEnabled(enabled: Boolean) {
-        val value = if (enabled) "1" else "0"
-        getRootShell().newJob()
-            .add("echo $value > ${APApplication.GLOBAL_NAMESPACE_FILE}")
-            .submit { result ->
-                Log.i(TAG, "setGlobalNamespaceEnabled result: ${result.isSuccess}")
-            }
-    }
+    override suspend fun setGlobalNamespaceEnabled(enabled: Boolean): Boolean =
+        withContext(Dispatchers.IO) {
+            val value = if (enabled) "1" else "0"
+            val result = getRootShell().newJob()
+                .add("echo $value > ${APApplication.GLOBAL_NAMESPACE_FILE}")
+                .exec()
+            Log.i(TAG, "setGlobalNamespaceEnabled result: ${result.isSuccess}")
+            result.isSuccess
+        }
 
     override suspend fun calculateCacheSize(): Long = withContext(Dispatchers.IO) {
         val context = apApp

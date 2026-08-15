@@ -12,7 +12,7 @@ interface SettingsRepository {
     fun getPageScale(): Float
     fun setPageScale(scale: Float)
     suspend fun isGlobalNamespaceEnabled(): Boolean
-    suspend fun setGlobalNamespaceEnabled(enabled: Boolean)
+    suspend fun setGlobalNamespaceEnabled(enabled: Boolean): Boolean
     suspend fun calculateCacheSize(): Long
     suspend fun resetSuPath(newPath: String): Boolean
 }

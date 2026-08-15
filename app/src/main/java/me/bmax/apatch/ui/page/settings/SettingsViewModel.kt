@@ -109,8 +109,10 @@ class SettingsViewModel(
 
     fun toggleGlobalNamespace(enabled: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            settingsRepo.setGlobalNamespaceEnabled(enabled)
-            _uiState.update { it.copy(isGlobalNamespaceEnabled = enabled) }
+            val success = settingsRepo.setGlobalNamespaceEnabled(enabled)
+            if (success) {
+                _uiState.update { it.copy(isGlobalNamespaceEnabled = enabled) }
+            }
         }
     }
 
