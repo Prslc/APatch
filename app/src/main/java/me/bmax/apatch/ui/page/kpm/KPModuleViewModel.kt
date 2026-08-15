@@ -109,7 +109,7 @@ class KPModuleViewModel(
         _uiState.update { it.copy(search = query) }
     }
 
-    fun controlModule(name: String, param: String): Natives.KPMCtlRes {
-        return moduleRepo.controlModule(name, param)
+    suspend fun controlModule(name: String, param: String): Natives.KPMCtlRes = withContext(Dispatchers.IO) {
+        moduleRepo.controlModule(name, param)
     }
 }
