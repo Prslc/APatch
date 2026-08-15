@@ -406,11 +406,13 @@ class PatchEngine(
                 if (setNextActiveSlot.isSuccess) {
                     logs.add("- Switch done")
                     logs.add("- Writing boot marker script...")
+                    val deBootctl = "${APApplication.APATCH_BIN_FOLDER}bootctl"
                     val markBootableScript = shell.newJob().add(
                         "mkdir -p /data/adb/post-fs-data.d && rm -rf /data/adb/post-fs-data.d/post_ota.sh && touch /data/adb/post-fs-data.d/post_ota.sh",
-                        "echo \"chmod 0777 $patchDir/bootctl\" > /data/adb/post-fs-data.d/post_ota.sh",
-                        "echo \"chown root:root 0777 $patchDir/bootctl\" > /data/adb/post-fs-data.d/post_ota.sh",
-                        "echo \"$patchDir/bootctl mark-boot-successful\" > /data/adb/post-fs-data.d/post_ota.sh",
+                        "cp -L $patchDir/bootctl $deBootctl && chmod 0777 $deBootctl",
+                        "echo \"chmod 0777 $deBootctl\" > /data/adb/post-fs-data.d/post_ota.sh",
+                        "echo \"chown root:root $deBootctl\" >> /data/adb/post-fs-data.d/post_ota.sh",
+                        "echo \"$deBootctl mark-boot-successful\" >> /data/adb/post-fs-data.d/post_ota.sh",
                         "echo >> /data/adb/post-fs-data.d/post_ota.sh",
                         "echo \"rm -rf $patchDir\" >> /data/adb/post-fs-data.d/post_ota.sh",
                         "echo >> /data/adb/post-fs-data.d/post_ota.sh",
@@ -418,7 +420,6 @@ class PatchEngine(
                         "chmod 0777 /data/adb/post-fs-data.d/post_ota.sh",
                         "chown root:root /data/adb/post-fs-data.d/post_ota.sh",
                     ).to(logs, logs).exec()
-
                     if (markBootableScript.isSuccess) logs.add("- Boot marker script write done")
                     else logs.add("[X] Boot marker scripts write failed")
                 }
