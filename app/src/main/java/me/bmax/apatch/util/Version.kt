@@ -54,17 +54,19 @@ object Version {
             val dest = File(patchDir, script)
             apApp.assets.open(script).writeTo(dest)
         }
-        val result = shellForResult(
-            getRootShell(), "(cd \"$patchDir\" && ./kptools -l -k kpimg)"
-        )
+        createRootShell().use { shell ->
+            val result = shellForResult(
+                shell, "cd \"$patchDir\"", "./kptools -l -k kpimg"
+            )
 
-        if (result.isSuccess) {
-            val ini = Ini(StringReader(result.out.joinToString("\n")))
-            val kpimg = ini["kpimg"]
-            if (kpimg != null) {
-                val compileTime = kpimg["compile_time"].toString()
-                cachedKpImg = compileTime
-                return compileTime
+            if (result.isSuccess) {
+                val ini = Ini(StringReader(result.out.joinToString("\n")))
+                val kpimg = ini["kpimg"]
+                if (kpimg != null) {
+                    val compileTime = kpimg["compile_time"].toString()
+                    cachedKpImg = compileTime
+                    return compileTime
+                }
             }
         }
 
