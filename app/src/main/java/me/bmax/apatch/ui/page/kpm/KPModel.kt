@@ -42,6 +42,7 @@ object KPModel {
         var license: String,
         var author: String,
         var description: String,
+        var pinyinName: String = "",
     ) : IExtraInfo
 
     @Immutable
