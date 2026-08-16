@@ -91,11 +91,9 @@ fun HomeScreenMiuix(
 
     val availablePages = rememberAvailablePages()
 
-    if (isCurrentPage) {
-        LaunchedEffect(Unit) {
-            if (APApplication.sharedPreferences.getBoolean("check_update", true)) {
-                viewModel.checkUpdate()
-            }
+    LaunchedEffect(isCurrentPage) {
+        if (isCurrentPage && APApplication.sharedPreferences.getBoolean("check_update", true)) {
+            viewModel.checkUpdate()
         }
     }
 

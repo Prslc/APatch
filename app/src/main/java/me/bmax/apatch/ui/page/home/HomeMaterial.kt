@@ -64,6 +64,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import android.widget.Toast
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -103,11 +104,9 @@ fun HomeScreenMaterial(
 
     val kpState = uiState.kpState
 
-    if (isCurrentPage) {
-        androidx.compose.runtime.LaunchedEffect(Unit) {
-            if (APApplication.sharedPreferences.getBoolean("check_update", true)) {
-                viewModel.checkUpdate()
-            }
+    LaunchedEffect(isCurrentPage) {
+        if (isCurrentPage && APApplication.sharedPreferences.getBoolean("check_update", true)) {
+            viewModel.checkUpdate()
         }
     }
 

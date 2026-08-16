@@ -80,11 +80,9 @@ fun SuperUserScreenMiuix(
         if (uiState.search.isEmpty()) listState.scrollToItem(0)
     }
 
-    if (isCurrentPage) {
-        LaunchedEffect(Unit) {
-            if (AppRepository.apps.value.isEmpty()) {
-                viewModel.fetchAppList()
-            }
+    LaunchedEffect(isCurrentPage) {
+        if (isCurrentPage && AppRepository.apps.value.isEmpty()) {
+            viewModel.fetchAppList()
         }
     }
 

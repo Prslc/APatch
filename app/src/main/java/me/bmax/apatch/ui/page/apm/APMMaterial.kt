@@ -195,11 +195,9 @@ fun APModuleScreenMaterial(
         if (uiState.search.isEmpty()) moduleListState.scrollToItem(0)
     }
 
-    if (isCurrentPage) {
-        LaunchedEffect(uiState.isNeedRefresh) {
-            if (uiState.modules.isEmpty() || uiState.isNeedRefresh) {
-                viewModel.fetchModuleList()
-            }
+    LaunchedEffect(isCurrentPage, uiState.isNeedRefresh) {
+        if (isCurrentPage && (uiState.modules.isEmpty() || uiState.isNeedRefresh)) {
+            viewModel.fetchModuleList()
         }
     }
 

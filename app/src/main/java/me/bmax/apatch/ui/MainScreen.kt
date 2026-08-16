@@ -129,7 +129,7 @@ fun MainScreen() {
                     .fillMaxSize()
                     .withBackdrop(backdrop),
                 state = mainPagerState.pagerState,
-                beyondViewportPageCount = if (contentReady) availablePages.size - 1 else 0,
+                beyondViewportPageCount = if (contentReady) 1 else 0,
                 userScrollEnabled = availablePages.contains(BottomBarDestination.AModule),
             ) { pageIndex ->
                 val pageModifier = Modifier

@@ -133,10 +133,8 @@ fun KPModuleScreenMaterial(
 
     // Load lazily on first visit; the pager pre-composes all pages, so this
     // avoids scanning KPM modules at startup before the page is ever shown.
-    if (isCurrentPage) {
-        LaunchedEffect(Unit) {
-            if (uiState.modules.isEmpty()) viewModel.fetchModuleList()
-        }
+    LaunchedEffect(isCurrentPage) {
+        if (isCurrentPage && uiState.modules.isEmpty()) viewModel.fetchModuleList()
     }
 
     val moduleStr = stringResource(id = R.string.kpm)
