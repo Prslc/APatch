@@ -69,6 +69,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -90,6 +91,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
+import me.bmax.apatch.ui.component.ScrollToTopOnChange
 import me.bmax.apatch.ui.component.dialog.ConfirmResult
 import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
 import me.bmax.apatch.ui.component.dialog.rememberLoadingDialog
@@ -122,10 +124,13 @@ fun KPModuleScreenMaterial(
     val kpModuleListState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     var fabVisible by remember { mutableStateOf(true) }
 
-    // Clearing the search returns to the full list, so jump back to the top.
-    LaunchedEffect(uiState.search) {
-        if (uiState.search.isEmpty()) kpModuleListState.scrollToItem(0)
-    }
+    val latestFilteredModules = rememberUpdatedState(filteredModules)
+    ScrollToTopOnChange(
+        kpModuleListState,
+        uiState.search,
+        isBusy = { uiState.isRefreshing },
+        observedList = { latestFilteredModules.value }
+    )
 
     val navigator = LocalNavigator.current
     val backdrop =

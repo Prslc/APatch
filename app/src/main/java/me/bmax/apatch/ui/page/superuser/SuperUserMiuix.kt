@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +36,7 @@ import me.bmax.apatch.R
 import me.bmax.apatch.data.AppInfo
 import me.bmax.apatch.data.AppRepository
 import me.bmax.apatch.ui.component.AppIconImage
+import me.bmax.apatch.ui.component.ScrollToTopOnChange
 import me.bmax.apatch.ui.component.labeltext.LabelText
 import me.bmax.apatch.ui.component.searchbar.AppSearchBar
 import me.bmax.apatch.ui.theme.blurEffect
@@ -75,10 +77,15 @@ fun SuperUserScreenMiuix(
     val backdrop = rememberBlurBackdrop()
     val listState = rememberLazyListState()
 
-    // Clearing the search returns to the full list, so jump back to the top.
-    LaunchedEffect(uiState.search) {
-        if (uiState.search.isEmpty()) listState.scrollToItem(0)
-    }
+    val latestAppList = rememberUpdatedState(appList)
+    ScrollToTopOnChange(
+        listState,
+        uiState.sortBy,
+        uiState.showSystemApps,
+        uiState.search,
+        isBusy = { uiState.isRefreshing },
+        observedList = { latestAppList.value }
+    )
 
     LaunchedEffect(isCurrentPage) {
         if (isCurrentPage && AppRepository.apps.value.isEmpty()) {

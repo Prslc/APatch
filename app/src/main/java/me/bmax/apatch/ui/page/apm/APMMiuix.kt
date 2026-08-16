@@ -50,6 +50,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -86,6 +87,7 @@ import me.bmax.apatch.R
 import me.bmax.apatch.apApp
 import me.bmax.apatch.ui.LocalSnackbarHost
 import me.bmax.apatch.ui.WebUIActivity
+import me.bmax.apatch.ui.component.ScrollToTopOnChange
 import me.bmax.apatch.ui.component.snackbar.AppSnackbarHostState
 import me.bmax.apatch.ui.component.dialog.ConfirmResult
 import me.bmax.apatch.ui.component.miuix.IconTextButton
@@ -182,11 +184,18 @@ fun APModuleScreenMiuix(
     val hasMagisk = uiState.hasMagisk
     val moduleListState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     var fabVisible by remember { mutableStateOf(true) }
+    val filteredModules by viewModel.filteredModules.collectAsStateWithLifecycle()
 
-    // Clearing the search returns to the full list, so jump back to the top.
-    LaunchedEffect(uiState.search) {
-        if (uiState.search.isEmpty()) moduleListState.scrollToItem(0)
-    }
+    val latestFilteredModules = rememberUpdatedState(filteredModules)
+    ScrollToTopOnChange(
+        moduleListState,
+        uiState.search,
+        uiState.sortEnabledFirst,
+        uiState.sortActionFirst,
+        uiState.sortWebFirst,
+        isBusy = { uiState.isRefreshing },
+        observedList = { latestFilteredModules.value }
+    )
 
     LaunchedEffect(isCurrentPage, uiState.isNeedRefresh) {
         if (isCurrentPage && (uiState.modules.isEmpty() || uiState.isNeedRefresh)) {
