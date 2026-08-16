@@ -129,7 +129,14 @@ object AppRepository {
             val task = RootServices.bindOrTask(intent, Shell.EXECUTOR, connection)
 
             if (task != null) {
-                APatchCli.SHELL.execTask(task)
+                Shell.EXECUTOR.execute {
+                    try {
+                        APatchCli.SHELL.execTask(task)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "execTask failed", e)
+                        if (cont.isActive) cont.resume(null)
+                    }
+                }
             } else {
                 Handler(Looper.getMainLooper()).post {
                     if (cont.isActive) cont.resume(null)
