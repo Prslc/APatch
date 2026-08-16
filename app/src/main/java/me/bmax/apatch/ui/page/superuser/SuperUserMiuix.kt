@@ -231,7 +231,10 @@ private fun AppItem(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 AppIconImage(
-                    packageInfo = app.packageInfo,
+                    uid = app.uid,
+                    packageName = app.packageName,
+                    sourceDir = app.sourceDir,
+                    icon = app.icon,
                     label = app.label,
                     modifier = Modifier
                         .size(48.dp)

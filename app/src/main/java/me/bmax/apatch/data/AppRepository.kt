@@ -4,12 +4,13 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageInfo
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.Parcelable
 import android.util.Log
+import androidx.compose.runtime.Immutable
+import androidx.core.content.pm.PackageInfoCompat
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -32,17 +33,22 @@ import kotlin.coroutines.resume
 
 private const val TAG = "AppRepository"
 
+@Immutable
 @Parcelize
 data class AppInfo(
     val label: String,
     val lowercaseLabel: String,
     val pinyinLabel: String,
-    val packageInfo: PackageInfo,
+    val packageName: String,
+    val uid: Int,
+    val isSystem: Boolean,
+    val firstInstallTime: Long,
+    val versionName: String,
+    val versionCode: Long,
+    val sourceDir: String,
+    val icon: Int,
     val config: PkgConfig.Config
-) : Parcelable {
-    val packageName: String get() = packageInfo.packageName
-    val uid: Int get() = packageInfo.applicationInfo!!.uid
-}
+) : Parcelable
 
 object AppRepository {
     private val _apps = MutableStateFlow<List<AppInfo>>(emptyList())
@@ -94,7 +100,14 @@ object AppRepository {
                             label = label,
                             lowercaseLabel = lowerLabel,
                             pinyinLabel = pinyin,
-                            packageInfo = pkg,
+                            packageName = pkg.packageName,
+                            uid = uid,
+                            isSystem = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0,
+                            firstInstallTime = pkg.firstInstallTime,
+                            versionName = pkg.versionName ?: "",
+                            versionCode = PackageInfoCompat.getLongVersionCode(pkg),
+                            sourceDir = appInfo.sourceDir,
+                            icon = appInfo.icon,
                             config = config
                         )
                     }

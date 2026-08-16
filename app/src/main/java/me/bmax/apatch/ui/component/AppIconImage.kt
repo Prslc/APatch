@@ -1,13 +1,8 @@
 package me.bmax.apatch.ui.component
 
-import android.content.pm.ApplicationInfo
-import android.content.pm.PackageInfo
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -33,16 +28,19 @@ private data class IconKey(val uid: Int, val packageName: String)
 @Composable
 fun AppIconImage(
     modifier: Modifier = Modifier,
-    applicationInfo: ApplicationInfo,
+    uid: Int,
+    packageName: String,
+    sourceDir: String,
+    icon: Int,
     label: String,
 ) {
     val density = LocalDensity.current
     val context = LocalContext.current
     val targetSizePx = with(density) { 48.dp.roundToPx() }
 
-    val iconKey = IconKey(applicationInfo.uid, applicationInfo.packageName)
+    val iconKey = IconKey(uid, packageName)
     val cachedBitmap = remember(iconKey) {
-        AppIconCache.getFromCache(applicationInfo)
+        AppIconCache.getFromCache(packageName, uid, sourceDir)
     }
 
     Box(modifier = modifier) {
@@ -50,7 +48,7 @@ fun AppIconImage(
 
         if (cachedBitmap == null) {
             LaunchedEffect(iconKey) {
-                appBitmap = AppIconCache.loadIcon(context, applicationInfo, targetSizePx)
+                appBitmap = AppIconCache.loadIcon(context, packageName, uid, sourceDir, icon, targetSizePx)
             }
         }
 
@@ -64,20 +62,6 @@ fun AppIconImage(
             )
         }
     }
-}
-
-@Composable
-fun AppIconImage(
-    modifier: Modifier = Modifier,
-    packageInfo: PackageInfo,
-    label: String,
-) {
-    val appInfo = packageInfo.applicationInfo
-    if (appInfo == null) {
-        PlaceHolderBox(modifier)
-        return
-    }
-    AppIconImage(modifier, appInfo, label)
 }
 
 @Composable

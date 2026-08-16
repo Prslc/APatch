@@ -1,6 +1,5 @@
 package me.bmax.apatch.ui.page.superuser
 
-import android.content.pm.ApplicationInfo
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -61,7 +60,7 @@ class SuperUserViewModel(
     private val sortComparators = mapOf(
         SortBy.NAME to compareBy(staticCollator) { it.label },
         SortBy.PACKAGE_NAME to compareBy(staticCollator) { it.packageName },
-        SortBy.INSTALL_TIME to compareByDescending<AppInfo> { it.packageInfo.firstInstallTime }
+        SortBy.INSTALL_TIME to compareByDescending<AppInfo> { it.firstInstallTime }
     )
 
     private fun buildComparator(sortBy: SortBy): Comparator<AppInfo> =
@@ -79,9 +78,7 @@ class SuperUserViewModel(
         apps.asSequence()
             .filter { app ->
                 if (app.packageName == apApp.packageName) return@filter false
-                val isSystem =
-                    (app.packageInfo.applicationInfo!!.flags and ApplicationInfo.FLAG_SYSTEM) != 0
-                val matchSystem = showSystem || !isSystem || app.uid == 2000
+                val matchSystem = showSystem || !app.isSystem || app.uid == 2000
                 if (!matchSystem) return@filter false
 
                 trimmedQuery.isEmpty() ||

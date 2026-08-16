@@ -325,7 +325,10 @@ private fun AppItemMaterial(
                     Modifier
                         .size(44.dp)
                         .padding(4.dp),
-                    app.packageInfo,
+                    app.uid,
+                    app.packageName,
+                    app.sourceDir,
+                    app.icon,
                     app.label
                 )
                 Spacer(Modifier.width(12.dp))

@@ -35,17 +35,24 @@ object AppIconCache {
         }
     }
 
-    fun getFromCache(applicationInfo: ApplicationInfo): Bitmap? {
-        val key = buildKey(applicationInfo)
+    fun getFromCache(packageName: String, uid: Int, sourceDir: String): Bitmap? {
+        val key = buildKey(packageName, uid, sourceDir)
         synchronized(lruCache) { return lruCache.get(key) }
     }
 
-    private fun buildKey(applicationInfo: ApplicationInfo): String {
-        return "${applicationInfo.packageName}:${applicationInfo.uid}:${applicationInfo.sourceDir}"
+    private fun buildKey(packageName: String, uid: Int, sourceDir: String): String {
+        return "$packageName:$uid:$sourceDir"
     }
 
-    suspend fun loadIcon(context: Context, applicationInfo: ApplicationInfo, size: Int): Bitmap {
-        val key = buildKey(applicationInfo)
+    suspend fun loadIcon(
+        context: Context,
+        packageName: String,
+        uid: Int,
+        sourceDir: String,
+        icon: Int,
+        size: Int
+    ): Bitmap {
+        val key = buildKey(packageName, uid, sourceDir)
 
         synchronized(lruCache) {
             val cached = lruCache.get(key)
@@ -60,6 +67,12 @@ object AppIconCache {
 
             withContext(Dispatchers.IO) {
                 val loader = AppIconLoader(size, false, context)
+                val applicationInfo = ApplicationInfo().apply {
+                    this.packageName = packageName
+                    this.uid = uid
+                    this.sourceDir = sourceDir
+                    this.icon = icon
+                }
                 val bitmap = loader.loadIcon(applicationInfo.withCurrentUserUid())
 
                 val gpuBitmap = try {
