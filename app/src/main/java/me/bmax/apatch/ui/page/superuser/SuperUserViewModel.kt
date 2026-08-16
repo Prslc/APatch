@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -66,7 +67,7 @@ class SuperUserViewModel(
     private fun buildComparator(sortBy: SortBy): Comparator<AppInfo> =
         priorityComparator.thenComparing(sortComparators.getValue(sortBy))
 
-    @OptIn(kotlinx.coroutines.FlowPreview::class)
+    @OptIn(FlowPreview::class)
     val filteredApps = combine(
         AppRepository.apps,
         uiState.map { it.search }.distinctUntilChanged().debounce(200.milliseconds),

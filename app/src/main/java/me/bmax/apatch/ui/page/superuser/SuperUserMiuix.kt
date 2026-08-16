@@ -153,36 +153,43 @@ fun SuperTopBar(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val showSystemLabel = stringResource(R.string.su_show_system_apps)
+    val sortNameLabel = stringResource(R.string.su_sort_name)
+    val sortPackageLabel = stringResource(R.string.su_sort_package)
+    val sortInstallLabel = stringResource(R.string.su_sort_install_time)
+
     TopAppBar(
         modifier = Modifier.blurEffect(backdrop),
         color = backdrop.getAppBarColor(),
         title = stringResource(R.string.su_title),
         actions = {
-            val entries = listOf(
-                DropdownEntry(
-                    items = listOf(
-                        DropdownItem(
-                            text = stringResource(R.string.su_show_system_apps),
-                            selected = uiState.showSystemApps,
-                            onClick = { viewModel.toggleSystemApps() }
+            val entries = remember(uiState.showSystemApps, uiState.sortBy) {
+                listOf(
+                    DropdownEntry(
+                        items = listOf(
+                            DropdownItem(
+                                text = showSystemLabel,
+                                selected = uiState.showSystemApps,
+                                onClick = { viewModel.toggleSystemApps() }
+                            )
                         )
-                    )
-                ),
-                DropdownEntry(
-                    items = SortBy.entries.map { sortBy ->
-                        val label = when (sortBy) {
-                            SortBy.NAME -> stringResource(R.string.su_sort_name)
-                            SortBy.PACKAGE_NAME -> stringResource(R.string.su_sort_package)
-                            SortBy.INSTALL_TIME -> stringResource(R.string.su_sort_install_time)
+                    ),
+                    DropdownEntry(
+                        items = SortBy.entries.map { sortBy ->
+                            val label = when (sortBy) {
+                                SortBy.NAME -> sortNameLabel
+                                SortBy.PACKAGE_NAME -> sortPackageLabel
+                                SortBy.INSTALL_TIME -> sortInstallLabel
+                            }
+                            DropdownItem(
+                                text = label,
+                                selected = uiState.sortBy == sortBy,
+                                onClick = { viewModel.updateSort(sortBy) }
+                            )
                         }
-                        DropdownItem(
-                            text = label,
-                            selected = uiState.sortBy == sortBy,
-                            onClick = { viewModel.updateSort(sortBy) }
-                        )
-                    }
+                    )
                 )
-            )
+            }
 
             OverlayIconDropdownMenu(entries = entries, collapseOnSelection = true) {
                 Icon(

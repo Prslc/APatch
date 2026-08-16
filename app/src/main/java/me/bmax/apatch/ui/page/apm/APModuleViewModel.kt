@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -62,6 +63,8 @@ class APModuleViewModel(
             else -> this
         }
 
+    private val staticCollator = Collator.getInstance(Locale.getDefault())
+
     @OptIn(FlowPreview::class)
     val filteredModules = combine(
         uiState.map { it.search }.distinctUntilChanged().debounce(200.milliseconds),
@@ -70,21 +73,21 @@ class APModuleViewModel(
         uiState.map { it.sortActionFirst }.distinctUntilChanged(),
         uiState.map { it.sortWebFirst }.distinctUntilChanged()
     ) { query, modules, sortEnabledFirst, sortActionFirst, sortWebFirst ->
-        val collator = Collator.getInstance(Locale.getDefault())
-
+        val trimmedQuery = query.trim()
         modules.filter {
-            it.id.contains(query, true) ||
-                    it.name.contains(query, true) ||
-                    it.pinyinName.contains(query, true)
-        }.sortedWith(moduleComparator(sortEnabledFirst, sortActionFirst, sortWebFirst, collator))
+            trimmedQuery.isEmpty() ||
+                    it.id.contains(trimmedQuery, true) ||
+                    it.name.contains(trimmedQuery, true) ||
+                    it.pinyinName.contains(trimmedQuery, true)
+        }.sortedWith(moduleComparator(sortEnabledFirst, sortActionFirst, sortWebFirst))
     }
+        .flowOn(Dispatchers.Default)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private fun moduleComparator(
         sortEnabledFirst: Boolean,
         sortActionFirst: Boolean,
-        sortWebFirst: Boolean,
-        collator: Collator
+        sortWebFirst: Boolean
     ): Comparator<ModuleInfo> {
         return compareBy<ModuleInfo>(
             {
@@ -100,7 +103,7 @@ class APModuleViewModel(
             { if (sortWebFirst) !it.hasWebUi else 0 },
             { if (sortEnabledFirst) !it.enabled else 0 },
             { if (sortActionFirst) !(it.hasWebUi || it.hasActionScript) else 0 }
-        ).thenBy(collator) { it.id }
+        ).thenBy(staticCollator) { it.id }
     }
 
     fun onSearchChange(newSearch: String) {
