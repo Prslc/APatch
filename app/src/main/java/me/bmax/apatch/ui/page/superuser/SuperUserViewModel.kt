@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -49,23 +50,22 @@ class SuperUserViewModel(
 
     private val staticCollator = Collator.getInstance(Locale.getDefault())
 
-    private fun buildComparator(sortBy: SortBy): Comparator<AppInfo> {
-        val priorityComparator = compareBy<AppInfo> {
-            when {
-                it.config.allow != 0 -> 0
-                it.config.exclude == 1 -> 1
-                else -> 2
-            }
+    private val priorityComparator = compareBy<AppInfo> {
+        when {
+            it.config.allow != 0 -> 0
+            it.config.exclude == 1 -> 1
+            else -> 2
         }
-        val sortComparator = when (sortBy) {
-            SortBy.NAME -> compareBy(staticCollator) { it.label }
-            SortBy.PACKAGE_NAME -> compareBy(staticCollator) { it.packageName }
-            SortBy.INSTALL_TIME -> compareByDescending<AppInfo> {
-                it.packageInfo.firstInstallTime
-            }
-        }
-        return priorityComparator.thenComparing(sortComparator)
     }
+
+    private val sortComparators = mapOf(
+        SortBy.NAME to compareBy(staticCollator) { it.label },
+        SortBy.PACKAGE_NAME to compareBy(staticCollator) { it.packageName },
+        SortBy.INSTALL_TIME to compareByDescending<AppInfo> { it.packageInfo.firstInstallTime }
+    )
+
+    private fun buildComparator(sortBy: SortBy): Comparator<AppInfo> =
+        priorityComparator.thenComparing(sortComparators.getValue(sortBy))
 
     @OptIn(kotlinx.coroutines.FlowPreview::class)
     val filteredApps = combine(
@@ -91,7 +91,8 @@ class SuperUserViewModel(
             }
             .sortedWith(buildComparator(sortBy))
             .toList()
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    }.flowOn(Dispatchers.Default)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun fetchAppList() {
         viewModelScope.launch {
