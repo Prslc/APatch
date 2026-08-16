@@ -15,6 +15,10 @@ object PkgConfig {
     private const val TAG = "PkgConfig"
 
     private const val CSV_HEADER = "pkg,exclude,allow,uid,to_uid,sctx"
+    
+    private val configLock = Any()
+    private val cachedConfigs = HashMap<Int, Config>()
+    private var configsLoaded = false
 
     @Immutable
     @Parcelize
@@ -53,7 +57,7 @@ object PkgConfig {
         }
     }
 
-    fun readConfigs(): HashMap<Int, Config> {
+    private fun readConfigsFromDisk(): HashMap<Int, Config> {
         val configs = HashMap<Int, Config>()
         val file = SuFile(APApplication.PACKAGE_CONFIG_FILE)
         file.shell = getRootShell()
@@ -83,6 +87,14 @@ object PkgConfig {
         return configs
     }
 
+    fun readConfigs(): HashMap<Int, Config> = synchronized(configLock) {
+        val configs = readConfigsFromDisk()
+        cachedConfigs.clear()
+        cachedConfigs.putAll(configs)
+        configsLoaded = true
+        configs
+    }
+
     private fun writeConfigs(configs: HashMap<Int, Config>) {
         val file = SuFile(APApplication.PACKAGE_CONFIG_FILE)
         file.shell = getRootShell()
@@ -108,8 +120,12 @@ object PkgConfig {
     }
 
     suspend fun changeConfig(config: Config) = withContext(Dispatchers.IO) {
-        synchronized(PkgConfig.javaClass) {
-            val configs = readConfigs()
+        synchronized(configLock) {
+            if (!configsLoaded) {
+                cachedConfigs.putAll(readConfigsFromDisk())
+                configsLoaded = true
+            }
+            val configs = cachedConfigs
             val uid = config.profile.uid
             // Root App should not be excluded
             if (config.allow == 1) {
