@@ -3,7 +3,6 @@ package me.bmax.apatch.util
 import android.system.Os
 import android.util.Log
 import androidx.core.content.pm.PackageInfoCompat
-import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.nio.ExtendedFile
 import com.topjohnwu.superuser.nio.FileSystemManager
 import me.bmax.apatch.APApplication
@@ -28,8 +27,10 @@ object Version {
         return vi.toUInt()
     }
 
+    private var cachedKpImg: String? = null
+
     fun getKpImg(): String {
-        var shell: Shell = createRootShell()
+        cachedKpImg?.let { return it }
         val patchDir: ExtendedFile = FileSystemManager.getLocal().getFile(apApp.filesDir.parent, "check")
         patchDir.deleteRecursively()
         patchDir.mkdirs()
@@ -54,14 +55,16 @@ object Version {
             apApp.assets.open(script).writeTo(dest)
         }
         val result = shellForResult(
-            shell, "cd $patchDir", "./kptools -l -k kpimg"
+            getRootShell(), "(cd \"$patchDir\" && ./kptools -l -k kpimg)"
         )
 
         if (result.isSuccess) {
             val ini = Ini(StringReader(result.out.joinToString("\n")))
             val kpimg = ini["kpimg"]
             if (kpimg != null) {
-                return kpimg["compile_time"].toString()
+                val compileTime = kpimg["compile_time"].toString()
+                cachedKpImg = compileTime
+                return compileTime
             }
         }
 

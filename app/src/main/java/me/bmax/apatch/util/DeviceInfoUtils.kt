@@ -2,10 +2,9 @@ package me.bmax.apatch.util
 
 import android.os.Build
 import android.util.Log
-import com.topjohnwu.superuser.Shell
 
 fun getSELinuxStatus(): String {
-    val shell = Shell.Builder.create().build("sh")
+    val shell = getRootShell()
     val list = ArrayList<String>()
     val result = shell.newJob().add("getenforce").to(list, list).exec()
     val output = result.out.joinToString("\n").trim()
