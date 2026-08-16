@@ -77,14 +77,12 @@ object AppRepository {
 
                         val actProfile = if (uids.contains(uid)) Natives.suProfile(uid) else null
 
-                        val config = configs.getOrDefault(
-                            uid, PkgConfig.Config(
-                                pkg.packageName,
-                                Natives.isUidExcluded(uid),
-                                0,
-                                Natives.Profile(uid = uid)
-                            )
-                        ).apply {
+                        val config = (configs[uid] ?: PkgConfig.Config(
+                            pkg.packageName,
+                            Natives.isUidExcluded(uid),
+                            0,
+                            Natives.Profile(uid = uid)
+                        )).apply {
                             allow = if (actProfile != null) 1 else 0
                             if (actProfile != null) profile = actProfile
                         }
