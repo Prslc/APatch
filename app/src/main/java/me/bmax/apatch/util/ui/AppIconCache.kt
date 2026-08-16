@@ -71,6 +71,7 @@ object AppIconCache {
                     this.packageName = packageName
                     this.uid = uid
                     this.sourceDir = sourceDir
+                    this.publicSourceDir = sourceDir
                     this.icon = icon
                 }
                 val bitmap = loader.loadIcon(applicationInfo.withCurrentUserUid())
