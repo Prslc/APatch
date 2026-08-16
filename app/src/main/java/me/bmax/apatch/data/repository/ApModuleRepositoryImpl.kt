@@ -12,6 +12,7 @@ import me.bmax.apatch.ui.navigation.MODULE_TYPE
 import me.bmax.apatch.ui.page.apm.ModuleInfo
 import me.bmax.apatch.util.HanziToPinyin
 import me.bmax.apatch.util.createRootShell
+import me.bmax.apatch.util.getRootShell
 import me.bmax.apatch.util.listModuleJson
 import org.json.JSONArray
 import org.json.JSONObject
@@ -161,9 +162,7 @@ object ApModuleRepositoryImpl : ApModuleRepository {
     }
 
     private fun execApd(args: String): Boolean {
-        return createRootShell().use { shell ->
-            ShellUtils.fastCmdResult(shell, "${APApplication.APD_PATH} $args")
-        }
+        return ShellUtils.fastCmdResult(getRootShell(), "${APApplication.APD_PATH} $args")
     }
 
     private fun parseModuleInfo(obj: JSONObject, h2p: HanziToPinyin): ModuleInfo {

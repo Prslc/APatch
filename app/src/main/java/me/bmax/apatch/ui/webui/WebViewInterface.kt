@@ -17,6 +17,7 @@ import com.topjohnwu.superuser.internal.UiThreadHandler
 import me.bmax.apatch.data.AppRepository
 import me.bmax.apatch.ui.WebUIActivity
 import me.bmax.apatch.util.createRootShell
+import me.bmax.apatch.util.getRootShell
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.concurrent.CompletableFuture
@@ -24,8 +25,7 @@ import java.util.concurrent.CompletableFuture
 class WebViewInterface(val context: Context, private val webView: WebView) {
     @JavascriptInterface
     fun exec(cmd: String): String {
-        val shell = createRootShell()
-        return ShellUtils.fastCmd(shell, cmd)
+        return ShellUtils.fastCmd(getRootShell(), cmd)
     }
 
     @JavascriptInterface
@@ -58,8 +58,7 @@ class WebViewInterface(val context: Context, private val webView: WebView) {
         processOptions(finalCommand, options)
         finalCommand.append(cmd)
 
-        val shell = createRootShell()
-        val result = shell.newJob().add(finalCommand.toString()).to(ArrayList(), ArrayList()).exec()
+        val result = getRootShell().newJob().add(finalCommand.toString()).to(ArrayList(), ArrayList()).exec()
         val stdout = result.out.joinToString(separator = "\n")
         val stderr = result.err.joinToString(separator = "\n")
 
@@ -119,6 +118,10 @@ class WebViewInterface(val context: Context, private val webView: WebView) {
         val future = shell.newJob().add(finalCommand.toString()).to(stdout, stderr).enqueue()
         val completableFuture = CompletableFuture.supplyAsync {
             future.get()
+        }
+        
+        completableFuture.whenComplete { _, _ ->
+            shell.close()
         }
 
         completableFuture.thenAccept { result ->
