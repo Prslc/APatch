@@ -339,7 +339,7 @@ pub fn start_uid_listener() -> Result<()> {
             let skey = CStr::from_bytes_with_nul(b"su\0")
                 .expect("[start_uid_listener] CStr::from_bytes_with_nul failed");
             refresh_ap_package_list(&skey, &mutex);
-            report_kernel(None, "uid_listener", "package-list-updated");
+            report_kernel(None, "boot-completed", "package-list-updated");
         } else if !debounce {
             thread::sleep(Duration::from_secs(1));
             debounce = true;
