@@ -356,7 +356,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.dev.rikka.rikkax.parcelablelist)
     implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.me.zhanghai.android.appiconloader)
+    implementation(libs.coil3)
+    implementation(libs.appiconloader)
     implementation(libs.markdown)
     implementation(libs.ini4j)
 

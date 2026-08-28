@@ -10,6 +10,9 @@ import android.widget.Toast
 import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.SingletonImageLoader
 import com.topjohnwu.superuser.CallbackList
 import me.bmax.apatch.ui.CrashHandleActivity
 import me.bmax.apatch.util.APatchCli
@@ -17,6 +20,8 @@ import me.bmax.apatch.util.APatchKeyHelper
 import me.bmax.apatch.util.Version
 import me.bmax.apatch.util.getRootShell
 import me.bmax.apatch.util.rootShellForResult
+import me.zhanghai.android.appiconloader.coil3.AppIconFetcher
+import me.zhanghai.android.appiconloader.coil3.AppIconKeyer
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import java.io.File
@@ -28,11 +33,22 @@ lateinit var apApp: APApplication
 
 const val TAG = "APatch"
 
-class APApplication : Application(), Thread.UncaughtExceptionHandler {
+class APApplication : Application(), SingletonImageLoader.Factory, Thread.UncaughtExceptionHandler {
     lateinit var okhttpClient: OkHttpClient
 
     init {
         Thread.setDefaultUncaughtExceptionHandler(this)
+    }
+
+    // Initialize Coil
+    override fun newImageLoader(context: PlatformContext): ImageLoader {
+        val iconSize = context.resources.getDimensionPixelSize(android.R.dimen.app_icon_size)
+        return ImageLoader.Builder(context)
+            .components {
+                add(AppIconKeyer())
+                add(AppIconFetcher.Factory(iconSize, false, context))
+            }
+            .build()
     }
 
     enum class State {
@@ -42,7 +58,6 @@ class APApplication : Application(), Thread.UncaughtExceptionHandler {
 
         ANDROIDPATCH_NOT_INSTALLED, ANDROIDPATCH_INSTALLED, ANDROIDPATCH_INSTALLING, ANDROIDPATCH_NEED_UPDATE, ANDROIDPATCH_UNINSTALLING,
     }
-
 
     companion object {
         const val APD_PATH = "/data/adb/apd"

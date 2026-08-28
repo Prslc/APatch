@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -40,13 +41,12 @@ data class AppInfo(
     val lowercaseLabel: String,
     val pinyinLabel: String,
     val packageName: String,
-    val uid: Int,
     val isSystem: Boolean,
+    val uid: Int,
     val firstInstallTime: Long,
     val versionName: String,
     val versionCode: Long,
-    val sourceDir: String,
-    val icon: Int,
+    val packageInfo: PackageInfo,
     val config: PkgConfig.Config
 ) : Parcelable
 
@@ -101,13 +101,12 @@ object AppRepository {
                             lowercaseLabel = lowerLabel,
                             pinyinLabel = pinyin,
                             packageName = pkg.packageName,
-                            uid = uid,
                             isSystem = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0,
+                            uid = uid,
                             firstInstallTime = pkg.firstInstallTime,
                             versionName = pkg.versionName ?: "",
                             versionCode = PackageInfoCompat.getLongVersionCode(pkg),
-                            sourceDir = appInfo.sourceDir,
-                            icon = appInfo.icon,
+                            packageInfo = pkg,
                             config = config
                         )
                     }

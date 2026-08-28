@@ -20,6 +20,7 @@ appiconloader = "1.5.0"
 markdown = "4.6.2"
 ini4j = "0.5.4"
 cxx = "29.0.14206865"
+coil3 = "3.6.0"
 
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
@@ -63,11 +64,13 @@ com-github-topjohnwu-libsu-service = { group = "com.github.topjohnwu.libsu", nam
 com-github-topjohnwu-libsu-nio = { group = "com.github.topjohnwu.libsu", name = "nio", version.ref = "libsu" }
 com-github-topjohnwu-libsu-io = { group = "com.github.topjohnwu.libsu", name = "io", version.ref = "libsu" }
 
-dev-rikka-rikkax-parcelablelist = {  group = "dev.rikka.rikkax.parcelablelist", name = "parcelablelist", version.ref = "parcelablelist" }
+dev-rikka-rikkax-parcelablelist = { group = "dev.rikka.rikkax.parcelablelist", name = "parcelablelist", version.ref = "parcelablelist" }
 
-kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx" ,name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 
-me-zhanghai-android-appiconloader = { group = "me.zhanghai.android.appiconloader", name = "appiconloader", version.ref = "appiconloader" }
+coil3 = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil3" }
+
+appiconloader = { group = "io.github.prslc.android.appiconloader", name = "appiconloader-coil3", version.ref = "appiconloader" }
 
 markdown = { group = "io.noties.markwon", name = "core", version.ref = "markdown" }
 

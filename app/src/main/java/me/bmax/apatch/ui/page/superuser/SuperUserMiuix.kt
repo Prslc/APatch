@@ -243,16 +243,10 @@ private fun AppItem(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 AppIconImage(
-                    uid = app.uid,
-                    packageName = app.packageName,
-                    sourceDir = app.sourceDir,
-                    icon = app.icon,
+                    packageInfo = app.packageInfo,
                     label = app.label,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .padding(4.dp)
+                    modifier = Modifier.size(48.dp)
                 )
-
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = app.label,
