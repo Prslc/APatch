@@ -62,6 +62,16 @@ fun NavGraph() {
                     targetOffsetX = { it },
                     animationSpec = tween(300, easing = FastOutSlowInEasing)
                 )
+            },
+            predictivePopEnterTransition = {
+                slideInHorizontally(initialOffsetX = { -it / 5 }, animationSpec = tween(300)) +
+                        fadeIn(initialAlpha = 0f, animationSpec = tween(300))
+            },
+            predictivePopExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300, easing = FastOutSlowInEasing)
+                )
             }
         ) {
             dialog<InstallPreviewRoute> { backStackEntry ->

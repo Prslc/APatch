@@ -61,7 +61,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 
 import androidx.compose.material3.DropdownMenuGroup
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.SelectableDropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -397,7 +397,7 @@ private fun SortDropdown(
                     R.string.apm_sort_action_first,
                     R.string.apm_sort_web_first
                 ).forEachIndexed { index, res ->
-                    DropdownMenuItem(
+                    SelectableDropdownMenuItem(
                         selected = sortIndex == index,
                         onClick = {
                             sortIndex = index

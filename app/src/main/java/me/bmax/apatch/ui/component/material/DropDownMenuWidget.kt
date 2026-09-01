@@ -2,7 +2,7 @@ package me.bmax.apatch.ui.component.material
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.DropdownMenuGroup
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.SelectableDropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MenuDefaults
@@ -57,7 +57,7 @@ fun DropDownMenuWidget(
 
                             // Utilize the selectable variation of DropdownMenuItem
                             // MenuDefaults.itemShape(index, count) automatically handles the shapes
-                            DropdownMenuItem(
+                            SelectableDropdownMenuItem(
                                 selected = isSelected,
                                 onClick = {
                                     onChoiceChange(index)

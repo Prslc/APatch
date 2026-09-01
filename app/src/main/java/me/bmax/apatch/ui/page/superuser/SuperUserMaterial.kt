@@ -26,7 +26,8 @@ import androidx.compose.material.icons.filled.RadioButtonChecked
 import androidx.compose.material.icons.outlined.CheckBoxOutlineBlank
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material3.DropdownMenuGroup
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.CheckableDropdownMenuItem
+import androidx.compose.material3.SelectableDropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -222,7 +223,7 @@ private fun SortDropdown(
             DropdownMenuGroup(
                 shapes = MenuDefaults.groupShape(index = 0, count = 2)
             ) {
-                DropdownMenuItem(
+                CheckableDropdownMenuItem(
                     checked = uiState.showSystemApps,
                     onCheckedChange = {
                         viewModel.toggleSystemApps()
@@ -242,7 +243,7 @@ private fun SortDropdown(
                             tint = MaterialTheme.colorScheme.primary
                         )
                     },
-                    colors = MenuDefaults.itemColors(),
+                    colors = MenuDefaults.selectableItemColors(),
                     shapes = MenuDefaults.itemShape(index = 0, count = 1)
                 )
             }
@@ -258,7 +259,7 @@ private fun SortDropdown(
                         SortBy.PACKAGE_NAME -> stringResource(R.string.su_sort_package)
                         SortBy.INSTALL_TIME -> stringResource(R.string.su_sort_install_time)
                     }
-                    DropdownMenuItem(
+                    SelectableDropdownMenuItem(
                         selected = uiState.sortBy == sortBy,
                         onClick = {
                             viewModel.updateSort(sortBy)
