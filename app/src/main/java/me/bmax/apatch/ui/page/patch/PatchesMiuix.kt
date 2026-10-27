@@ -38,7 +38,6 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -456,15 +455,15 @@ private fun BottomButtons(
 @Composable
 private fun ExtraConfigDialog(
     kpmInfo: KPModel.KPMInfo,
-    show: MutableState<Boolean>
+    onDismiss: () -> Unit
 ) {
     var event by remember { mutableStateOf(kpmInfo.event) }
     var args by remember { mutableStateOf(kpmInfo.args) }
 
     WindowDialog(
-        show = show.value,
+        show = true,
         title = stringResource(R.string.kpm_control_dialog_title),
-        onDismissRequest = { show.value = false },
+        onDismissRequest = onDismiss,
     ) {
         TextField(
             value = event,
@@ -493,9 +492,7 @@ private fun ExtraConfigDialog(
         ) {
             TextButton(
                 text = stringResource(android.R.string.cancel),
-                onClick = {
-                    show.value = false
-                },
+                onClick = onDismiss,
                 modifier = Modifier.weight(1f),
             )
 
@@ -506,7 +503,7 @@ private fun ExtraConfigDialog(
                 onClick = {
                     kpmInfo.event = event
                     kpmInfo.args = args
-                    show.value = false
+                    onDismiss()
                 },
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.textButtonColorsPrimary()
@@ -521,7 +518,10 @@ private fun ExtraItem(extra: KPModel.IExtraInfo, existed: Boolean, onDelete: () 
     val colorScheme = colorScheme
 
     if (extra is KPModel.KPMInfo && showConfigDialog.value) {
-        ExtraConfigDialog(kpmInfo = extra, show = showConfigDialog)
+        ExtraConfigDialog(
+            kpmInfo = extra,
+            onDismiss = { showConfigDialog.value = false }
+        )
     }
 
     Card {

@@ -52,8 +52,8 @@ import top.yukonga.miuix.kmp.utils.overScrollVertical
 
 @Composable
 fun SettingScreenMiuix(
-    modifier: Modifier,
     bottomPadding: Dp,
+    modifier: Modifier = Modifier,
     isCurrentPage: Boolean = true,
     viewModel: SettingsViewModel = viewModel()
 ) {
@@ -65,7 +65,10 @@ fun SettingScreenMiuix(
     val backdrop = if (isCurrentPage) rememberBlurBackdrop() else null
 
     val showUninstallDialog = remember { mutableStateOf(false) }
-    UninstallDialog(showUninstallDialog)
+    UninstallDialog(
+        show = showUninstallDialog.value,
+        onDismiss = { showUninstallDialog.value = false }
+    )
 
     Scaffold(
         modifier = modifier.fillMaxSize(),

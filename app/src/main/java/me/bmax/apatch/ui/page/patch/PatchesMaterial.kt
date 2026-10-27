@@ -59,7 +59,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -492,67 +491,63 @@ private fun BottomButtonsMaterial(
 @Composable
 private fun ExtraConfigDialogMaterial(
     kpmInfo: KPModel.KPMInfo,
-    show: MutableState<Boolean>
+    onDismiss: () -> Unit
 ) {
     var event by remember { mutableStateOf(kpmInfo.event) }
     var args by remember { mutableStateOf(kpmInfo.args) }
 
-    if (show.value) {
-        BasicAlertDialog(
-            onDismissRequest = { show.value = false }
+    BasicAlertDialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = AlertDialogDefaults.shape,
+            color = AlertDialogDefaults.containerColor,
+            tonalElevation = AlertDialogDefaults.TonalElevation,
         ) {
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = AlertDialogDefaults.shape,
-                color = AlertDialogDefaults.containerColor,
-                tonalElevation = AlertDialogDefaults.TonalElevation,
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp)
+                Text(
+                    text = stringResource(R.string.kpm_control_dialog_title),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(Modifier.height(16.dp))
+                OutlinedTextField(
+                    value = event,
+                    label = { Text(stringResource(R.string.patch_item_extra_event)) },
+                    onValueChange = { event = it },
+                    singleLine = true,
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = args,
+                    label = { Text(stringResource(id = R.string.patch_item_extra_args)) },
+                    onValueChange = { args = it },
+                    singleLine = true,
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    Text(
-                        text = stringResource(R.string.kpm_control_dialog_title),
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(Modifier.height(16.dp))
-                    OutlinedTextField(
-                        value = event,
-                        label = { Text(stringResource(R.string.patch_item_extra_event)) },
-                        onValueChange = { event = it },
-                        singleLine = true,
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    OutlinedTextField(
-                        value = args,
-                        label = { Text(stringResource(id = R.string.patch_item_extra_args)) },
-                        onValueChange = { args = it },
-                        singleLine = true,
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Spacer(Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
+                    TextButton(onClick = onDismiss) {
+                        Text(stringResource(android.R.string.cancel))
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    Button(
+                        onClick = {
+                            kpmInfo.event = event
+                            kpmInfo.args = args
+                            onDismiss()
+                        }
                     ) {
-                        TextButton(onClick = { show.value = false }) {
-                            Text(stringResource(android.R.string.cancel))
-                        }
-                        Spacer(Modifier.width(8.dp))
-                        Button(
-                            onClick = {
-                                kpmInfo.event = event
-                                kpmInfo.args = args
-                                show.value = false
-                            }
-                        ) {
-                            Text(stringResource(android.R.string.ok))
-                        }
+                        Text(stringResource(android.R.string.ok))
                     }
                 }
             }
@@ -569,7 +564,10 @@ private fun ExtraItemMaterial(
     val showConfigDialog = remember { mutableStateOf(false) }
 
     if (extra is KPModel.KPMInfo && showConfigDialog.value) {
-        ExtraConfigDialogMaterial(kpmInfo = extra, show = showConfigDialog)
+        ExtraConfigDialogMaterial(
+            kpmInfo = extra,
+            onDismiss = { showConfigDialog.value = false }
+        )
     }
 
     Surface(

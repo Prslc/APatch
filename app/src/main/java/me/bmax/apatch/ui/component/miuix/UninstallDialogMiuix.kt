@@ -9,7 +9,6 @@ import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.material.icons.rounded.RemoveModerator
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -32,10 +31,10 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.window.WindowDialog
 
 @Composable
-fun UninstallDialog(showDialog: MutableState<Boolean>) {
+fun UninstallDialog(show: Boolean, onDismiss: () -> Unit) {
     val navigator = LocalNavigator.current
     val runAction = { type: UninstallType ->
-        showDialog.value = false
+        onDismiss()
 
         when (type) {
             UninstallType.TEMPORARY -> {
@@ -56,9 +55,9 @@ fun UninstallDialog(showDialog: MutableState<Boolean>) {
     }
 
     WindowDialog(
-        show = showDialog.value,
+        show = show,
         insideMargin = DpSize(0.dp, 0.dp),
-        onDismissRequest = { showDialog.value = false },
+        onDismissRequest = onDismiss,
         content = {
             Text(
                 modifier = Modifier
@@ -99,7 +98,7 @@ fun UninstallDialog(showDialog: MutableState<Boolean>) {
                         .fillMaxWidth()
                         .padding(top = 12.dp, bottom = 24.dp),
                     text = stringResource(id = android.R.string.cancel),
-                    onClick = { showDialog.value = false }
+                    onClick = onDismiss
                 )
             }
         }

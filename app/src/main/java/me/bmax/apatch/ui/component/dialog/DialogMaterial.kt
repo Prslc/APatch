@@ -17,7 +17,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
@@ -32,26 +31,24 @@ import me.bmax.apatch.ui.component.dialog.ConfirmDialogVisuals
 import me.bmax.apatch.ui.component.loadingindicator.LoadingIndicator
 
 @Composable
-internal fun LoadingDialogMaterial(showDialog: MutableState<Boolean>) {
-    if (showDialog.value) {
-        Dialog(
-            onDismissRequest = {},
-            properties = DialogProperties(
-                dismissOnClickOutside = false,
-                dismissOnBackPress = false,
-                usePlatformDefaultWidth = false
-            )
+internal fun LoadingDialogMaterial() {
+    Dialog(
+        onDismissRequest = {},
+        properties = DialogProperties(
+            dismissOnClickOutside = false,
+            dismissOnBackPress = false,
+            usePlatformDefaultWidth = false
+        )
+    ) {
+        Surface(
+            modifier = Modifier.size(100.dp),
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surfaceContainer
         ) {
-            Surface(
-                modifier = Modifier.size(100.dp),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceContainer
+            Box(
+                contentAlignment = Alignment.Center,
             ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                ) {
-                    LoadingIndicator()
-                }
+                LoadingIndicator()
             }
         }
     }
@@ -61,45 +58,29 @@ internal fun LoadingDialogMaterial(showDialog: MutableState<Boolean>) {
 internal fun ConfirmDialogMaterial(
     visuals: ConfirmDialogVisuals,
     confirm: () -> Unit,
-    dismiss: () -> Unit,
-    showDialog: MutableState<Boolean>
+    dismiss: () -> Unit
 ) {
-    if (showDialog.value) {
-        AlertDialog(
-            onDismissRequest = {
-                dismiss()
-                showDialog.value = false
-            },
-            title = { Text(visuals.title) },
-            text = {
-                if (visuals.isMarkdown) {
-                    MarkdownContentMaterial(content = visuals.content)
-                } else {
-                    Text(text = visuals.content)
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        confirm()
-                        showDialog.value = false
-                    }
-                ) {
-                    Text(visuals.confirm ?: stringResource(id = android.R.string.ok))
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        dismiss()
-                        showDialog.value = false
-                    }
-                ) {
-                    Text(visuals.dismiss ?: stringResource(id = android.R.string.cancel))
-                }
+    AlertDialog(
+        onDismissRequest = dismiss,
+        title = { Text(visuals.title) },
+        text = {
+            if (visuals.isMarkdown) {
+                MarkdownContentMaterial(content = visuals.content)
+            } else {
+                Text(text = visuals.content)
             }
-        )
-    }
+        },
+        confirmButton = {
+            TextButton(onClick = confirm) {
+                Text(visuals.confirm ?: stringResource(id = android.R.string.ok))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = dismiss) {
+                Text(visuals.dismiss ?: stringResource(id = android.R.string.cancel))
+            }
+        }
+    )
 }
 
 @Composable

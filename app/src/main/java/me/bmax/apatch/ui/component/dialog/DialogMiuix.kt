@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
@@ -74,17 +73,13 @@ internal fun LoadingDialogMiuix() {
 internal fun ConfirmDialogMiuix(
     visuals: ConfirmDialogVisuals,
     confirm: () -> Unit,
-    dismiss: () -> Unit,
-    showDialog: MutableState<Boolean>
+    dismiss: () -> Unit
 ) {
     WindowDialog(
-        show = showDialog.value,
+        show = true,
         title = visuals.title,
         modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top)),
-        onDismissRequest = {
-            dismiss()
-            showDialog.value = false
-        },
+        onDismissRequest = dismiss,
         content = {
             Layout(
                 content = {
@@ -104,19 +99,13 @@ internal fun ConfirmDialogMiuix(
                     ) {
                         TextButton(
                             text = visuals.dismiss ?: stringResource(id = android.R.string.cancel),
-                            onClick = {
-                                dismiss()
-                                showDialog.value = false
-                            },
+                            onClick = dismiss,
                             modifier = Modifier.weight(1f)
                         )
                         Spacer(Modifier.width(20.dp))
                         TextButton(
                             text = visuals.confirm ?: stringResource(id = android.R.string.ok),
-                            onClick = {
-                                confirm()
-                                showDialog.value = false
-                            },
+                            onClick = confirm,
                             modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.textButtonColorsPrimary()
                         )
