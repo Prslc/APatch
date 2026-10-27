@@ -65,7 +65,7 @@ import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.ScrollToTopOnChange
 import me.bmax.apatch.ui.component.dialog.ConfirmResult
-import me.bmax.apatch.ui.component.dialog.ModuleDownloadProgressDialog
+import me.bmax.apatch.ui.component.dialog.ModuleDownloadProgressHost
 import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
 import me.bmax.apatch.ui.component.searchbar.AppSearchBar
 import me.bmax.apatch.ui.navigation.LocalNavigator
@@ -126,7 +126,7 @@ fun OnlineScreenMaterial(
         observedList = { uiState.modules }
     )
 
-    var downloadTask by remember { mutableStateOf<Pair<String, Int>?>(null) }
+    val downloadTask = remember { mutableStateOf<Pair<String, Int>?>(null) }
     var downloadHandle by remember { mutableStateOf<DownloadCancelHandle?>(null) }
     var detailModule by remember { mutableStateOf<OnlineModule?>(null) }
 
@@ -155,7 +155,7 @@ fun OnlineScreenMaterial(
         val fileName = "${module.id}-${doc.version}.${if (module.kpm) "kpm" else "zip"}"
         val handle = DownloadCancelHandle()
         downloadHandle = handle
-        downloadTask = module.id to 0
+        downloadTask.value = module.id to 0
         val file = try {
             ModuleRepo.downloadModuleFile(
                 id = module.id,
@@ -163,9 +163,9 @@ fun OnlineScreenMaterial(
                 fileName = fileName,
                 authorUrl = doc.downloadUrl,
                 cancel = handle
-            ) { percent -> downloadTask = module.id to percent }
+            ) { percent -> downloadTask.value = module.id to percent }
         } finally {
-            downloadTask = null
+            downloadTask.value = null
             downloadHandle = null
         }
         if (handle.isCancelled) {
@@ -287,13 +287,7 @@ fun OnlineScreenMaterial(
         )
     }
 
-    downloadTask?.let { (title, progress) ->
-        ModuleDownloadProgressDialog(
-            title = title,
-            progress = progress,
-            onCancel = { downloadHandle?.cancel() }
-        )
-    }
+    ModuleDownloadProgressHost(downloadTask) { downloadHandle?.cancel() }
 }
 
 @Composable

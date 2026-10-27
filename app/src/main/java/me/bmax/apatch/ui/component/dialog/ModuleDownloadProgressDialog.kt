@@ -18,6 +18,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,6 +30,15 @@ import me.bmax.apatch.ui.UiMode
 import top.yukonga.miuix.kmp.basic.CircularProgressIndicator
 import top.yukonga.miuix.kmp.basic.TextButton as MiuixTextButton
 import top.yukonga.miuix.kmp.window.WindowDialog
+
+@Composable
+fun ModuleDownloadProgressHost(
+    task: State<Pair<String, Int>?>,
+    onCancel: () -> Unit
+) {
+    val (title, progress) = task.value ?: return
+    ModuleDownloadProgressDialog(title, progress, onCancel)
+}
 
 @Composable
 fun ModuleDownloadProgressDialog(

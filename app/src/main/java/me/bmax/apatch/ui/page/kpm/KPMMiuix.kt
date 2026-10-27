@@ -64,7 +64,7 @@ import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.ChipLabel
 import me.bmax.apatch.ui.component.ScrollToTopOnChange
 import me.bmax.apatch.ui.component.dialog.ConfirmResult
-import me.bmax.apatch.ui.component.dialog.ModuleDownloadProgressDialog
+import me.bmax.apatch.ui.component.dialog.ModuleDownloadProgressHost
 import me.bmax.apatch.ui.component.miuix.DropdownItem
 import me.bmax.apatch.ui.component.miuix.IconTextButton
 import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
@@ -171,7 +171,7 @@ fun KPModuleScreenMiuix(
     val controlOkText = stringResource(R.string.kpm_control_ok)
     val controlFailText = stringResource(R.string.kpm_control_failed)
 
-    var updateTask by remember { mutableStateOf<Pair<String, Int>?>(null) }
+    val updateTask = remember { mutableStateOf<Pair<String, Int>?>(null) }
     var updateHandle by remember { mutableStateOf<DownloadCancelHandle?>(null) }
 
     suspend fun onModuleInstall(uri: Uri) {
@@ -202,7 +202,7 @@ fun KPModuleScreenMiuix(
         )
         if (confirmed != ConfirmResult.Confirmed) return
 
-        updateTask = module.name to 0
+        updateTask.value = module.name to 0
         val handle = DownloadCancelHandle()
         updateHandle = handle
         val file = try {
@@ -212,9 +212,9 @@ fun KPModuleScreenMiuix(
                 fileName = "${module.moduleId}-${update.version}.kpm",
                 authorUrl = update.authorUrl,
                 cancel = handle
-            ) { percent -> updateTask = module.name to percent }
+            ) { percent -> updateTask.value = module.name to percent }
         } finally {
-            updateTask = null
+            updateTask.value = null
             updateHandle = null
         }
         if (handle.isCancelled) {
@@ -378,13 +378,7 @@ fun KPModuleScreenMiuix(
             }
         )
     }
-    updateTask?.let { (name, progress) ->
-        ModuleDownloadProgressDialog(
-            title = name,
-            progress = progress,
-            onCancel = { updateHandle?.cancel() }
-        )
-    }
+    ModuleDownloadProgressHost(updateTask) { updateHandle?.cancel() }
 }
 
 @Composable
