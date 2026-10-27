@@ -158,8 +158,8 @@ import top.yukonga.miuix.kmp.blur.LayerBackdrop
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun APModuleScreenMaterial(
-    modifier: Modifier,
     bottomPadding: Dp,
+    modifier: Modifier = Modifier,
     isCurrentPage: Boolean = true,
     viewModel: APModuleViewModel = viewModel()
 ) {
@@ -1020,6 +1020,7 @@ private fun ModuleListMaterial(
                     ModuleItemMaterial(
                         navigator = navigator,
                         module = module,
+                        viewModel = viewModel,
                         updateUrl = updatedModule.first,
                         onUninstall = {
                             scope.launch { onModuleUninstall(module) }
@@ -1126,6 +1127,7 @@ private fun MetaModuleWarningCardMaterial(
 private fun ModuleItemMaterial(
     navigator: Navigator,
     module: ModuleInfo,
+    viewModel: APModuleViewModel,
     updateUrl: String,
     onUninstall: (ModuleInfo) -> Unit,
     onUndoUninstall: (ModuleInfo) -> Unit,
@@ -1137,7 +1139,6 @@ private fun ModuleItemMaterial(
     val decoration = if (!module.remove) TextDecoration.None else TextDecoration.LineThrough
     val moduleVersion = stringResource(id = R.string.apm_version)
     val moduleAuthor = stringResource(id = R.string.apm_author)
-    val viewModel = viewModel<APModuleViewModel>()
 
     Surface(
         modifier = Modifier

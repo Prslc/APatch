@@ -151,8 +151,8 @@ import top.yukonga.miuix.kmp.window.WindowDialog
 
 @Composable
 fun APModuleScreenMiuix(
-    modifier: Modifier,
     bottomPadding: Dp,
+    modifier: Modifier = Modifier,
     isCurrentPage: Boolean = true,
     viewModel: APModuleViewModel = viewModel()
 ) {
@@ -934,6 +934,7 @@ private fun ModuleList(
                         navigator,
                         module,
                         updatedModule.first,
+                        viewModel = viewModel,
                         onUninstall = {
                             scope.launch { onModuleUninstall(module) }
                         },
@@ -1005,6 +1006,7 @@ private fun ModuleItem(
     navigator: Navigator,
     module: ModuleInfo,
     updateUrl: String,
+    viewModel: APModuleViewModel,
     onUninstall: (ModuleInfo) -> Unit,
     onUndoUninstall: (ModuleInfo) -> Unit,
     onCheckChanged: (Boolean) -> Unit,
@@ -1017,7 +1019,6 @@ private fun ModuleItem(
     val decoration = if (!module.remove) TextDecoration.None else TextDecoration.LineThrough
     val moduleVersion = stringResource(id = R.string.apm_version)
     val moduleAuthor = stringResource(id = R.string.apm_author)
-    val viewModel = viewModel<APModuleViewModel>()
     Card(
         modifier = modifier,
         pressFeedbackType = PressFeedbackType.Sink,
