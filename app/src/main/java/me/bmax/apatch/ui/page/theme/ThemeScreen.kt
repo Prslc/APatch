@@ -1,7 +1,10 @@
 package me.bmax.apatch.ui.page.theme
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -32,16 +35,19 @@ fun ThemeScreen(viewModel: ThemeViewModel = viewModel()) {
         blurEnabled = uiState.blurEnabled,
     )
 
-    val actions = ThemeScreenActions(
-        onBack = dropUnlessResumed { navigator.popBackStack() },
-        onSetUiMode = viewModel::setUiMode,
-        onSetThemeMode = viewModel::setThemeMode,
-        onSetKeyColor = viewModel::setKeyColor,
-        onSetPaletteStyle = viewModel::setPaletteStyle,
-        onSetColorSpec = viewModel::setColorSpec,
-        onSetPageScale = viewModel::setPageScale,
-        onSetBlur = viewModel::setBlurEnabled,
-    )
+    val currentOnBack by rememberUpdatedState(dropUnlessResumed { navigator.popBackStack() })
+    val actions = remember(viewModel) {
+        ThemeScreenActions(
+            onBack = { currentOnBack() },
+            onSetUiMode = viewModel::setUiMode,
+            onSetThemeMode = viewModel::setThemeMode,
+            onSetKeyColor = viewModel::setKeyColor,
+            onSetPaletteStyle = viewModel::setPaletteStyle,
+            onSetColorSpec = viewModel::setColorSpec,
+            onSetPageScale = viewModel::setPageScale,
+            onSetBlur = viewModel::setBlurEnabled,
+        )
+    }
 
     // Page Scale dialog
     if (uiState.showPageScaleDialog) {
@@ -57,7 +63,8 @@ fun ThemeScreen(viewModel: ThemeViewModel = viewModel()) {
     }
 }
 
-class ThemeUiState(
+@Immutable
+data class ThemeUiState(
     val uiMode: String,
     val themeMode: Int,
     val keyColorIndex: Int,
@@ -66,6 +73,7 @@ class ThemeUiState(
     val blurEnabled: Boolean,
 )
 
+@Immutable
 class ThemeScreenActions(
     val onBack: () -> Unit,
     val onSetUiMode: (String) -> Unit,
