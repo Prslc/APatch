@@ -5,6 +5,7 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class PatchModeUiState(
+    val isProbing: Boolean = true,
     val rootAvailable: Boolean = false,
     val isAbDevice: Boolean = false,
     val jailbreakBlocked: Boolean = false,

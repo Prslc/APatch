@@ -22,6 +22,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.WarningCard
 import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
+import me.bmax.apatch.ui.component.loadingindicator.LoadingIndicator
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.page.patch.PatchMode
 import me.bmax.apatch.ui.theme.blurEffect
@@ -77,6 +78,14 @@ fun PatchModeMiuix(viewModel: PatchModeViewModel = viewModel()) {
             )
         }
     ) { paddingValues ->
+        if (state.isProbing) {
+            LoadingIndicator(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            )
+            return@Scaffold
+        }
         Column(
             modifier = Modifier
                 .withBackdrop(backdrop)

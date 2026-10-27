@@ -46,6 +46,7 @@ import me.bmax.apatch.R
 import me.bmax.apatch.ui.component.material.BaseWidget
 import me.bmax.apatch.ui.component.material.SegmentedColumn
 import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
+import me.bmax.apatch.ui.component.loadingindicator.LoadingIndicator
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.page.patch.PatchMode
 import me.bmax.apatch.ui.theme.LocalEnableBlur
@@ -115,6 +116,14 @@ fun PatchModeMaterial(viewModel: PatchModeViewModel = viewModel()) {
             }
         }
     ) { paddingValues ->
+        if (state.isProbing) {
+            LoadingIndicator(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            )
+            return@Scaffold
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
