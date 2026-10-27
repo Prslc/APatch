@@ -37,6 +37,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Update
+import androidx.compose.material.icons.outlined.Cloud
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
@@ -294,6 +295,14 @@ fun KPModuleScreenMaterial(
                             text = stringResource(R.string.kpm),
                             modifier = Modifier.padding(start = 12.dp)
                         )
+                    },
+                    actions = {
+                        IconButton(onClick = { navigator.navigateToOnline(kpmOnly = true) }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Cloud,
+                                contentDescription = stringResource(R.string.online_module)
+                            )
+                        }
                     },
                     scrollBehavior = scrollBehavior,
                     colors = TopAppBarDefaults.topAppBarColors(

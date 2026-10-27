@@ -54,6 +54,7 @@ import androidx.compose.material.icons.filled.HorizontalSplit
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.RadioButtonChecked
+import androidx.compose.material.icons.outlined.Cloud
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
@@ -239,6 +240,12 @@ fun APModuleScreenMaterial(
                         )
                     },
                     actions = {
+                        IconButton(onClick = { navigator.navigateToOnline(kpmOnly = false) }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Cloud,
+                                contentDescription = stringResource(R.string.online_module)
+                            )
+                        }
                         SortDropdown(viewModel)
                     },
                     scrollBehavior = scrollBehavior,

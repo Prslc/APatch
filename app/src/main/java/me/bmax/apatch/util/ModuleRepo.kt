@@ -9,6 +9,7 @@ import okhttp3.Request
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import java.io.IOException
 import java.util.Locale
 import kotlin.math.roundToInt
 
@@ -40,6 +41,13 @@ object ModuleRepo {
          * been read yet.
          */
         val stars: Int = 0,
+    )
+
+    /** Result of reading a module document: content, a server error, or no pointer yet. */
+    data class ModuleDocResult(
+        val doc: RepoModuleDoc?,
+        val error: String? = null,
+        val unavailable: Boolean = false,
     )
 
     /** A module's `module.json`, as served by `/m/<id>/info`. */
@@ -78,8 +86,10 @@ object ModuleRepo {
                 if (search.isNotBlank()) addQueryParameter("search", search)
             }
             .build()
-        val body = get(url.toString()) ?: return@withContext emptyList()
-        val array = runCatching { JSONObject(body).optJSONArray("modules") }.getOrNull() ?: JSONArray()
+        val body = getStrict(url.toString())
+        val root = JSONObject(body)
+        root.optString("error").takeIf { it.isNotBlank() }?.let { throw IOException(it) }
+        val array = root.optJSONArray("modules") ?: JSONArray()
         (0 until array.length()).mapNotNull { index ->
             val obj = array.optJSONObject(index) ?: return@mapNotNull null
             val id = obj.optString("id")
@@ -106,6 +116,16 @@ object ModuleRepo {
         val body = get(url.toString()) ?: return@withContext null
         parseDoc(body)
     }
+
+    /** Like [moduleDoc], but keeps the reason a document is not usable. */
+    suspend fun moduleDocResult(id: String, kpm: Boolean): ModuleDocResult =
+        withContext(Dispatchers.IO) {
+            val url = "$BASE_URL/m/$id/info".toHttpUrl().newBuilder()
+                .apply { if (kpm) addQueryParameter("kpm", "1") }
+                .build()
+            val body = get(url.toString()) ?: return@withContext ModuleDocResult(null)
+            parseDocResult(body)
+        }
 
     /**
      * Downloads a module's file, trying the address the document names first and
@@ -153,10 +173,31 @@ object ModuleRepo {
     /** Parses a `module.json` document; null when it is not valid JSON. */
     fun parseDoc(body: String): RepoModuleDoc? = runCatching {
         val obj = JSONObject(body)
-        val moduleId = obj.optString("moduleid")
-        RepoModuleDoc(
+        if (obj.has("error")) return null
+        parseDocObject(obj)
+    }.onFailure { Log.w(TAG, "parse module document failed", it) }.getOrNull()
+
+    private fun parseDocResult(body: String): ModuleDocResult = runCatching {
+        val obj = JSONObject(body)
+        val error = obj.optString("error")
+        if (error.isNotBlank()) {
+            return ModuleDocResult(null, error, unavailable = true)
+        }
+        val doc = parseDocObject(obj) ?: return ModuleDocResult(null, unavailable = true)
+        if (doc.version.isBlank() && doc.downloadUrl.isBlank()) {
+            return ModuleDocResult(null, unavailable = true)
+        }
+        ModuleDocResult(doc)
+    }.onFailure { Log.w(TAG, "parse module document failed", it) }
+        .getOrElse { ModuleDocResult(null) }
+
+    private fun parseDocObject(obj: JSONObject): RepoModuleDoc? {
+        val moduleId = obj.optString("moduleid").ifBlank { obj.optString("module_id") }
+        val name = obj.optString("modulename").ifBlank { moduleId }
+        if (moduleId.isBlank() && name.isBlank()) return null
+        return RepoModuleDoc(
             moduleId = moduleId,
-            name = obj.optString("modulename").ifBlank { moduleId },
+            name = name,
             version = obj.optString("version"),
             versionCode = if (obj.has("VersionCode")) obj.optInt("VersionCode") else obj.optInt("versionCode"),
             license = obj.optString("license"),
@@ -167,7 +208,7 @@ object ModuleRepo {
             summary = obj.optJSONObject("summary").toStringMap(),
             description = obj.optJSONObject("description").toStringMap(),
         )
-    }.onFailure { Log.w(TAG, "parse module document failed", it) }.getOrNull()
+    }
 
     /**
      * Renders a star count the way the repository's own pages do — `7`, `99`,
@@ -207,6 +248,12 @@ object ModuleRepo {
         }
         return texts.values.firstOrNull { it.isNotBlank() } ?: ""
     }
+
+    private fun getStrict(url: String): String =
+        apApp.okhttpClient.newCall(Request.Builder().url(url).build()).execute().use { response ->
+            if (!response.isSuccessful) throw IOException("HTTP ${response.code}")
+            response.body.string()
+        }
 
     private fun get(url: String): String? = runCatching {
         apApp.okhttpClient.newCall(Request.Builder().url(url).build()).execute().use { response ->

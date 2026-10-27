@@ -29,6 +29,9 @@ object AboutRoute
 object ThemeRoute
 
 @Serializable
+data class OnlineRoute(val kpmOnly: Boolean = false)
+
+@Serializable
 data class PatchesRoute(
     val mode: PatchMode,
     val bootImageUri: String? = null

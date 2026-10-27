@@ -4,6 +4,8 @@ import android.net.Uri
 import android.util.Log
 import com.topjohnwu.superuser.nio.FileSystemManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.Natives
@@ -18,6 +20,7 @@ import java.io.StringReader
 
 object KPModuleRepositoryImpl : KPModuleRepository {
     private const val TAG = "KPModuleRepo"
+    private val installMutex = Mutex()
 
     override suspend fun listModules(): List<KPModel.KPMInfo> {
         val result = linkedMapOf<String, KPModel.KPMInfo>()
@@ -148,44 +151,46 @@ object KPModuleRepositoryImpl : KPModuleRepository {
         return Natives.kernelPatchModuleControl(name, param)
     }
 
-    override suspend fun installModule(uri: Uri): Int = withContext(Dispatchers.IO) {
-        val tempDir = File(apApp.cacheDir, "kpm-install").apply {
-            deleteRecursively()
-            mkdirs()
-        }
-        val rand = (1..4).map { ('a'..'z').random() }.joinToString("")
-        val temp = File(tempDir, "$rand.kpm")
-        try {
-            apApp.contentResolver.openInputStream(uri)?.use { input ->
-                temp.outputStream().use { output -> input.copyTo(output) }
-            } ?: return@withContext -1
+    override suspend fun installModule(uri: Uri): Int = installMutex.withLock {
+        withContext(Dispatchers.IO) {
+            val tempDir = File(apApp.cacheDir, "kpm-install").apply {
+                deleteRecursively()
+                mkdirs()
+            }
+            val rand = (1..4).map { ('a'..'z').random() }.joinToString("")
+            val temp = File(tempDir, "$rand.kpm")
+            try {
+                apApp.contentResolver.openInputStream(uri)?.use { input ->
+                    temp.outputStream().use { output -> input.copyTo(output) }
+                } ?: return@withContext -1
 
-            val infoResult = rootShellForResult(
-                "${APApplication.APATCH_BIN_FOLDER}kptools -l -M '${temp.path}'"
-            )
-            if (!infoResult.isSuccess) return@withContext -2
-            val section = Ini(StringReader(infoResult.out.joinToString("\n")))["kpm"]
-                ?: return@withContext -3
-            val name = section["name"]?.trim().orEmpty()
-            if (name.isEmpty()) return@withContext -4
+                val infoResult = rootShellForResult(
+                    "${APApplication.APATCH_BIN_FOLDER}kptools -l -M '${temp.path}'"
+                )
+                if (!infoResult.isSuccess) return@withContext -2
+                val section = Ini(StringReader(infoResult.out.joinToString("\n")))["kpm"]
+                    ?: return@withContext -3
+                val name = section["name"]?.trim().orEmpty()
+                if (name.isEmpty()) return@withContext -4
 
-            val id = safeKpmModuleId(name)
-            val dir = "${APApplication.KPMS_DIR}$id"
-            val destination = "$dir/$id.kpm"
-            val result = rootShellForResult(
-                "mkdir -p '$dir' && cp -f '${temp.path}' '$destination.tmp' && mv -f '$destination.tmp' '$destination'"
-            )
-            if (!result.isSuccess) return@withContext -5
+                val id = safeKpmModuleId(name)
+                val dir = "${APApplication.KPMS_DIR}$id"
+                val destination = "$dir/$id.kpm"
+                val result = rootShellForResult(
+                    "mkdir -p '$dir' && cp -f '${temp.path}' '$destination.tmp' && mv -f '$destination.tmp' '$destination'"
+                )
+                if (!result.isSuccess) return@withContext -5
 
-            // Installed KPMs are loaded by the boot-time loader. Do not load them
-            // in the current session; installation takes effect after reboot.
-            Log.i(TAG, "install KPM $name to $destination; reboot required")
-            0
-        } catch (e: Exception) {
-            Log.e(TAG, "install KPM failed", e)
-            -1
-        } finally {
-            tempDir.deleteRecursively()
+                // Installed KPMs are loaded by the boot-time loader. Do not load them
+                // in the current session; installation takes effect after reboot.
+                Log.i(TAG, "install KPM $name to $destination; reboot required")
+                0
+            } catch (e: Exception) {
+                Log.e(TAG, "install KPM failed", e)
+                -1
+            } finally {
+                tempDir.deleteRecursively()
+            }
         }
     }
 

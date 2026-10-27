@@ -20,6 +20,7 @@ import me.bmax.apatch.ui.MainScreen
 import me.bmax.apatch.ui.UiMode
 import me.bmax.apatch.ui.component.moduleinstalldialog.ModuleInstallDialog
 import me.bmax.apatch.ui.page.about.AboutScreen
+import me.bmax.apatch.ui.page.online.OnlineScreen
 import me.bmax.apatch.ui.page.patch.PatchesScreen
 import me.bmax.apatch.ui.page.theme.ThemeScreen
 import me.bmax.apatch.ui.page.patchmode.PatchMode
@@ -102,6 +103,14 @@ fun NavGraph() {
 
             composable<ThemeRoute> {
                 ThemeScreen()
+            }
+
+            composable<OnlineRoute> { backStackEntry ->
+                val args = backStackEntry.toRoute<OnlineRoute>()
+                OnlineScreen(
+                    kpmOnly = args.kpmOnly,
+                    onBack = { navigator.popBackStack() }
+                )
             }
 
             composable<PatchesRoute> { backStackEntry ->

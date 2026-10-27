@@ -73,6 +73,12 @@ class Navigator(val navController: NavHostController) {
     fun navigateToAbout() = navController.navigate(AboutRoute)
     fun navigateToTheme() = navController.navigate(ThemeRoute)
 
+    fun navigateToOnline(kpmOnly: Boolean) {
+        navController.navigate(OnlineRoute(kpmOnly)) {
+            launchSingleTop = true
+        }
+    }
+
     fun navigateToPatches(mode: PatchMode, uri: Uri? = null) {
         navController.navigate(PatchesRoute(mode, uri?.toString()))
     }

@@ -83,6 +83,7 @@ import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.FloatingActionButton
 import top.yukonga.miuix.kmp.basic.HorizontalDivider
 import top.yukonga.miuix.kmp.basic.Icon
+import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.ListPopupColumn
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.PopupPositionProvider
@@ -98,6 +99,7 @@ import top.yukonga.miuix.kmp.blur.LayerBackdrop
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.Add
 import top.yukonga.miuix.kmp.icon.extended.Delete
+import top.yukonga.miuix.kmp.icon.extended.Download
 import top.yukonga.miuix.kmp.icon.extended.Settings
 import top.yukonga.miuix.kmp.icon.extended.Update
 import top.yukonga.miuix.kmp.theme.MiuixTheme
@@ -283,6 +285,15 @@ fun KPModuleScreenMiuix(
                 color = backdrop.getAppBarColor(),
                 title = stringResource(R.string.kpm),
                 scrollBehavior = scrollBehavior,
+                actions = {
+                    IconButton(onClick = { navigator.navigateToOnline(kpmOnly = true) }) {
+                        Icon(
+                            imageVector = MiuixIcons.Download,
+                            tint = colorScheme.onSurface,
+                            contentDescription = stringResource(R.string.online_module)
+                        )
+                    }
+                },
             ) {
                 AppSearchBar(
                     query = uiState.search,

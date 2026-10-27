@@ -226,6 +226,13 @@ fun APModuleScreenMiuix(
                 title = stringResource(R.string.apm),
                 scrollBehavior = scrollBehavior,
                 actions = {
+                    IconButton(onClick = { navigator.navigateToOnline(kpmOnly = false) }) {
+                        Icon(
+                            imageVector = MiuixIcons.Download,
+                            tint = colorScheme.onSurface,
+                            contentDescription = stringResource(R.string.online_module)
+                        )
+                    }
                     var sortIndex by remember {
                         mutableIntStateOf(
                             when {
