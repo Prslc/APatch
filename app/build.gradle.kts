@@ -59,6 +59,7 @@ android {
     buildToolsVersion = androidBuildToolsVersion
 
     defaultConfig {
+	applicationId = "com.example.apatch"
         minSdk = androidMinSdkVersion
         targetSdk = androidTargetSdkVersion
         versionCode = managerVersionCode
