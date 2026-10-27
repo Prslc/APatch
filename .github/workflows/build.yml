@@ -32,6 +32,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: KernelPatch info
+        id: kp_info
+        run: |
+          KP_VERSION=$(awk '/#define MAJOR/{m=$3} /#define MINOR/{n=$3} /#define PATCH/{p=$3} END{print m"."n"."p}' app/src/main/cpp/version)
+          KP_HASH=$(git ls-remote https://github.com/bmax121/KernelPatch.git "refs/tags/${KP_VERSION}" | cut -c1-7)
+          echo "KP_VERSION=${KP_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "KP_HASH=${KP_HASH}" >> "$GITHUB_OUTPUT"
+
       - name: Generate version
         id: parse_version
         run: |
@@ -141,26 +149,20 @@ jobs:
           path: |
             ${{ steps.sign_debug_app.outputs.signedReleaseFile }}
 
-      - name: Post to channel
+      - name: Post to Telegram
         if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && github.ref_type != 'tag' }}
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-          COMMIT_URL: ${{ github.event.head_commit.url }}
-          COMMIT_ID: ${{ github.event.head_commit.id }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+          BRANCH: ${{ github.ref_name }}
+          VERSION: "${{ steps.parse_version.outputs.VERSION }}"
+          KP_VERSION: "${{ steps.kp_info.outputs.KP_VERSION }}"
+          KP_HASH: "${{ steps.kp_info.outputs.KP_HASH }}"
+          RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         run: |
-          if [ -n "${BOT_TOKEN}" ]; then
-            CHANNELS=(-1002058433411 -1001910818234 -1002312454396)
-            RELEASE_APK="${{ steps.sign_app.outputs.signedReleaseFile }}"
-            DEBUG_APK="${{ steps.sign_debug_app.outputs.signedReleaseFile }}"
-          
-            for CHANNEL in "${CHANNELS[@]}"; do
-              URL=$(python3 .github/scripts/telegram_url.py $CHANNEL)
-              if [ -f "$RELEASE_APK" ] && [ -f "$DEBUG_APK" ]; then
-                curl -v "$URL" -F "Release1=@$RELEASE_APK" -F "Release2=@$DEBUG_APK"
-              fi
-            done
-          fi
+          APK_PATH="${{ steps.sign_app.outputs.signedReleaseFile }}"
+          [ -n "$APK_PATH" ] && [ -f "$APK_PATH" ] || { echo "signed release APK missing"; exit 1; }
+          python3 .github/scripts/telegram_bot.py "${{ secrets.CHANNEL_ID }}" "$APK_PATH"
 
       - name: Release apk
         env:
