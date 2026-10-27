@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.Engineering
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.rounded.DeleteForever
@@ -112,6 +113,18 @@ fun SettingScreenMiuix(
                             summary = stringResource(R.string.settings_sucompat_summary),
                             checked = uiState.sucompatEnabled,
                             onCheckedChange = { viewModel.toggleSucompat(it) }
+                        )
+                    }
+
+                    // Hide SELinux modification
+                    if (uiState.isKpatchReady && uiState.isApatchReady) {
+                        SwitchItem(
+                            title = stringResource(R.string.settings_selinux_hide),
+                            summary = stringResource(R.string.settings_selinux_hide_summary),
+                            icon = Icons.Filled.Security,
+                            checked = uiState.selinuxHideEnabled,
+                            enabled = uiState.kernelSupported || uiState.selinuxHideEnabled,
+                            onCheckedChange = { viewModel.requestSelinuxHide(it) }
                         )
                     }
 

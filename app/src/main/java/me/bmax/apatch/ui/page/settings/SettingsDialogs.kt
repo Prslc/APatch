@@ -33,6 +33,11 @@ fun SettingsDialogOverlay(uiState: SettingsUiState, viewModel: SettingsViewModel
             UiMode.Material -> LogDialogMaterial(viewModel)
         }
 
+        SettingDialogType.SELINUX_HIDE_WARNING -> when (LocalUiMode.current) {
+            UiMode.Miuix -> SelinuxHideWarningDialogMiuix(uiState, viewModel)
+            UiMode.Material -> SelinuxHideWarningDialogMaterial(uiState, viewModel)
+        }
+
         SettingDialogType.NONE -> { /* None */ }
     }
 }

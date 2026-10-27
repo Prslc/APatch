@@ -23,6 +23,8 @@ import me.bmax.apatch.R
 import me.bmax.apatch.apApp
 import me.bmax.apatch.data.repository.SettingsRepository
 import me.bmax.apatch.data.repository.SettingsRepositoryImpl
+import me.bmax.apatch.util.getKernelVersionCode
+import me.bmax.apatch.util.isGkiKernel
 import me.bmax.apatch.util.rootShellForResult
 
 class SettingsViewModel(
@@ -54,9 +56,12 @@ class SettingsViewModel(
         _uiState.update {
             it.copy(
                 sucompatEnabled = settingsRepo.getBoolean("sucompat_enabled", false),
+                selinuxHideEnabled = settingsRepo.getBoolean(SELINUX_HIDE_PREF, false),
                 enableWebDebugging = settingsRepo.getBoolean("enable_web_debugging", false),
                 checkUpdate = settingsRepo.getBoolean("check_update", true),
-                currentLanguageIndex = languagesValues.indexOf(tag).coerceAtLeast(0)
+                currentLanguageIndex = languagesValues.indexOf(tag).coerceAtLeast(0),
+                kernelVersionCode = getKernelVersionCode(),
+                isGki = isGkiKernel()
             )
         }
     }
@@ -135,6 +140,40 @@ class SettingsViewModel(
         }
     }
 
+    /**
+     * Enabling SELinux hide on an untested kernel asks for confirmation first;
+     * disabling is always safe and applied immediately.
+     */
+    fun requestSelinuxHide(enabled: Boolean) {
+        if (enabled && _uiState.value.selinuxHideNeedsWarning) {
+            showDialog(SettingDialogType.SELINUX_HIDE_WARNING)
+        } else {
+            applySelinuxHide(enabled)
+        }
+    }
+
+    fun confirmSelinuxHide() {
+        dismissDialog()
+        applySelinuxHide(true)
+    }
+
+    private fun applySelinuxHide(enabled: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val command = if (enabled) {
+                "touch ${APApplication.SELINUX_HIDE_FILE}"
+            } else {
+                "rm -f ${APApplication.SELINUX_HIDE_FILE}"
+            }
+            val success = runCatching { rootShellForResult(command).isSuccess }
+                .getOrDefault(false)
+            Log.d("SelinuxHideToggle", "$command result: $success")
+            if (success) {
+                settingsRepo.setBoolean(SELINUX_HIDE_PREF, enabled)
+                _uiState.update { it.copy(selinuxHideEnabled = enabled) }
+            }
+        }
+    }
+
     fun setWebDebugging(enabled: Boolean) {
         settingsRepo.setBoolean("enable_web_debugging", enabled)
         _uiState.update { it.copy(enableWebDebugging = enabled) }
@@ -187,5 +226,9 @@ class SettingsViewModel(
             // Recreate the activity so attachBaseContext() re-applies the locale.
             (context as? Activity)?.recreate()
         }
+    }
+
+    companion object {
+        private const val SELINUX_HIDE_PREF = "selinux_hide_enabled"
     }
 }

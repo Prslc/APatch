@@ -279,3 +279,62 @@ fun LogDialogMaterial(viewModel: SettingsViewModel) {
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SelinuxHideWarningDialogMaterial(
+    uiState: SettingsUiState,
+    viewModel: SettingsViewModel
+) {
+    BasicAlertDialog(
+        onDismissRequest = { viewModel.dismissDialog() }
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = AlertDialogDefaults.shape,
+            color = AlertDialogDefaults.containerColor,
+            tonalElevation = AlertDialogDefaults.TonalElevation,
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.settings_selinux_hide_warning_title),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+                if ((uiState.kernelVersionCode ?: 0) < 510) {
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(R.string.settings_selinux_hide_warning_below_5_10),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                if (!uiState.isGki) {
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(R.string.settings_selinux_hide_warning_non_gki),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Spacer(Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = { viewModel.dismissDialog() }) {
+                        Text(stringResource(android.R.string.cancel))
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    Button(onClick = { viewModel.confirmSelinuxHide() }) {
+                        Text(stringResource(android.R.string.ok))
+                    }
+                }
+            }
+        }
+    }
+}

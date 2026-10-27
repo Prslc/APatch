@@ -45,6 +45,7 @@ import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.preference.ArrowPreference
 import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
+import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.window.WindowDialog
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -248,6 +249,54 @@ fun PageScaleDialogMiuix(viewModel: ThemeViewModel) {
                         viewModel.setPageScale(clamped / 100f)
                         viewModel.dismissPageScaleDialog()
                     },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.textButtonColorsPrimary(),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SelinuxHideWarningDialogMiuix(
+    uiState: SettingsUiState,
+    viewModel: SettingsViewModel
+) {
+    WindowDialog(
+        show = true,
+        title = stringResource(R.string.settings_selinux_hide_warning_title),
+        onDismissRequest = { viewModel.dismissDialog() }
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            if ((uiState.kernelVersionCode ?: 0) < 510) {
+                Text(
+                    text = stringResource(R.string.settings_selinux_hide_warning_below_5_10),
+                    style = MiuixTheme.textStyles.body2,
+                    color = colorScheme.onSurfaceVariantActions
+                )
+                Spacer(Modifier.height(8.dp))
+            }
+            if (!uiState.isGki) {
+                Text(
+                    text = stringResource(R.string.settings_selinux_hide_warning_non_gki),
+                    style = MiuixTheme.textStyles.body2,
+                    color = colorScheme.onSurfaceVariantActions
+                )
+                Spacer(Modifier.height(8.dp))
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(
+                    stringResource(android.R.string.cancel),
+                    onClick = { viewModel.dismissDialog() },
+                    modifier = Modifier.weight(1f),
+                )
+                Spacer(Modifier.width(20.dp))
+                TextButton(
+                    stringResource(android.R.string.ok),
+                    onClick = { viewModel.confirmSelinuxHide() },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.textButtonColorsPrimary(),
                 )

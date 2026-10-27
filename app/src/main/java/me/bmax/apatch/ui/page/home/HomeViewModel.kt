@@ -1,7 +1,6 @@
 package me.bmax.apatch.ui.page.home
 
 import android.os.Build
-import android.system.Os
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
@@ -22,6 +21,7 @@ import me.bmax.apatch.data.repository.KPModuleRepository
 import me.bmax.apatch.data.repository.KPModuleRepositoryImpl
 import me.bmax.apatch.util.checkNewVersion
 import me.bmax.apatch.util.getDeviceInfo
+import me.bmax.apatch.util.getKernelRelease
 import me.bmax.apatch.util.getSELinuxStatus
 import me.bmax.apatch.util.getSystemVersion
 import me.bmax.apatch.util.isJailbreakMode
@@ -37,7 +37,7 @@ class HomeViewModel(
         _uiState.update {
             it.copy(
                 deviceInfo = getDeviceInfo(),
-                kernelVersion = Os.uname().release,
+                kernelVersion = getKernelRelease().orEmpty(),
                 androidVersion = getSystemVersion(),
                 fingerprint = Build.FINGERPRINT
             )

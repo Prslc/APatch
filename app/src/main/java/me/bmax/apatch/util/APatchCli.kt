@@ -194,12 +194,15 @@ fun rebootJailbreakAware() {
     }
 }
 
+/** Raw `uname -r` of the running kernel, or null when it cannot be read. */
+fun getKernelRelease(): String? = runCatching { Os.uname().release }.getOrNull()
+
 /**
  * Detect the Kernel Module Interface (KMI) of the running kernel, e.g.
  * `android14-5.15`, from `uname -r` (same parsing as KernelSU).
  */
 fun getKmi(): String? {
-    val release = runCatching { Os.uname().release }.getOrNull() ?: return null
+    val release = getKernelRelease() ?: return null
     val m = Regex("(.* )?(\\d+\\.\\d+)(\\S+)?(android\\d+)(.*)").find(release) ?: return null
     return "${m.groupValues[4]}-${m.groupValues[2]}"
 }
@@ -209,6 +212,21 @@ fun jailbreakAssetName(): String? {
     val kmi = getKmi() ?: return null
     return "${kmi}_kernelpatch.ko"
 }
+
+/**
+ * Running kernel version as a comparable integer, e.g. `4.19` -> 419,
+ * `5.10` -> 510, `6.1` -> 601. Returns null if it can't be parsed.
+ */
+fun getKernelVersionCode(): Int? {
+    val release = getKernelRelease() ?: return null
+    val m = Regex("^(\\d+)\\.(\\d+)").find(release) ?: return null
+    val major = m.groupValues[1].toIntOrNull() ?: return null
+    val minor = m.groupValues[2].toIntOrNull() ?: return null
+    return major * 100 + minor
+}
+
+/** Whether the running kernel is a GKI kernel (i.e. exposes `android<N>` in uname). */
+fun isGkiKernel(): Boolean = getKmi() != null
 
 /** Extract the bundled kernelpatch.ko for this device's kernel to the app files dir. */
 fun extractJailbreakKo(): File? {
