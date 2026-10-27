@@ -32,6 +32,5 @@ data class PatchUiState(
 
     val jailbreakBlocked: Boolean = false,
 
-    val error: String = "",
-    val patchLog: String = ""
+    val error: String = ""
 )

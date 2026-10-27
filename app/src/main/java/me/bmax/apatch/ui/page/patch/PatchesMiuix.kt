@@ -46,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -65,6 +66,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bmax.apatch.R
@@ -115,6 +117,7 @@ fun PatchesScreenMiuix(
     val navigator = LocalNavigator.current
     val scrollBehavior = MiuixScrollBehavior()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val patchLog = viewModel.log.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
 
@@ -185,10 +188,10 @@ fun PatchesScreenMiuix(
         }
     }
 
-    LaunchedEffect(uiState.patchLog) {
-        if (uiState.isPatching) {
-            scrollState.animateScrollTo(scrollState.maxValue)
-        }
+    LaunchedEffect(Unit) {
+        snapshotFlow { scrollState.maxValue }
+            .distinctUntilChanged()
+            .collect { scrollState.scrollTo(it) }
     }
 
     Scaffold(
@@ -321,7 +324,7 @@ fun PatchesScreenMiuix(
                             modifier = Modifier
                                 .padding(12.dp)
                                 .fillMaxWidth(),
-                            text = uiState.patchLog,
+                            text = patchLog.value,
                             fontSize = 11.sp,
                             fontFamily = FontFamily.Monospace,
                             lineHeight = 16.sp

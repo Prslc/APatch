@@ -14,6 +14,7 @@ import kotlinx.coroutines.sync.withLock
 import me.bmax.apatch.ui.page.kpm.KPModel
 import me.bmax.apatch.ui.page.patch.utils.PatchEngine
 import me.bmax.apatch.ui.page.patch.utils.checkSuperKeyValidation
+import me.bmax.apatch.util.LogBuffer
 import me.bmax.apatch.util.copyAndCloseOut
 import me.bmax.apatch.util.createRootShell
 import me.bmax.apatch.util.inputStream
@@ -27,15 +28,16 @@ class PatchesViewModel : ViewModel() {
 
     private val actionMutex = Mutex()
 
+    private val _log = MutableStateFlow("")
+    val log: StateFlow<String> = _log.asStateFlow()
+
+    private val logBuffer = LogBuffer(scope = viewModelScope) { _log.value = it }
+
     private val patchEngine by lazy {
-        val logBuilder = StringBuilder()
         val errorBuilder = StringBuilder()
         PatchEngine(
             shell = createRootShell(),
-            onLog = { logMsg ->
-                logBuilder.append(logMsg).append("\n")
-                _uiState.update { it.copy(patchLog = logBuilder.toString()) }
-            },
+            onLog = { logMsg -> logBuffer.append(logMsg) },
             onError = { errMsg ->
                 errorBuilder.append(errMsg)
                 _uiState.update { it.copy(error = errorBuilder.toString()) }
@@ -117,10 +119,12 @@ class PatchesViewModel : ViewModel() {
     fun doUnpatch() {
         viewModelScope.launch(Dispatchers.IO) {
             actionMutex.withLock {
-                _uiState.update { it.copy(isPatching = true, patchLog = "") }
+                logBuffer.clear()
+                _uiState.update { it.copy(isPatching = true) }
                 try {
                     patchEngine.doUnpatch(_uiState.value.bootDev)
                 } finally {
+                    logBuffer.flush()
                     _uiState.update { it.copy(isPatching = false, isPatchDone = true) }
                 }
             }
@@ -130,10 +134,12 @@ class PatchesViewModel : ViewModel() {
     fun doPatch(mode: PatchMode, useKey: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             actionMutex.withLock {
-                _uiState.update { it.copy(isPatching = true, patchLog = "") }
+                logBuffer.clear()
+                _uiState.update { it.copy(isPatching = true) }
                 try {
                     patchEngine.doPatch(_uiState.value, mode, useKey)
                 } finally {
+                    logBuffer.flush()
                     _uiState.update { it.copy(isPatching = false, isPatchDone = true) }
                 }
             }
