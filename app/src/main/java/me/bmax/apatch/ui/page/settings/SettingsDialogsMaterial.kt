@@ -104,7 +104,7 @@ fun ResetSUPathDialogMaterial(
     viewModel: SettingsViewModel
 ) {
     val context = LocalContext.current
-    val suPath = uiState.suPath
+    var suPath by remember(uiState.suPath) { mutableStateOf(uiState.suPath) }
     val isPathValid = suPath.startsWith("/") && suPath.trim().length > 1
 
     BasicAlertDialog(
@@ -135,7 +135,7 @@ fun ResetSUPathDialogMaterial(
                 Spacer(Modifier.height(16.dp))
                 OutlinedTextField(
                     value = suPath,
-                    onValueChange = { viewModel.setSuPath(it) },
+                    onValueChange = { suPath = it },
                     label = { Text(stringResource(R.string.setting_reset_su_new_path)) },
                     singleLine = true,
                     shape = RoundedCornerShape(16.dp),

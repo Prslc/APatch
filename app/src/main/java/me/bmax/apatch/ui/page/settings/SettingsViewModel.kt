@@ -108,10 +108,6 @@ class SettingsViewModel(
         }
     }
 
-    fun setSuPath(path: String) {
-        _uiState.update { it.copy(suPath = path) }
-    }
-
     fun toggleGlobalNamespace(enabled: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             val success = settingsRepo.setGlobalNamespaceEnabled(enabled)

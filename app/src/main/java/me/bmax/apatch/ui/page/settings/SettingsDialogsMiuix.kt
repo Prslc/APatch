@@ -155,7 +155,7 @@ fun ResetSUPathDialogMiuix(
     viewModel: SettingsViewModel
 ) {
     val context = LocalContext.current
-    val suPath = uiState.suPath
+    var suPath by remember(uiState.suPath) { mutableStateOf(uiState.suPath) }
     val isPathValid = suPath.startsWith("/") && suPath.trim().length > 1
 
     WindowDialog(
@@ -165,7 +165,7 @@ fun ResetSUPathDialogMiuix(
     ) {
         TextField(
             value = suPath,
-            onValueChange = { viewModel.setSuPath(it) },
+            onValueChange = { suPath = it },
             label = stringResource(R.string.setting_reset_su_new_path),
         )
 
