@@ -683,7 +683,7 @@ private fun AddKpmItemMaterial(onSelected: (Uri) -> Unit) {
 private fun SetSuperKeyViewMaterial(viewModel: PatchesViewModel, uiState: PatchUiState) {
     var skey by remember { mutableStateOf(uiState.superkey) }
     var keyVisible by remember { mutableStateOf(false) }
-    val showWarn by remember(skey) {
+    val showWarn by remember {
         derivedStateOf { !checkSuperKeyValidation(skey) }
     }
 
