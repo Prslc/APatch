@@ -154,6 +154,7 @@ fun SuperUserScreenMaterial(
             }
         }
     ) { paddingValues ->
+        val appCount = uiState.filteredApps.size
         PullToRefreshBox(
             state = pullRefreshState,
             isRefreshing = uiState.isRefreshing,
@@ -188,7 +189,7 @@ fun SuperUserScreenMaterial(
                     ) { index, app ->
                         AppItemMaterial(
                             app = app,
-                            shape = segmentedShape(index, uiState.filteredApps.size),
+                            shape = segmentedShape(index, appCount),
                             topPadding = if (index == 0) {
                                 0.dp
                             } else {

@@ -531,6 +531,7 @@ private fun KPModuleList(
     bottomPadding: Dp,
     scaffoldPadding: PaddingValues = PaddingValues(),
 ) {
+    val updates = uiState.updates
     Box(modifier = Modifier.padding(scaffoldPadding)) {
         PullToRefresh(
             isRefreshing = uiState.isRefreshing,
@@ -612,7 +613,7 @@ private fun KPModuleList(
                         ) { module ->
                             KPModuleItem(
                                 module = module,
-                                update = uiState.updates[module.moduleId],
+                                update = updates[module.moduleId],
                                 onUninstall = { onUninstall(module) },
                                 onControl = { onControl(module) },
                                 onUpdate = { onUpdate(module) },

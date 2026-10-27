@@ -351,6 +351,7 @@ fun KPModuleScreenMaterial(
             }
         }
     ) { paddingValues ->
+        val updates = uiState.updates
         val pullRefreshState = rememberPullToRefreshState()
         PullToRefreshBox(
             state = pullRefreshState,
@@ -434,7 +435,7 @@ fun KPModuleScreenMaterial(
                         ) { module ->
                             KPModuleItemMaterial(
                                 module = module,
-                                update = uiState.updates[module.moduleId],
+                                update = updates[module.moduleId],
                                 onUninstall = {
                                     scope.launch {
                                         val result = confirmDialog.awaitConfirm(
