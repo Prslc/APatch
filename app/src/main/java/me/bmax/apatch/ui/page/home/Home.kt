@@ -13,8 +13,8 @@ import me.bmax.apatch.ui.UiMode
 
 @Composable
 fun HomeScreen(
-    modifier: Modifier,
     bottomPadding: Dp,
+    modifier: Modifier = Modifier,
     isCurrentPage: Boolean = true,
     viewModel: HomeViewModel = viewModel(),
 ) {
@@ -32,7 +32,7 @@ fun HomeScreen(
     }
 
     when (LocalUiMode.current) {
-        UiMode.Miuix -> HomeScreenMiuix(modifier, bottomPadding, isCurrentPage, viewModel)
-        UiMode.Material -> HomeScreenMaterial(modifier, bottomPadding, isCurrentPage, viewModel)
+        UiMode.Miuix -> HomeScreenMiuix(bottomPadding, modifier, isCurrentPage, viewModel)
+        UiMode.Material -> HomeScreenMaterial(bottomPadding, modifier, isCurrentPage, viewModel)
     }
 }

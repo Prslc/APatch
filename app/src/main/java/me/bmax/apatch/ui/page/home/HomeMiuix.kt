@@ -77,8 +77,8 @@ import top.yukonga.miuix.kmp.utils.overScrollVertical
 
 @Composable
 fun HomeScreenMiuix(
-    modifier: Modifier,
     bottomPadding: Dp,
+    modifier: Modifier = Modifier,
     isCurrentPage: Boolean = true,
     viewModel: HomeViewModel = viewModel(),
 ) {

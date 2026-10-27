@@ -13,11 +13,11 @@ import me.bmax.apatch.ui.component.material.ExpressiveSearchBar
 internal fun AppSearchBarMaterial(
     query: String,
     onQueryChange: (String) -> Unit,
-    modifier: Modifier,
     onSearch: () -> Unit,
     placeholder: String,
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     ExpressiveSearchBar(

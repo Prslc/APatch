@@ -13,11 +13,11 @@ import top.yukonga.miuix.kmp.basic.SearchBar
 internal fun AppSearchBarMiuix(
     query: String,
     onQueryChange: (String) -> Unit,
-    modifier: Modifier,
     onSearch: () -> Unit,
     placeholder: String,
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     SearchBar(

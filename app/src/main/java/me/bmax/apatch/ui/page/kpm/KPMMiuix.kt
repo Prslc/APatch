@@ -113,8 +113,8 @@ private const val TAG = "KernelPatchModule"
 
 @Composable
 fun KPModuleScreenMiuix(
-    modifier: Modifier,
     bottomPadding: Dp,
+    modifier: Modifier = Modifier,
     isCurrentPage: Boolean = true,
     viewModel: KPModuleViewModel = viewModel()
 ) {

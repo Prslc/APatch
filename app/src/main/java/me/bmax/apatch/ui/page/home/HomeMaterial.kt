@@ -89,8 +89,8 @@ import me.bmax.apatch.util.installJailbreak
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomeScreenMaterial(
-    modifier: Modifier,
     bottomPadding: Dp,
+    modifier: Modifier = Modifier,
     isCurrentPage: Boolean = true,
     viewModel: HomeViewModel = viewModel(),
 ) {

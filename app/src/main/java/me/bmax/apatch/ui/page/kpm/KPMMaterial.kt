@@ -119,8 +119,8 @@ import top.yukonga.miuix.kmp.blur.LayerBackdrop
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun KPModuleScreenMaterial(
-    modifier: Modifier,
     bottomPadding: Dp,
+    modifier: Modifier = Modifier,
     isCurrentPage: Boolean = true,
     viewModel: KPModuleViewModel = viewModel()
 ) {

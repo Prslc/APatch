@@ -74,8 +74,8 @@ import me.bmax.apatch.util.formatSize
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreenMaterial(
-    modifier: Modifier,
     bottomPadding: Dp,
+    modifier: Modifier = Modifier,
     isCurrentPage: Boolean = true,
     viewModel: SettingsViewModel = viewModel()
 ) {

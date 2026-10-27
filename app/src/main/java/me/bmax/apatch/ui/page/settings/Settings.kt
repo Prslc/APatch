@@ -9,13 +9,13 @@ import me.bmax.apatch.ui.UiMode
 
 @Composable
 fun SettingScreen(
-    modifier: Modifier,
     bottomPadding: Dp,
+    modifier: Modifier = Modifier,
     isCurrentPage: Boolean = true,
     viewModel: SettingsViewModel = viewModel()
 ) {
     when (LocalUiMode.current) {
-        UiMode.Miuix -> SettingScreenMiuix(modifier, bottomPadding, isCurrentPage, viewModel)
-        UiMode.Material -> SettingScreenMaterial(modifier, bottomPadding, isCurrentPage, viewModel)
+        UiMode.Miuix -> SettingScreenMiuix(bottomPadding, modifier, isCurrentPage, viewModel)
+        UiMode.Material -> SettingScreenMaterial(bottomPadding, modifier, isCurrentPage, viewModel)
     }
 }

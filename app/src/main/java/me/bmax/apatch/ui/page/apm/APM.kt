@@ -9,13 +9,13 @@ import me.bmax.apatch.ui.UiMode
 
 @Composable
 fun APModuleScreen(
-    modifier: Modifier,
     bottomPadding: Dp,
+    modifier: Modifier = Modifier,
     isCurrentPage: Boolean = true,
     viewModel: APModuleViewModel = viewModel()
 ) {
     when (LocalUiMode.current) {
-        UiMode.Miuix -> APModuleScreenMiuix(modifier, bottomPadding, isCurrentPage, viewModel)
-        UiMode.Material -> APModuleScreenMaterial(modifier, bottomPadding, isCurrentPage, viewModel)
+        UiMode.Miuix -> APModuleScreenMiuix(bottomPadding, modifier, isCurrentPage, viewModel)
+        UiMode.Material -> APModuleScreenMaterial(bottomPadding, modifier, isCurrentPage, viewModel)
     }
 }
