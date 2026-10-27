@@ -77,6 +77,15 @@ class WebUIActivity : ComponentActivity() {
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private var uiEvent by mutableStateOf<WebUIEvent?>(null)
     private var isLoading by mutableStateOf(true)
+    private var suFilePathHandler: SuFilePathHandler? = null
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Release the root shell held by the webroot file handler, otherwise
+        // every opened WebUI leaks a root shell process.
+        suFilePathHandler?.close()
+        suFilePathHandler = null
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -248,7 +257,9 @@ class WebUIActivity : ComponentActivity() {
             .setDomain("mui.kernelsu.org")
             .addPathHandler(
                 "/",
-                SuFilePathHandler(this, webRoot, { insets }, { enable -> enableInsets(enable) })
+                SuFilePathHandler(this, webRoot, { insets }, { enable -> enableInsets(enable) }).also {
+                    suFilePathHandler = it
+                }
             )
             .build()
 

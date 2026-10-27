@@ -130,6 +130,11 @@ object APatchCli {
     }
 }
 
+inline fun <T> withNewRootShell(
+    globalMnt: Boolean = false,
+    block: Shell.() -> T
+): T = createRootShell(globalMnt).use(block)
+
 fun getRootShell(globalMnt: Boolean = false): Shell {
 
     return if (globalMnt) APatchCli.GLOBAL_MNT_SHELL else {

@@ -72,6 +72,7 @@ object AppRepository {
                 val h2p = HanziToPinyin.getInstance()
 
                 val uids = Natives.suUids().toSet()
+                Natives.su()
                 val configs = PkgConfig.readConfigs()
 
                 val newApps = allPackages.list.map { pkg ->
