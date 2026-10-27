@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -13,6 +14,7 @@ val LocalNavigator = staticCompositionLocalOf<Navigator> {
     error("NavController not provided")
 }
 
+@Stable
 class Navigator(val navController: NavHostController) {
     private val intentEvents = MutableSharedFlow<Intent>(extraBufferCapacity = 64)
 
