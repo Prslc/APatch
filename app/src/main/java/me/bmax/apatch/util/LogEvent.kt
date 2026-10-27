@@ -87,7 +87,7 @@ fun getBugreportFile(context: Context): File {
 
         // modules
         val modulesFile = File(bugreportDir, "modules.json")
-        modulesFile.writeText(listModuleJson())
+        modulesFile.writeText(runCatching { listModuleJson() }.getOrDefault("[]"))
 
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH_mm")
         val current = LocalDateTime.now().format(formatter)

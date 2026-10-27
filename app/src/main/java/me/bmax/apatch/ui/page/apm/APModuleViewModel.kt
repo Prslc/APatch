@@ -5,19 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -29,7 +22,6 @@ import me.bmax.apatch.ui.page.home.ModuleCountsRefresher
 import me.bmax.apatch.util.hasMagisk
 import java.text.Collator
 import java.util.Locale
-import kotlin.time.Duration.Companion.milliseconds
 
 class APModuleViewModel(
     private val moduleRepo: ApModuleRepository = ApModuleRepositoryImpl,
@@ -43,6 +35,7 @@ class APModuleViewModel(
     val uiState = _uiState.asStateFlow()
 
     private var refreshJob: Job? = null
+    private var searchJob: Job? = null
 
     init {
         refreshMagiskState()
@@ -65,24 +58,17 @@ class APModuleViewModel(
 
     private val staticCollator = Collator.getInstance(Locale.getDefault())
 
-    @OptIn(FlowPreview::class)
-    val filteredModules = combine(
-        uiState.map { it.search }.distinctUntilChanged().debounce(200.milliseconds),
-        uiState.map { it.modules }.distinctUntilChanged(),
-        uiState.map { it.sortEnabledFirst }.distinctUntilChanged(),
-        uiState.map { it.sortActionFirst }.distinctUntilChanged(),
-        uiState.map { it.sortWebFirst }.distinctUntilChanged()
-    ) { query, modules, sortEnabledFirst, sortActionFirst, sortWebFirst ->
-        val trimmedQuery = query.trim()
-        modules.filter {
+    /** Recomputes the single visible list held in [APMUiState]. */
+    private fun APMUiState.withVisibleModules(): APMUiState {
+        val trimmedQuery = search.trim()
+        val visible = modules.filter {
             trimmedQuery.isEmpty() ||
                     it.id.contains(trimmedQuery, true) ||
                     it.name.contains(trimmedQuery, true) ||
                     it.pinyinName.contains(trimmedQuery, true)
         }.sortedWith(moduleComparator(sortEnabledFirst, sortActionFirst, sortWebFirst))
+        return copy(filteredModules = visible)
     }
-        .flowOn(Dispatchers.Default)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private fun moduleComparator(
         sortEnabledFirst: Boolean,
@@ -108,10 +94,25 @@ class APModuleViewModel(
 
     fun onSearchChange(newSearch: String) {
         _uiState.update { it.copy(search = newSearch) }
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(200)
+            _uiState.update { it.withVisibleModules() }
+        }
     }
 
     fun markNeedRefresh() {
         _uiState.update { it.copy(isNeedRefresh = true) }
+    }
+
+    /**
+     * Single entry point for the screens' visibility/resume triggers. Keeps the retry
+     * decision in the ViewModel and never re-enters while a load is in flight.
+     */
+    fun loadIfNeeded() {
+        val state = _uiState.value
+        if (state.isRefreshing) return
+        if (!state.hasLoaded || state.isNeedRefresh) fetchModuleList()
     }
 
     fun resetSort() {
@@ -120,7 +121,7 @@ class APModuleViewModel(
                 sortEnabledFirst = false,
                 sortActionFirst = false,
                 sortWebFirst = false
-            )
+            ).withVisibleModules()
         }
         persistSort()
     }
@@ -132,7 +133,7 @@ class APModuleViewModel(
                 sortEnabledFirst = true,
                 sortActionFirst = false,
                 sortWebFirst = false
-            )
+            ).withVisibleModules()
         }
         persistSort()
     }
@@ -144,7 +145,7 @@ class APModuleViewModel(
                 sortActionFirst = true,
                 sortEnabledFirst = false,
                 sortWebFirst = false
-            )
+            ).withVisibleModules()
         }
         persistSort()
     }
@@ -156,7 +157,7 @@ class APModuleViewModel(
                 sortWebFirst = true,
                 sortEnabledFirst = false,
                 sortActionFirst = false
-            )
+            ).withVisibleModules()
         }
         persistSort()
     }
@@ -194,7 +195,7 @@ class APModuleViewModel(
     fun fetchModuleList() {
         refreshJob?.cancel()
         refreshJob = viewModelScope.launch {
-            _uiState.update { it.copy(isRefreshing = true) }
+            _uiState.update { it.copy(isRefreshing = true, error = null) }
             val result = withContext(Dispatchers.IO) {
                 moduleRepo.listModules()
             }
@@ -219,14 +220,18 @@ class APModuleViewModel(
                             modules = newList,
                             isNeedRefresh = false,
                             isRefreshing = false,
+                            hasLoaded = true,
+                            error = null,
                             updateResults = updateResults
-                        )
+                        ).withVisibleModules()
                     }
                     checkMetaModuleWarning(newList)
                 },
                 onFailure = { e ->
+                    // Keep hasLoaded false so the next page visit/resume retries, and keep
+                    // isNeedRefresh pending so a requested refresh is not lost.
                     Log.e(TAG, "fetchModuleList failed", e)
-                    _uiState.update { it.copy(isNeedRefresh = false, isRefreshing = false) }
+                    _uiState.update { it.copy(isRefreshing = false, hasLoaded = false, error = e) }
                 }
             )
         }

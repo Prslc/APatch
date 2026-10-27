@@ -37,11 +37,9 @@ object ApModuleRepositoryImpl : ApModuleRepository {
     }
 
     override suspend fun getModuleCount(): Int {
-        return listModuleJson().let { result ->
-            runCatching {
-                JSONArray(result).length()
-            }.getOrDefault(0)
-        }
+        return runCatching {
+            JSONArray(listModuleJson()).length()
+        }.getOrDefault(0)
     }
 
     override suspend fun checkModuleUpdate(module: ModuleInfo): Triple<String, String, String> {

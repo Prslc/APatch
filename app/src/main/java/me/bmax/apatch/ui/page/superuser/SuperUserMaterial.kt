@@ -59,14 +59,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.bmax.apatch.R
 import me.bmax.apatch.data.AppInfo
-import me.bmax.apatch.data.AppRepository
 import me.bmax.apatch.ui.component.AppIconImage
 import me.bmax.apatch.ui.component.ScrollToTopOnChange
 import me.bmax.apatch.ui.component.labeltext.LabelText
@@ -88,7 +89,6 @@ fun SuperUserScreenMaterial(
     viewModel: SuperUserViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val appList by viewModel.filteredApps.collectAsStateWithLifecycle()
 
     val backdrop =
         if (isCurrentPage) rememberMaterial3BlurBackdrop(LocalEnableBlur.current) else null
@@ -98,7 +98,7 @@ fun SuperUserScreenMaterial(
     val pullRefreshState = rememberPullToRefreshState()
     val listState = rememberLazyListState()
 
-    val latestAppList = rememberUpdatedState(appList)
+    val latestAppList = rememberUpdatedState(uiState.filteredApps)
     ScrollToTopOnChange(
         listState,
         uiState.sortBy,
@@ -109,7 +109,13 @@ fun SuperUserScreenMaterial(
     )
 
     LaunchedEffect(isCurrentPage) {
-        if (isCurrentPage && AppRepository.apps.value.isEmpty()) viewModel.fetchAppList()
+        if (isCurrentPage) viewModel.loadIfNeeded()
+    }
+
+    val latestIsCurrentPage by rememberUpdatedState(isCurrentPage)
+    LifecycleResumeEffect(Unit) {
+        if (latestIsCurrentPage) viewModel.loadIfNeeded()
+        onPauseOrDispose { }
     }
 
     val bgColor = MaterialTheme.colorScheme.surfaceContainer
@@ -175,14 +181,14 @@ fun SuperUserScreenMaterial(
                     end = 16.dp
                 )
             ) {
-                if (appList.isNotEmpty()) {
+                if (uiState.filteredApps.isNotEmpty()) {
                     itemsIndexed(
-                        items = appList,
+                        items = uiState.filteredApps,
                         key = { _, app -> app.packageName + app.uid }
                     ) { index, app ->
                         AppItemMaterial(
                             app = app,
-                            shape = segmentedShape(index, appList.size),
+                            shape = segmentedShape(index, uiState.filteredApps.size),
                             topPadding = if (index == 0) {
                                 0.dp
                             } else {
@@ -195,6 +201,18 @@ fun SuperUserScreenMaterial(
                                 viewModel.toggleExclude(app, excluded)
                             }
                         )
+                    }
+                } else if (uiState.error != null) {
+                    item {
+                        Box(
+                            modifier = Modifier.fillParentMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                stringResource(R.string.list_load_failed),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }

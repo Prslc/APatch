@@ -53,6 +53,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.Dispatchers
@@ -118,7 +119,6 @@ fun KPModuleScreenMiuix(
     viewModel: KPModuleViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val filteredModules by viewModel.filteredModules.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -129,7 +129,7 @@ fun KPModuleScreenMiuix(
     val kpModuleListState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     var fabVisible by remember { mutableStateOf(true) }
 
-    val latestFilteredModules = rememberUpdatedState(filteredModules)
+    val latestFilteredModules = rememberUpdatedState(uiState.filteredModules)
     ScrollToTopOnChange(
         kpModuleListState,
         uiState.search,
@@ -143,13 +143,13 @@ fun KPModuleScreenMiuix(
     // Load lazily on first visit; the pager pre-composes all pages, so this
     // avoids scanning KPM modules at startup before the page is ever shown.
     LaunchedEffect(isCurrentPage) {
-        if (isCurrentPage) {
-            if (uiState.modules.isEmpty()) {
-                viewModel.fetchModuleList()
-            } else {
-                viewModel.refreshOnlineUpdates()
-            }
-        }
+        if (isCurrentPage) viewModel.loadIfNeeded()
+    }
+
+    val latestIsCurrentPage by rememberUpdatedState(isCurrentPage)
+    LifecycleResumeEffect(Unit) {
+        if (latestIsCurrentPage) viewModel.loadIfNeeded()
+        onPauseOrDispose { }
     }
 
     val moduleStr = stringResource(id = R.string.kpm)
@@ -341,7 +341,6 @@ fun KPModuleScreenMiuix(
     ) { innerPadding ->
         KPModuleList(
             uiState = uiState,
-            filteredModules = filteredModules,
             onRefresh = { viewModel.fetchModuleList() },
             onUninstall = { module ->
                 scope.launch {
@@ -520,7 +519,6 @@ fun KPMControlDialog(
 @Composable
 private fun KPModuleList(
     uiState: KPModuleUiState,
-    filteredModules: List<KPModel.KPMInfo>,
     onRefresh: () -> Unit,
     onUninstall: (KPModel.KPMInfo) -> Unit,
     onControl: (KPModel.KPMInfo) -> Unit,
@@ -561,7 +559,37 @@ private fun KPModuleList(
                 )
             ) {
                 when {
-                    filteredModules.isEmpty() -> {
+                    uiState.filteredModules.isEmpty() && uiState.error != null -> {
+                        item {
+                            Box(
+                                modifier = Modifier.fillParentMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    stringResource(R.string.list_load_failed),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+
+                    uiState.filteredModules.isEmpty() && !uiState.hasLoaded -> {
+                        item {
+                            Box(
+                                modifier = Modifier.fillParentMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (!uiState.isRefreshing) {
+                                    Text(
+                                        stringResource(R.string.loading),
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    uiState.filteredModules.isEmpty() -> {
                         item {
                             Box(
                                 modifier = Modifier.fillParentMaxSize(),
@@ -579,7 +607,7 @@ private fun KPModuleList(
 
                     else -> {
                         items(
-                            filteredModules,
+                            uiState.filteredModules,
                             key = { it.moduleId.ifBlank { it.name } }
                         ) { module ->
                             KPModuleItem(

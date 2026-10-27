@@ -30,11 +30,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.bmax.apatch.R
 import me.bmax.apatch.data.AppInfo
-import me.bmax.apatch.data.AppRepository
 import me.bmax.apatch.ui.component.AppIconImage
 import me.bmax.apatch.ui.component.ScrollToTopOnChange
 import me.bmax.apatch.ui.component.labeltext.LabelText
@@ -71,13 +71,12 @@ fun SuperUserScreenMiuix(
     viewModel: SuperUserViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val appList by viewModel.filteredApps.collectAsStateWithLifecycle()
 
     val scrollBehavior = MiuixScrollBehavior()
     val backdrop = rememberBlurBackdrop()
     val listState = rememberLazyListState()
 
-    val latestAppList = rememberUpdatedState(appList)
+    val latestAppList = rememberUpdatedState(uiState.filteredApps)
     ScrollToTopOnChange(
         listState,
         uiState.sortBy,
@@ -88,9 +87,13 @@ fun SuperUserScreenMiuix(
     )
 
     LaunchedEffect(isCurrentPage) {
-        if (isCurrentPage && AppRepository.apps.value.isEmpty()) {
-            viewModel.fetchAppList()
-        }
+        if (isCurrentPage) viewModel.loadIfNeeded()
+    }
+
+    val latestIsCurrentPage by rememberUpdatedState(isCurrentPage)
+    LifecycleResumeEffect(Unit) {
+        if (latestIsCurrentPage) viewModel.loadIfNeeded()
+        onPauseOrDispose { }
     }
 
     Scaffold(
@@ -116,7 +119,9 @@ fun SuperUserScreenMiuix(
                 onRefresh = { viewModel.fetchAppList() },
                 contentPadding = innerPadding
             ) {
-                if (appList.isNotEmpty()) {
+                val appList = uiState.filteredApps
+                val showError = appList.isEmpty() && uiState.error != null
+                if (appList.isNotEmpty() || showError) {
                     LazyColumn(
                         state = listState,
                         modifier = Modifier
@@ -131,17 +136,28 @@ fun SuperUserScreenMiuix(
                             end = innerPadding.calculateEndPadding(LocalLayoutDirection.current)
                         )
                     ) {
-                        items(
-                            items = appList,
-                            key = { it.packageName + it.uid }
-                        ) { app ->
-                            AppItem(
-                                app = app,
-                                onToggleSu = { granted -> viewModel.toggleSu(app, granted) },
-                                onToggleExclude = { excluded ->
-                                    viewModel.toggleExclude(app, excluded)
+                        if (showError) {
+                            item {
+                                Box(
+                                    modifier = Modifier.fillParentMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(stringResource(R.string.list_load_failed))
                                 }
-                            )
+                            }
+                        } else {
+                            items(
+                                items = appList,
+                                key = { it.packageName + it.uid }
+                            ) { app ->
+                                AppItem(
+                                    app = app,
+                                    onToggleSu = { granted -> viewModel.toggleSu(app, granted) },
+                                    onToggleExclude = { excluded ->
+                                        viewModel.toggleExclude(app, excluded)
+                                    }
+                                )
+                            }
                         }
                     }
                 }

@@ -7,7 +7,12 @@ enum class ShortcutType { Action, WebUI }
 @Immutable
 data class APMUiState(
     val modules: List<ModuleInfo> = emptyList(),
+    /** Search- and sort-applied view of [modules]; the only list the UI reads. */
+    val filteredModules: List<ModuleInfo> = emptyList(),
     val isRefreshing: Boolean = false,
+    /** True once a load has completed successfully; an empty [modules] is only "no modules" then. */
+    val hasLoaded: Boolean = false,
+    val error: Throwable? = null,
     val search: String = "",
     val isNeedRefresh: Boolean = false,
     val sortEnabledFirst: Boolean = false,

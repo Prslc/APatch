@@ -280,6 +280,7 @@
     <string name="no_cache_to_clear">没有缓存可清理</string>
     <string name="send_log_summary">保存日志或分享给开发者</string>
     <string name="loading">加载中…</string>
+    <string name="list_load_failed">加载失败，请下拉重试。</string>
     <string name="clear_super_key_summary">清除后下次使用需重新输入凭证</string>
     <string name="patch_patching">修补中…</string>
     <string name="su_sort_name">按名称排序</string>

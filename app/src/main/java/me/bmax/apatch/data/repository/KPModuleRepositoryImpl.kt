@@ -11,6 +11,7 @@ import me.bmax.apatch.APApplication
 import me.bmax.apatch.Natives
 import me.bmax.apatch.apApp
 import me.bmax.apatch.ui.page.kpm.KPModel
+import me.bmax.apatch.util.rootAvailable
 import me.bmax.apatch.util.rootShellForResult
 import me.bmax.apatch.util.safeKpmModuleId
 import org.ini4j.Ini
@@ -23,6 +24,10 @@ object KPModuleRepositoryImpl : KPModuleRepository {
     private val installMutex = Mutex()
 
     override suspend fun listModules(): List<KPModel.KPMInfo> {
+        // A non-root shell makes the on-disk scan below return an empty list; surface
+        // that as an error so the UI can retry instead of showing "no modules".
+        check(rootAvailable()) { "Root is not available" }
+
         val result = linkedMapOf<String, KPModel.KPMInfo>()
 
         val names = if (Natives.kernelPatchModuleNum() > 0) {

@@ -159,12 +159,22 @@ fun rootShellForResult(vararg cmds: String): Shell.Result {
     return getRootShell().newJob().add(*cmds).to(out, err).exec()
 }
 
+/**
+ * Lists installed system modules as JSON. Throws when the command fails so callers can
+ * distinguish "no modules" from "could not load"; a failed shell must not look like an
+ * empty list, otherwise the UI silently stops retrying.
+ */
 fun listModuleJson(): String {
     val shell = getRootShell()
-    val out = shell.newJob()
+    val out = ArrayList<String>()
+    val err = ArrayList<String>()
+    val result = shell.newJob()
         .add("${APApplication.APD_PATH} module list")
-        .to(ArrayList(), null)
-        .exec().out
+        .to(out, err)
+        .exec()
+    check(result.isSuccess) {
+        "apd module list failed (${result.code}): ${err.joinToString("\n").ifBlank { "no output" }}"
+    }
     return out.joinToString("\n").ifBlank { "[]" }
 }
 

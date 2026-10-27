@@ -77,6 +77,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.Dispatchers
@@ -184,9 +185,8 @@ fun APModuleScreenMiuix(
     val hasMagisk = uiState.hasMagisk
     val moduleListState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     var fabVisible by remember { mutableStateOf(true) }
-    val filteredModules by viewModel.filteredModules.collectAsStateWithLifecycle()
 
-    val latestFilteredModules = rememberUpdatedState(filteredModules)
+    val latestFilteredModules = rememberUpdatedState(uiState.filteredModules)
     ScrollToTopOnChange(
         moduleListState,
         uiState.search,
@@ -198,9 +198,13 @@ fun APModuleScreenMiuix(
     )
 
     LaunchedEffect(isCurrentPage, uiState.isNeedRefresh) {
-        if (isCurrentPage && (uiState.modules.isEmpty() || uiState.isNeedRefresh)) {
-            viewModel.fetchModuleList()
-        }
+        if (isCurrentPage) viewModel.loadIfNeeded()
+    }
+
+    val latestIsCurrentPage by rememberUpdatedState(isCurrentPage)
+    LifecycleResumeEffect(Unit) {
+        if (latestIsCurrentPage) viewModel.loadIfNeeded()
+        onPauseOrDispose { }
     }
 
     LaunchedEffect(moduleListState) {
@@ -447,7 +451,7 @@ private fun ModuleList(
     var currentModuleHasWebUi by remember { mutableStateOf(false) }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val filteredModules by viewModel.filteredModules.collectAsStateWithLifecycle()
+    val filteredModules = uiState.filteredModules
 
     fun openShortcutDialogForType(type: ShortcutType) {
         selectedShortcutType = type
@@ -873,6 +877,36 @@ private fun ModuleList(
         }
 
         when {
+            filteredModules.isEmpty() && uiState.error != null -> {
+                item {
+                    Box(
+                        modifier = Modifier.fillParentMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            stringResource(R.string.list_load_failed),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+
+            filteredModules.isEmpty() && !uiState.hasLoaded -> {
+                item {
+                    Box(
+                        modifier = Modifier.fillParentMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (!uiState.isRefreshing) {
+                            Text(
+                                stringResource(R.string.loading),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+            }
+
             filteredModules.isEmpty() -> {
                 item {
                     Box(

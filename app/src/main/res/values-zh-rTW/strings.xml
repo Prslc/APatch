@@ -164,6 +164,7 @@
     <string name="setting_reset_su_new_path">新的完整路徑</string>
     <string name="success">成功</string>
     <string name="failure">失敗</string>
+    <string name="list_load_failed">載入失敗，請下拉重試。</string>
     <string name="settings_check_update">檢查更新</string>
     <string name="mode_select_page_patch_and_install">修補並安裝</string>
     <string name="mode_select_page_install_inactive_slot">安裝到非活動插槽（OTA 之後）</string>

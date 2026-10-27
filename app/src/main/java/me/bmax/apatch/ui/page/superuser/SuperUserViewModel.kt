@@ -4,16 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.bmax.apatch.APApplication
@@ -27,7 +21,6 @@ import me.bmax.apatch.data.repository.SuRepositoryImpl
 import me.bmax.apatch.ui.page.home.ModuleCountsRefresher
 import java.text.Collator
 import java.util.Locale
-import kotlin.time.Duration.Companion.milliseconds
 
 class SuperUserViewModel(
     private val suRepo: SuRepository = SuRepositoryImpl,
@@ -38,6 +31,18 @@ class SuperUserViewModel(
         SuperUserUiState(sortBy = loadSortBy())
     )
     val uiState = _uiState.asStateFlow()
+
+    private var searchJob: Job? = null
+
+    init {
+        // AppRepository stays the single source used by the WebUI bridge; mirror it into
+        // this screen's state so the UI never reads a second flow.
+        viewModelScope.launch {
+            AppRepository.apps.collect { apps ->
+                _uiState.update { it.copy(apps = apps).withVisibleApps() }
+            }
+        }
+    }
 
     private fun loadSortBy(): SortBy {
         val name = settingsRepo.getString("su_sort_by", SortBy.NAME.name)
@@ -67,19 +72,14 @@ class SuperUserViewModel(
     private fun buildComparator(sortBy: SortBy): Comparator<AppInfo> =
         priorityComparator.thenComparing(sortComparators.getValue(sortBy))
 
-    @OptIn(FlowPreview::class)
-    val filteredApps = combine(
-        AppRepository.apps,
-        uiState.map { it.search }.distinctUntilChanged().debounce(200.milliseconds),
-        uiState.map { it.showSystemApps }.distinctUntilChanged(),
-        uiState.map { it.sortBy }.distinctUntilChanged()
-    ) { apps, query, showSystem, sortBy ->
-        val trimmedQuery = query.trim()
+    /** Recomputes the single visible list held in [SuperUserUiState]. */
+    private fun SuperUserUiState.withVisibleApps(): SuperUserUiState {
+        val trimmedQuery = search.trim()
 
-        apps.asSequence()
+        val visible = apps.asSequence()
             .filter { app ->
                 if (app.packageName == apApp.packageName) return@filter false
-                val matchSystem = showSystem || !app.isSystem || app.uid == 2000
+                val matchSystem = showSystemApps || !app.isSystem || app.uid == 2000
                 if (!matchSystem) return@filter false
 
                 trimmedQuery.isEmpty() ||
@@ -89,20 +89,34 @@ class SuperUserViewModel(
             }
             .sortedWith(buildComparator(sortBy))
             .toList()
-    }.flowOn(Dispatchers.Default)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        return copy(filteredApps = visible)
+    }
 
     fun fetchAppList() {
+        if (_uiState.value.isRefreshing) return
         viewModelScope.launch {
-            try {
-                _uiState.update { it.copy(isRefreshing = true) }
-                AppRepository.fetchAppList()
-            } catch (e: Exception) {
-                Log.e("SuperUserVM", "fetchAppList failed", e)
-            } finally {
-                _uiState.update { it.copy(isRefreshing = false) }
+            _uiState.update { it.copy(isRefreshing = true, error = null) }
+            val result = AppRepository.fetchAppList()
+            result.onFailure { Log.e("SuperUserVM", "fetchAppList failed", it) }
+            _uiState.update {
+                it.copy(
+                    apps = AppRepository.apps.value,
+                    isRefreshing = false,
+                    hasLoaded = result.isSuccess,
+                    error = result.exceptionOrNull()
+                ).withVisibleApps()
             }
         }
+    }
+
+    /**
+     * Single entry point for the screens' visibility/resume triggers. Retries after a
+     * failed load instead of leaving the page permanently blank.
+     */
+    fun loadIfNeeded() {
+        val state = _uiState.value
+        if (state.isRefreshing) return
+        if (!state.hasLoaded || state.error != null) fetchAppList()
     }
 
     fun toggleSu(app: AppInfo, granted: Boolean) {
@@ -175,14 +189,19 @@ class SuperUserViewModel(
 
     fun updateSearch(query: String) {
         _uiState.update { it.copy(search = query) }
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(200)
+            _uiState.update { it.withVisibleApps() }
+        }
     }
 
     fun toggleSystemApps() {
-        _uiState.update { it.copy(showSystemApps = !it.showSystemApps) }
+        _uiState.update { it.copy(showSystemApps = !it.showSystemApps).withVisibleApps() }
     }
 
     fun updateSort(sortBy: SortBy) {
-        _uiState.update { it.copy(sortBy = sortBy) }
+        _uiState.update { it.copy(sortBy = sortBy).withVisibleApps() }
         persistSort(sortBy)
     }
 }

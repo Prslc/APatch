@@ -51,6 +51,7 @@
     <string name="log_saved">Logs saved</string>
     <string name="safe_mode">Safe mode</string>
     <string name="loading">Loading…</string>
+    <string name="list_load_failed">Failed to load. Pull down to retry.</string>
     <string name="super_key">SuperKey</string>
     <string name="clear_super_key_summary">Credentials must be re-entered upon next use</string>
     <string name="patch_set_superkey">Set SuperKey</string>
