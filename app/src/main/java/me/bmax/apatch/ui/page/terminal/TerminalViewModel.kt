@@ -12,6 +12,7 @@ import me.bmax.apatch.data.repository.ApModuleRepository
 import me.bmax.apatch.data.repository.ApModuleRepositoryImpl
 import me.bmax.apatch.ui.navigation.MODULE_TYPE
 import me.bmax.apatch.ui.navigation.TERMINAL_TASK_TYPE
+import me.bmax.apatch.util.LogBuffer
 
 class TerminalViewModel(
     private val moduleRepo: ApModuleRepository = ApModuleRepositoryImpl
@@ -19,7 +20,13 @@ class TerminalViewModel(
     private val _uiState = MutableStateFlow(TerminalUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val fullLog = StringBuilder()
+    private val _logs = MutableStateFlow("")
+    val logs = _logs.asStateFlow()
+
+    private val logBuffer = LogBuffer(
+        scope = viewModelScope,
+        maxLength = MAX_LOG_LENGTH,
+    ) { _logs.value = it }
 
     private val clearScreenSequence = "\u001B[H\u001B[J"
 
@@ -58,6 +65,7 @@ class TerminalViewModel(
                 }
             }
 
+            logBuffer.flush()
             _uiState.update { it.copy(
                 isRunning = false,
                 isFinished = true,
@@ -67,23 +75,12 @@ class TerminalViewModel(
     }
 
     private fun appendLog(line: String) {
-        synchronized(fullLog) {
-            if (line.startsWith(clearScreenSequence)) {     //  clear command
-                fullLog.clear()
-                val rest = line.removePrefix(clearScreenSequence)
-                if (rest.isNotEmpty()) {
-                    fullLog.append(rest).append("\n")
-                }
-            } else {
-                fullLog.append(line).append("\n")
-            }
-            // Cap the retained log to bound memory usage on long installs.
-            if (fullLog.length > MAX_LOG_LENGTH) {
-                fullLog.delete(0, fullLog.length - MAX_LOG_LENGTH)
-            }
-            _uiState.update { it.copy(logs = fullLog.toString()) }
+        if (line.startsWith(clearScreenSequence)) {     //  clear command
+            logBuffer.clearAndAppend(line.removePrefix(clearScreenSequence))
+        } else {
+            logBuffer.append(line)
         }
     }
 
-    fun getFullLog() = synchronized(fullLog) { fullLog.toString() }
+    fun getFullLog() = logBuffer.snapshot()
 }

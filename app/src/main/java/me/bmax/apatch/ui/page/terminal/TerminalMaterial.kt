@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bmax.apatch.R
@@ -65,6 +67,7 @@ fun TerminalScreenMaterial(
     viewModel: TerminalViewModel = viewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val logs = viewModel.logs.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
     val backdrop = rememberMaterial3BlurBackdrop(LocalEnableBlur.current)
@@ -74,8 +77,10 @@ fun TerminalScreenMaterial(
         viewModel.executeTask(taskType, targetId, moduleType)
     }
 
-    LaunchedEffect(state.logs) {
-        scrollState.animateScrollTo(scrollState.maxValue)
+    LaunchedEffect(Unit) {
+        snapshotFlow { scrollState.maxValue }
+            .distinctUntilChanged()
+            .collect { scrollState.scrollTo(it) }
     }
 
     LaunchedEffect(state.isFinished, state.isSuccess) {
@@ -168,7 +173,7 @@ fun TerminalScreenMaterial(
         ) {
             BasicText(
                 modifier = Modifier.padding(12.dp),
-                text = state.logs,
+                text = logs.value,
                 style = TextStyle(
                     fontSize = 12.sp,
                     fontFamily = FontFamily.Monospace,
