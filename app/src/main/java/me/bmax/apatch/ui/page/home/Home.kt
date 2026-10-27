@@ -2,11 +2,11 @@ package me.bmax.apatch.ui.page.home
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.LocalModuleCounts
 import me.bmax.apatch.ui.UiMode
@@ -18,17 +18,17 @@ fun HomeScreen(
     isCurrentPage: Boolean = true,
     viewModel: HomeViewModel = viewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val counts = LocalModuleCounts.current
 
-    LaunchedEffect(
-        uiState.apmCount,
-        uiState.kpmCount,
-        uiState.suCount
-    ) {
-        counts.apmCount = uiState.apmCount
-        counts.kpmCount = uiState.kpmCount
-        counts.suCount = uiState.suCount
+    LaunchedEffect(viewModel) {
+        viewModel.uiState
+            .map { Triple(it.apmCount, it.kpmCount, it.suCount) }
+            .distinctUntilChanged()
+            .collect { (apm, kpm, su) ->
+                counts.apmCount = apm
+                counts.kpmCount = kpm
+                counts.suCount = su
+            }
     }
 
     when (LocalUiMode.current) {
