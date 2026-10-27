@@ -23,6 +23,7 @@ commons-compress = "1.28.0"
 xz = "1.12"
 cxx = "29.0.14206865"
 coil3 = "3.6.0"
+compose-lint = "1.4.2"
 
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
@@ -45,6 +46,8 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
+
+compose-lint-checks = { group = "com.slack.lint.compose", name = "compose-lint-checks", version.ref = "compose-lint" }
 
 material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "material-kolor" }
 

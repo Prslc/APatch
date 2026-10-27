@@ -365,4 +365,6 @@ dependencies {
     implementation(libs.xz)
 
     compileOnly(libs.cxx)
+
+    lintChecks(libs.compose.lint.checks)
 }
