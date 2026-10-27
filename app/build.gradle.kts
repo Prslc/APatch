@@ -361,6 +361,8 @@ dependencies {
     implementation(libs.appiconloader)
     implementation(libs.markdown)
     implementation(libs.ini4j)
+    implementation(libs.commons.compress)
+    implementation(libs.xz)
 
     compileOnly(libs.cxx)
 }

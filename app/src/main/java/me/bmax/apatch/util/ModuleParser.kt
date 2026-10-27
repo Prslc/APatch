@@ -6,9 +6,10 @@ import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
 import me.bmax.apatch.R
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
+import org.apache.commons.compress.archivers.zip.ZipFile
 import java.io.ByteArrayOutputStream
 import java.util.Properties
-import java.util.zip.ZipInputStream
 
 @Immutable
 @Suppress("ArrayInDataClass")
@@ -49,46 +50,18 @@ object ModuleParser {
 
     fun parse(context: Context, uri: Uri): Result<ParsedModuleInfo> {
         return try {
-            val properties = context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                val zipInputStream = ZipInputStream(inputStream)
-                var props: Properties? = null
-                while (true) {
-                    val entry = zipInputStream.nextEntry ?: break
-                    if (entry.name == "module.prop") {
-                        val bytes = readEntry(zipInputStream)
-                        props = Properties().apply { load(bytes.inputStream().reader(Charsets.UTF_8)) }
-                        break
-                    }
-                    zipInputStream.closeEntry()
-                }
-                props
-            } ?: return Result.failure(ModuleParseException(R.string.module_error_no_prop))
+            withInstallArchive(context, uri) { zip ->
+                val propEntry = zip.getEntry("module.prop")
+                    ?: return@withInstallArchive Result.failure(
+                        ModuleParseException(R.string.module_error_no_prop)
+                    )
 
-            val actionIconPath = properties.getProperty("actionIcon")?.trim()
-            val webuiIconPath = properties.getProperty("webuiIcon")?.trim()
-            val targetPaths = listOfNotNull(actionIconPath, webuiIconPath, "icon.png")
+                val properties = Properties().apply {
+                    load(readEntry(zip, propEntry).inputStream().reader(Charsets.UTF_8))
+                }
 
-            var iconBytes: ByteArray? = null
-            context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                val zipInputStream = ZipInputStream(inputStream)
-                val foundIcons = mutableMapOf<String, ByteArray>()
-                while (true) {
-                    val entry = zipInputStream.nextEntry ?: break
-                    if (targetPaths.contains(entry.name)) {
-                        foundIcons[entry.name] = readEntry(zipInputStream)
-                    }
-                    zipInputStream.closeEntry()
-                    if (foundIcons.size == targetPaths.size) break
-                }
-                for (path in targetPaths) {
-                    if (foundIcons.containsKey(path)) {
-                        iconBytes = foundIcons[path]
-                        break
-                    }
-                }
+                finalizeParsedInfo(properties, readIcon(zip, properties))
             }
-
-            finalizeParsedInfo(properties, iconBytes)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -114,17 +87,30 @@ object ModuleParser {
         )
     }
 
-    private fun readEntry(zipInputStream: ZipInputStream): ByteArray {
+    private fun readIcon(zip: ZipFile, properties: Properties): ByteArray? {
+        val actionIconPath = properties.getProperty("actionIcon")?.trim()
+        val webuiIconPath = properties.getProperty("webuiIcon")?.trim()
+        for (path in listOfNotNull(actionIconPath, webuiIconPath, "icon.png")) {
+            val entry = zip.getEntry(path) ?: continue
+            return readEntry(zip, entry)
+        }
+        return null
+    }
+
+    private fun readEntry(zip: ZipFile, entry: ZipArchiveEntry): ByteArray {
         val baos = ByteArrayOutputStream()
         val buffer = ByteArray(1024)
-        var len: Int
         var totalRead = 0L
-        while (zipInputStream.read(buffer).also { len = it } > -1) {
-            totalRead += len
-            if (totalRead > MAX_PROP_SIZE) {
-                throw ModuleParseException(R.string.module_error_prop_too_large)
+        zip.getInputStream(entry).use { input ->
+            while (true) {
+                val len = input.read(buffer)
+                if (len < 0) break
+                totalRead += len
+                if (totalRead > MAX_PROP_SIZE) {
+                    throw ModuleParseException(R.string.module_error_prop_too_large)
+                }
+                baos.write(buffer, 0, len)
             }
-            baos.write(buffer, 0, len)
         }
         return baos.toByteArray()
     }

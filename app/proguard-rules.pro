@@ -14,6 +14,9 @@
 -dontwarn java.beans.IntrospectionException
 -dontwarn java.beans.PropertyDescriptor
 
+# Commons Compress references the optional Zstandard backend; ZIP metadata uses XZ.
+-dontwarn com.github.luben.zstd.ZstdInputStream
+
 # Keep ini4j Service Provider Interface
 -keep,allowobfuscation,allowoptimization class org.ini4j.spi.** { *; }
 

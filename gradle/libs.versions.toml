@@ -19,6 +19,8 @@ coroutines = "1.11.0"
 appiconloader = "1.5.1"
 markdown = "4.6.2"
 ini4j = "0.5.4"
+commons-compress = "1.28.0"
+xz = "1.12"
 cxx = "29.0.14206865"
 coil3 = "3.6.0"
 
@@ -75,5 +77,8 @@ appiconloader = { group = "io.github.prslc.android.appiconloader", name = "appic
 markdown = { group = "io.noties.markwon", name = "core", version.ref = "markdown" }
 
 ini4j = { group = "org.ini4j", name = "ini4j", version.ref = "ini4j" }
+
+commons-compress = { module = "org.apache.commons:commons-compress", version.ref = "commons-compress" }
+xz = { module = "org.tukaani:xz", version.ref = "xz" }
 
 cxx = { group = "org.lsposed.libcxx" ,name = "libcxx", version.ref = "cxx" }
