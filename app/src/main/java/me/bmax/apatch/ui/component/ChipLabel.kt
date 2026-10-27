@@ -31,7 +31,10 @@ private fun ChipLabelMaterial(text: String) {
     ) {
         Text(
             text = text,
-            fontSize = 12.sp,
+            style = MaterialTheme.typography.labelSmall.copy(
+                fontSize = 12.sp,
+                lineHeight = 14.sp
+            ),
             modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
             color = MaterialTheme.colorScheme.onTertiary,
             maxLines = 1
@@ -48,6 +51,7 @@ private fun ChipLabelMiuix(text: String) {
         MiuixText(
             text = text,
             fontSize = 12.sp,
+            lineHeight = 14.sp,
             modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
             color = MiuixTheme.colorScheme.onTertiaryContainer,
             maxLines = 1
