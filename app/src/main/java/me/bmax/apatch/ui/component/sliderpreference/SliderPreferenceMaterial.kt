@@ -3,7 +3,6 @@ package me.bmax.apatch.ui.component.sliderpreference
 import me.bmax.apatch.ui.component.material.KeyPointSlider
 import me.bmax.apatch.ui.component.material.LocalSegmentedItemShape
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,14 +44,11 @@ fun SliderPreferenceMaterial(
     var sliderValue by remember(value) { mutableFloatStateOf(value) }
     val shape = LocalSegmentedItemShape.current
 
-    val displayKeyPoints = keyPoints.filter {
-        it != valueRange.start && it != valueRange.endInclusive
+    val displayKeyPoints = remember(keyPoints, valueRange) {
+        keyPoints.filter {
+            it != valueRange.start && it != valueRange.endInclusive
+        }
     }
-
-    val animatedValue by animateFloatAsState(
-        targetValue = sliderValue,
-        label = "PageScale Slider"
-    )
 
     Surface(
         modifier = modifier
@@ -103,7 +99,7 @@ fun SliderPreferenceMaterial(
 
             KeyPointSlider(
                 modifier = Modifier.fillMaxWidth(),
-                value = animatedValue,
+                value = sliderValue,
                 onValueChange = { sliderValue = it },
                 onValueChangeFinished = { onValueChangeFinished(sliderValue) },
                 valueRange = valueRange,

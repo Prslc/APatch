@@ -74,6 +74,13 @@ fun KeyPointSlider(
         )
     }
     val shouldAlwaysSnapToTick = keyPoints == null && steps > 0
+    val tickFractions = remember(tickValues, valueRange, showKeyPoints) {
+        if (showKeyPoints) {
+            tickValues.map { it.calcFraction(valueRange.start, valueRange.endInclusive) }
+        } else {
+            emptyList()
+        }
+    }
 
     fun updateValueFromPosition(x: Float, width: Float): Float {
         val rawValue = positionToValue(
@@ -158,11 +165,7 @@ fun KeyPointSlider(
             isRtl = layoutDirection == LayoutDirection.Rtl,
             isDragging = isDragging,
             drawStopIndicator = keyPoints == null,
-            tickFractions = if (showKeyPoints) {
-                tickValues.map { it.calcFraction(valueRange.start, valueRange.endInclusive) }
-            } else {
-                emptyList()
-            },
+            tickFractions = tickFractions,
             colors = colors
         )
     }
