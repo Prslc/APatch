@@ -90,7 +90,7 @@ fun CrashScreenMaterial(
 
 @Preview
 @Composable
-fun CrashScreenMaterialPreview() {
+private fun CrashScreenMaterialPreview() {
     APatchTheme {
         CrashScreenMaterial("Crash log here")
     }

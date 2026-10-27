@@ -83,7 +83,7 @@ fun CrashScreenMiuix(
 
 @Preview
 @Composable
-fun CrashScreenMiuixPreview() {
+private fun CrashScreenMiuixPreview() {
     APatchTheme {
         CrashScreenMiuix("Crash log here")
     }
