@@ -452,6 +452,7 @@ private fun ModuleList(
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val filteredModules = uiState.filteredModules
+    val updateResults = uiState.updateResults
 
     fun openShortcutDialogForType(type: ShortcutType) {
         selectedShortcutType = type
@@ -927,7 +928,7 @@ private fun ModuleList(
                 items(filteredModules, key = { it.id }) { module ->
                     val scope = rememberCoroutineScope()
                     val updatedModule =
-                        viewModel.uiState.value.updateResults[module.id] ?: Triple("", "", "")
+                        updateResults[module.id] ?: Triple("", "", "")
 
                     ModuleItem(
                         navigator,

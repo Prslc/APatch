@@ -1,5 +1,6 @@
 package me.bmax.apatch.ui.page.apm
 
+import android.os.SystemClock
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,6 +24,9 @@ import me.bmax.apatch.ui.page.home.ModuleCountsRefresher
 import me.bmax.apatch.util.hasMagisk
 import java.text.Collator
 import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
+
+private const val UPDATE_CACHE_TTL_MS = 5 * 60 * 1000L
 
 class APModuleViewModel(
     private val moduleRepo: ApModuleRepository = ApModuleRepositoryImpl,
@@ -34,8 +39,20 @@ class APModuleViewModel(
     private val _uiState = MutableStateFlow(APMUiState().loadSortMode())
     val uiState = _uiState.asStateFlow()
 
+    private data class CachedUpdate(
+        val checkedAt: Long,
+        val versionCode: Int,
+        val result: Triple<String, String, String>
+    )
+
+    private val updateCache = ConcurrentHashMap<String, CachedUpdate>()
+
     private var refreshJob: Job? = null
+    private var updateJob: Job? = null
     private var searchJob: Job? = null
+
+    /** Incremented on every list load so a stale update check cannot publish. */
+    private var fetchGeneration = 0
 
     init {
         refreshMagiskState()
@@ -194,6 +211,8 @@ class APModuleViewModel(
 
     fun fetchModuleList() {
         refreshJob?.cancel()
+        updateJob?.cancel()
+        val generation = ++fetchGeneration
         refreshJob = viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true, error = null) }
             val result = withContext(Dispatchers.IO) {
@@ -203,27 +222,17 @@ class APModuleViewModel(
             result.fold(
                 onSuccess = { newList ->
                     ModuleCountsRefresher.requestRefresh()
-                    val updateResults = try {
-                        withContext(Dispatchers.IO) {
-                            newList.map { module ->
-                                async { module.id to moduleRepo.checkModuleUpdate(module) }
-                            }.awaitAll().toMap()
-                        }
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (e: Exception) {
-                        Log.w(TAG, "update check failed", e)
-                        _uiState.value.updateResults
-                    }
                     _uiState.update {
                         it.copy(
                             modules = newList,
                             isNeedRefresh = false,
                             isRefreshing = false,
                             hasLoaded = true,
-                            error = null,
-                            updateResults = updateResults
+                            error = null
                         ).withVisibleModules()
+                    }
+                    updateJob = viewModelScope.launch {
+                        refreshUpdateResults(newList, generation)
                     }
                     checkMetaModuleWarning(newList)
                 },
@@ -235,5 +244,40 @@ class APModuleViewModel(
                 }
             )
         }
+    }
+
+    private suspend fun refreshUpdateResults(modules: List<ModuleInfo>, generation: Int) {
+        val results = try {
+            withContext(Dispatchers.IO) {
+                coroutineScope {
+                    val now = SystemClock.elapsedRealtime()
+                    modules.map { module ->
+                        async {
+                            val cached = updateCache[module.id]
+                            if (cached != null &&
+                                cached.versionCode == module.versionCode &&
+                                now - cached.checkedAt < UPDATE_CACHE_TTL_MS
+                            ) {
+                                return@async module.id to cached.result
+                            }
+                            val result = moduleRepo.checkModuleUpdate(module)
+                            updateCache[module.id] = CachedUpdate(
+                                checkedAt = now,
+                                versionCode = module.versionCode,
+                                result = result
+                            )
+                            module.id to result
+                        }
+                    }.awaitAll().toMap()
+                }
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Log.w(TAG, "update check failed", e)
+            return
+        }
+        if (generation != fetchGeneration) return
+        _uiState.update { it.copy(updateResults = results) }
     }
 }
