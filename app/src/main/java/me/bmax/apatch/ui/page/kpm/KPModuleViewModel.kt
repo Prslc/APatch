@@ -1,11 +1,15 @@
 package me.bmax.apatch.ui.page.kpm
 
 import android.net.Uri
+import android.os.SystemClock
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,15 +27,26 @@ import me.bmax.apatch.data.repository.KPModuleRepository
 import me.bmax.apatch.data.repository.KPModuleRepositoryImpl
 import me.bmax.apatch.ui.page.home.ModuleCountsRefresher
 import me.bmax.apatch.util.HanziToPinyin
+import me.bmax.apatch.util.ModuleRepo
 import java.text.Collator
 import java.util.Locale
 import kotlin.time.Duration.Companion.milliseconds
+
+private const val UPDATE_CACHE_TTL_MS = 5 * 60 * 1000L
 
 class KPModuleViewModel(
     private val moduleRepo: KPModuleRepository = KPModuleRepositoryImpl
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(KPModuleUiState())
     val uiState = _uiState.asStateFlow()
+
+    private data class CachedUpdate(
+        val checkedAt: Long,
+        val storedVersion: String,
+        val update: KPModel.KpmUpdateInfo?
+    )
+
+    private val updateCache = mutableMapOf<String, CachedUpdate>()
 
     @OptIn(FlowPreview::class)
     val filteredModules = combine(
@@ -76,6 +91,7 @@ class KPModuleViewModel(
             .sortedWith(nameComparator)
         ModuleCountsRefresher.requestRefresh()
         _uiState.update { it.copy(modules = modules) }
+        refreshOnlineUpdates()
     }
 
     suspend fun loadModule(uri: Uri): Int {
@@ -94,22 +110,101 @@ class KPModuleViewModel(
         }
     }
 
-    fun uninstallModule(moduleName: String) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isRefreshing = true) }
-            try {
-                withContext(Dispatchers.IO) {
-                    val success = moduleRepo.unloadModule(moduleName)
-                    if (success) {
-                        refreshModuleList()
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("KPM", "Unload failed", e)
-            } finally {
-                _uiState.update { it.copy(isRefreshing = false) }
+    suspend fun installModule(uri: Uri): Int {
+        _uiState.update { it.copy(isRefreshing = true) }
+        return try {
+            withContext(Dispatchers.IO) {
+                val rc = moduleRepo.installModule(uri)
+                if (rc == 0) refreshModuleList()
+                rc
             }
+        } catch (e: Exception) {
+            Log.e("KPM", "Install failed", e)
+            -1
+        } finally {
+            _uiState.update { it.copy(isRefreshing = false, isNeedRefresh = false) }
         }
+    }
+
+    suspend fun uninstallModule(module: KPModel.KPMInfo): Boolean {
+        if (module.loadSource == "embedded") return false
+        _uiState.update { it.copy(isRefreshing = true) }
+        return try {
+            withContext(Dispatchers.IO) {
+                if (module.loadSource.isNotBlank()) {
+                    moduleRepo.unloadModule(module.name)
+                }
+                val removed = if (module.installed) {
+                    moduleRepo.removeInstalledModule(module.moduleId.ifBlank { module.name })
+                } else {
+                    true
+                }
+                refreshModuleList()
+                removed
+            }
+        } catch (e: Exception) {
+            Log.e("KPM", "Uninstall failed", e)
+            false
+        } finally {
+            _uiState.update { it.copy(isRefreshing = false) }
+        }
+    }
+
+    suspend fun setModuleDisabled(module: KPModel.KPMInfo, enabled: Boolean) {
+        _uiState.update { it.copy(isRefreshing = true) }
+        try {
+            withContext(Dispatchers.IO) {
+                val id = module.moduleId.ifBlank { module.name }
+                if (moduleRepo.setModuleDisabled(id, !enabled)) {
+                    refreshModuleList()
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("KPM", "Toggle failed", e)
+        } finally {
+            _uiState.update { it.copy(isRefreshing = false) }
+        }
+    }
+
+    fun refreshOnlineUpdates() {
+        viewModelScope.launch {
+            val installed = _uiState.value.modules.filter {
+                it.installed && it.loadSource != "embedded" && it.moduleId.isNotBlank()
+            }
+            if (installed.isEmpty()) {
+                _uiState.update { it.copy(updates = emptyMap()) }
+                return@launch
+            }
+            _uiState.update { it.copy(updates = checkOnlineUpdates(installed)) }
+        }
+    }
+
+    private suspend fun checkOnlineUpdates(
+        installed: List<KPModel.KPMInfo>
+    ): Map<String, KPModel.KpmUpdateInfo> = coroutineScope {
+        val now = SystemClock.elapsedRealtime()
+        installed
+            .map { module ->
+                async {
+                    val id = module.moduleId
+                    val stored = module.storedVersion.ifBlank { module.version }
+                    val cached = updateCache[id]
+                    if (cached != null && cached.storedVersion == stored &&
+                        now - cached.checkedAt < UPDATE_CACHE_TTL_MS
+                    ) {
+                        return@async cached.update?.let { id to it }
+                    }
+                    val doc = runCatching { ModuleRepo.moduleDoc(id, kpm = true) }.getOrNull()
+                    val update = doc?.takeIf {
+                        it.version.isNotBlank() && it.downloadUrl.isNotBlank() && it.version != stored
+                    }?.let { KPModel.KpmUpdateInfo(it.version, it.downloadUrl) }
+                    updateCache[id] = CachedUpdate(now, stored, update)
+                    update?.let { id to it }
+                }
+            }
+            .awaitAll()
+            .filterNotNull()
+            .toMap()
     }
 
     fun openControlDialog(module: KPModel.KPMInfo) {

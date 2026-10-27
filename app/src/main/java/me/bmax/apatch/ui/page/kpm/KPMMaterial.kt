@@ -36,6 +36,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
@@ -56,6 +57,7 @@ import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -88,13 +90,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.R
+import me.bmax.apatch.ui.component.ChipLabel
 import me.bmax.apatch.ui.component.ScrollToTopOnChange
 import me.bmax.apatch.ui.component.dialog.ConfirmResult
+import me.bmax.apatch.ui.component.dialog.ModuleDownloadProgressDialog
 import me.bmax.apatch.ui.component.dialog.rememberConfirmDialog
 import me.bmax.apatch.ui.component.dialog.rememberLoadingDialog
+import me.bmax.apatch.util.DownloadCancelHandle
+import me.bmax.apatch.util.ModuleRepo
+import me.bmax.apatch.util.reboot
 import me.bmax.apatch.ui.component.searchbar.AppSearchBar
 import me.bmax.apatch.ui.navigation.LocalNavigator
 import me.bmax.apatch.ui.page.patch.PatchMode
@@ -119,6 +128,7 @@ fun KPModuleScreenMaterial(
     val context = LocalContext.current
 
     val confirmDialog = rememberConfirmDialog()
+    val loadingDialog = rememberLoadingDialog()
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val kpModuleListState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
@@ -139,7 +149,13 @@ fun KPModuleScreenMaterial(
     // Load lazily on first visit; the pager pre-composes all pages, so this
     // avoids scanning KPM modules at startup before the page is ever shown.
     LaunchedEffect(isCurrentPage) {
-        if (isCurrentPage && uiState.modules.isEmpty()) viewModel.fetchModuleList()
+        if (isCurrentPage) {
+            if (uiState.modules.isEmpty()) {
+                viewModel.fetchModuleList()
+            } else {
+                viewModel.refreshOnlineUpdates()
+            }
+        }
     }
 
     val moduleStr = stringResource(id = R.string.kpm)
@@ -148,6 +164,91 @@ fun KPModuleScreenMaterial(
     val cancelText = stringResource(android.R.string.cancel)
     val successToastText = stringResource(id = R.string.kpm_load_toast_succ)
     val failToastText = stringResource(id = R.string.kpm_load_toast_failed)
+    val installSuccessText = stringResource(R.string.kpm_install_toast_succ)
+    val updateTitleText = stringResource(R.string.kpm_update_confirm_title)
+    val updateConfirmText = stringResource(R.string.kpm_update_confirm)
+    val updateText = stringResource(R.string.kpm_update)
+    val updateSuccessText = stringResource(R.string.kpm_update_succ)
+    val downloadFailedText = stringResource(R.string.online_download_failed)
+    val downloadCancelledText = stringResource(R.string.online_download_cancelled)
+    val installFailedText = stringResource(R.string.online_install_failed)
+    val rebootText = stringResource(R.string.reboot)
+    val controlMsgText = stringResource(R.string.kpm_control_outMsg)
+    val controlOkText = stringResource(R.string.kpm_control_ok)
+    val controlFailText = stringResource(R.string.kpm_control_failed)
+
+    var updateTask by remember { mutableStateOf<Pair<String, Int>?>(null) }
+    var updateHandle by remember { mutableStateOf<DownloadCancelHandle?>(null) }
+
+    suspend fun onModuleInstall(uri: Uri) {
+        val rc = viewModel.installModule(uri)
+        val text = if (rc == 0) installSuccessText else "$failToastText: $rc"
+        Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
+    }
+
+    suspend fun onModuleControl(module: KPModel.KPMInfo, param: String) {
+        val result = loadingDialog.withLoading {
+            viewModel.controlModule(module.name, param)
+        }
+        val text = if (result.rc >= 0) {
+            "$controlOkText\n$controlMsgText: ${result.outMsg}"
+        } else {
+            "$controlFailText\n$controlMsgText: ${result.outMsg}"
+        }
+        Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
+    }
+
+    suspend fun onModuleUpdate(module: KPModel.KPMInfo) {
+        val update = uiState.updates[module.moduleId] ?: return
+        val confirmed = confirmDialog.awaitConfirm(
+            title = updateTitleText,
+            content = updateConfirmText.format(module.name, update.version),
+            confirm = updateText,
+            dismiss = cancelText
+        )
+        if (confirmed != ConfirmResult.Confirmed) return
+
+        updateTask = module.name to 0
+        val handle = DownloadCancelHandle()
+        updateHandle = handle
+        val file = try {
+            ModuleRepo.downloadModuleFile(
+                id = module.moduleId,
+                kpm = true,
+                fileName = "${module.moduleId}-${update.version}.kpm",
+                authorUrl = update.authorUrl,
+                cancel = handle
+            ) { percent -> updateTask = module.name to percent }
+        } finally {
+            updateTask = null
+            updateHandle = null
+        }
+        if (handle.isCancelled) {
+            Toast.makeText(context, downloadCancelledText, Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (file == null) {
+            Toast.makeText(context, downloadFailedText, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val rc = viewModel.installModule(Uri.fromFile(file))
+        file.delete()
+        if (rc != 0) {
+            Toast.makeText(context, installFailedText.format(rc), Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val rebootConfirmed = confirmDialog.awaitConfirm(
+            title = rebootText,
+            content = updateSuccessText.format(update.version),
+            confirm = rebootText,
+            dismiss = cancelText
+        )
+        if (rebootConfirmed == ConfirmResult.Confirmed) {
+            withContext(Dispatchers.IO) { reboot() }
+        }
+    }
 
     val state by APApplication.apStateLiveData.observeAsState(APApplication.State.UNKNOWN_STATE)
     if (state == APApplication.State.UNKNOWN_STATE) {
@@ -230,7 +331,9 @@ fun KPModuleScreenMaterial(
                             Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
                         }
                     },
-                    onInstallModule = { /*TODO*/ },
+                    onInstallModule = { uri ->
+                        scope.launch { onModuleInstall(uri) }
+                    },
                     onNavigateToPatches = {
                         navigator.navigateToPatches(PatchMode.PATCH_AND_INSTALL)
                     },
@@ -286,9 +389,13 @@ fun KPModuleScreenMaterial(
                     }
 
                     else -> {
-                        items(filteredModules, key = { it.name }) { module ->
+                        items(
+                            filteredModules,
+                            key = { it.moduleId.ifBlank { it.name } }
+                        ) { module ->
                             KPModuleItemMaterial(
                                 module = module,
+                                update = uiState.updates[module.moduleId],
                                 onUninstall = {
                                     scope.launch {
                                         val result = confirmDialog.awaitConfirm(
@@ -298,11 +405,15 @@ fun KPModuleScreenMaterial(
                                             dismiss = cancelText
                                         )
                                         if (result == ConfirmResult.Confirmed) {
-                                            viewModel.uninstallModule(module.name)
+                                            viewModel.uninstallModule(module)
                                         }
                                     }
                                 },
-                                onControl = { viewModel.openControlDialog(module) }
+                                onControl = { viewModel.openControlDialog(module) },
+                                onUpdate = { scope.launch { onModuleUpdate(module) } },
+                                onToggle = { enabled ->
+                                    scope.launch { viewModel.setModuleDisabled(module, enabled) }
+                                }
                             )
                         }
                     }
@@ -311,9 +422,19 @@ fun KPModuleScreenMaterial(
         }
     }
     if (uiState.showControlDialog && uiState.controlTarget != null) {
+        val target = uiState.controlTarget!!
         KPMControlDialogMaterial(
-            module = uiState.controlTarget!!,
-            onDismiss = { viewModel.closeControlDialog() }
+            onDismiss = { viewModel.closeControlDialog() },
+            onConfirm = { param ->
+                scope.launch { onModuleControl(target, param) }
+            }
+        )
+    }
+    updateTask?.let { (name, progress) ->
+        ModuleDownloadProgressDialog(
+            title = name,
+            progress = progress,
+            onCancel = { updateHandle?.cancel() }
         )
     }
 }
@@ -334,6 +455,13 @@ private fun KPMFloatingActionButtonMaterial(
     ) {
         if (it.resultCode != RESULT_OK) return@rememberLauncherForActivityResult
         it.data?.data?.let { uri -> onLoadModule(uri) }
+    }
+
+    val selectInstallLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode != RESULT_OK) return@rememberLauncherForActivityResult
+        it.data?.data?.let { uri -> onInstallModule(uri) }
     }
 
     val moduleLoad = stringResource(id = R.string.kpm_load)
@@ -366,8 +494,9 @@ private fun KPMFloatingActionButtonMaterial(
                             when (label) {
                                 moduleEmbed -> onNavigateToPatches()
                                 moduleInstall -> {
-                                    Toast.makeText(context, "Under development", Toast.LENGTH_SHORT)
-                                        .show()
+                                    val intent =
+                                        Intent(Intent.ACTION_GET_CONTENT).apply { type = "*/*" }
+                                    selectInstallLauncher.launch(intent)
                                 }
 
                                 moduleLoad -> {
@@ -389,38 +518,11 @@ private fun KPMFloatingActionButtonMaterial(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun KPMControlDialogMaterial(
-    module: KPModel.KPMInfo,
     onDismiss: () -> Unit,
-    viewModel: KPModuleViewModel = viewModel()
+    onConfirm: (String) -> Unit
 ) {
     var controlParam by remember { mutableStateOf("") }
     var enable by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    val loadingDialog = rememberLoadingDialog()
-    val context = LocalContext.current
-    val outMsgStringRes = stringResource(id = R.string.kpm_control_outMsg)
-    val okStringRes = stringResource(id = R.string.kpm_control_ok)
-    val failedStringRes = stringResource(id = R.string.kpm_control_failed)
-
-    suspend fun onModuleControl(module: KPModel.KPMInfo) {
-        val controlResult = loadingDialog.withLoading {
-            viewModel.controlModule(module.name, controlParam)
-        }
-
-        if (controlResult.rc >= 0) {
-            Toast.makeText(
-                context,
-                "$okStringRes\n${outMsgStringRes}: ${controlResult.outMsg}",
-                Toast.LENGTH_SHORT
-            ).show()
-        } else {
-            Toast.makeText(
-                context,
-                "$failedStringRes\n${outMsgStringRes}: ${controlResult.outMsg}",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
 
     BasicAlertDialog(
         onDismissRequest = onDismiss
@@ -473,9 +575,7 @@ private fun KPMControlDialogMaterial(
                     Button(
                         onClick = {
                             onDismiss()
-                            scope.launch {
-                                onModuleControl(module)
-                            }
+                            onConfirm(controlParam)
                         },
                         enabled = enable
                     ) {
@@ -490,8 +590,11 @@ private fun KPMControlDialogMaterial(
 @Composable
 private fun KPModuleItemMaterial(
     module: KPModel.KPMInfo,
+    update: KPModel.KpmUpdateInfo?,
     onUninstall: (KPModel.KPMInfo) -> Unit,
     onControl: (KPModel.KPMInfo) -> Unit,
+    onUpdate: (KPModel.KPMInfo) -> Unit,
+    onToggle: (Boolean) -> Unit,
 ) {
     val moduleVersion = stringResource(id = R.string.kpm_version)
     val moduleAuthor = stringResource(id = R.string.kpm_author)
@@ -507,12 +610,44 @@ private fun KPModuleItemMaterial(
         Column(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
-            Text(
-                text = module.name,
-                fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                fontWeight = FontWeight.SemiBold,
-                lineHeight = MaterialTheme.typography.bodySmall.lineHeight
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = module.name,
+                            fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                            fontWeight = FontWeight.SemiBold,
+                            lineHeight = MaterialTheme.typography.bodySmall.lineHeight,
+                            modifier = Modifier.weight(1f, false)
+                        )
+                        when {
+                            module.loadSource == "embedded" -> {
+                                Spacer(Modifier.width(6.dp))
+                                ChipLabel(stringResource(R.string.kpm_embed))
+                            }
+
+                            module.installed && module.disabled -> {
+                                Spacer(Modifier.width(6.dp))
+                                ChipLabel(stringResource(R.string.kpm_disabled))
+                            }
+
+                            module.installed -> {
+                                Spacer(Modifier.width(6.dp))
+                                ChipLabel(stringResource(R.string.kpm_installed))
+                            }
+                        }
+                    }
+                }
+                if (module.installed && module.loadSource != "embedded") {
+                    Switch(
+                        checked = !module.disabled,
+                        onCheckedChange = onToggle
+                    )
+                }
+            }
             Spacer(Modifier.height(4.dp))
             Text(
                 text = "$moduleVersion: ${module.version}",
@@ -532,6 +667,13 @@ private fun KPModuleItemMaterial(
                 lineHeight = MaterialTheme.typography.bodySmall.lineHeight,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            if (update != null) {
+                Text(
+                    text = stringResource(R.string.kpm_update_available, update.version),
+                    fontSize = MaterialTheme.typography.labelSmall.fontSize,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
 
             Spacer(Modifier.height(12.dp))
 
@@ -555,17 +697,27 @@ private fun KPModuleItemMaterial(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                if (update != null) {
+                    ModuleActionButtonMaterial(
+                        icon = Icons.Filled.Update,
+                        text = stringResource(R.string.kpm_update),
+                        onClick = { onUpdate(module) }
+                    )
+                    Spacer(Modifier.width(8.dp))
+                }
                 ModuleActionButtonMaterial(
                     icon = Icons.Filled.Settings,
                     text = stringResource(R.string.kpm_control),
                     onClick = { onControl(module) }
                 )
-                Spacer(Modifier.width(8.dp))
-                ModuleActionButtonMaterial(
-                    icon = Icons.Filled.Delete,
-                    text = stringResource(R.string.kpm_unload),
-                    onClick = { onUninstall(module) }
-                )
+                if (module.loadSource != "embedded") {
+                    Spacer(Modifier.width(8.dp))
+                    ModuleActionButtonMaterial(
+                        icon = Icons.Filled.Delete,
+                        text = stringResource(R.string.kpm_unload),
+                        onClick = { onUninstall(module) }
+                    )
+                }
             }
         }
     }

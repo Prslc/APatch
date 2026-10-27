@@ -9,5 +9,7 @@ data class KPModuleUiState(
     val isNeedRefresh: Boolean = false,
     val search: String = "",
     val controlTarget: KPModel.KPMInfo? = null,
-    val showControlDialog: Boolean = false
+    val showControlDialog: Boolean = false,
+    /** Repository releases newer than the persisted KPM file, by module id. */
+    val updates: Map<String, KPModel.KpmUpdateInfo> = emptyMap()
 )
