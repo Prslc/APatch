@@ -43,7 +43,27 @@ object KPModel {
         var author: String,
         var description: String,
         var pinyinName: String = "",
+        /** Directory name used by the file-backed KPM store. */
+        var moduleId: String = "",
+        /** file, embedded, or empty when the kernel did not report a source. */
+        var loadSource: String = "",
+        var installed: Boolean = false,
+        var disabled: Boolean = false,
+        /**
+         * Version reported by the persisted file, which differs from [version]
+         * while a loaded module has not been reloaded since the file changed.
+         */
+        var storedVersion: String = "",
     ) : IExtraInfo
+
+    /** A newer release the repository offers for an installed KPM. */
+    @Immutable
+    @Keep
+    data class KpmUpdateInfo(
+        val version: String,
+        /** The address the module document names; the repository relay backs it up. */
+        val authorUrl: String = "",
+    )
 
     @Immutable
     @Parcelize

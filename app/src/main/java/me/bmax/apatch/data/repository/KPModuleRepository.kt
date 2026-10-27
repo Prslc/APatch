@@ -14,4 +14,17 @@ interface KPModuleRepository {
     fun unloadModule(name: String): Boolean
 
     fun controlModule(name: String, param: String): Natives.KPMCtlRes
+
+    /**
+     * Persists a KPM from [uri] into the file-backed store. It is loaded by the
+     * boot-time loader, so the caller has to prompt for a reboot afterwards.
+     * Returns 0 on success and a negative code on failure.
+     */
+    suspend fun installModule(uri: Uri): Int
+
+    /** Removes an installed KPM's persisted directory. */
+    suspend fun removeInstalledModule(id: String): Boolean
+
+    /** Enables or disables an installed KPM for the next boot. */
+    suspend fun setModuleDisabled(id: String, disabled: Boolean): Boolean
 }
