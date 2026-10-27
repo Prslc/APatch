@@ -313,7 +313,7 @@ fun rememberLoadingDialog(): LoadingDialogHandle {
     val uiMode = LocalUiMode.current
     when (uiMode) {
         UiMode.Miuix -> if (visible.value) LoadingDialogMiuix()
-        UiMode.Material -> LoadingDialogMaterial()
+        UiMode.Material -> if (visible.value) LoadingDialogMaterial()
     }
 
     return remember {
