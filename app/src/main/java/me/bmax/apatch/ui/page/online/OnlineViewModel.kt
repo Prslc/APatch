@@ -79,6 +79,10 @@ class OnlineViewModel(
 
     private val docCache = ConcurrentHashMap<String, ModuleRepo.RepoModuleDoc>()
 
+    /** Installed-module snapshot for the current catalogue generation. */
+    @Volatile
+    private var installedCache: Pair<Map<String, InstalledModule>, Map<String, InstalledModule>>? = null
+
     fun onEnter(kpmOnly: Boolean) {
         if (!entered) {
             entered = true
@@ -100,6 +104,7 @@ class OnlineViewModel(
     fun refresh() {
         pageJob?.cancel()
         generation++
+        installedCache = null
         val gen = generation
         _uiState.update { it.copy(isRefreshing = true, errorMessage = "") }
         pageJob = viewModelScope.launch(Dispatchers.IO) {
@@ -165,14 +170,18 @@ class OnlineViewModel(
                 return@launch
             }
             nextPage = target + 1
+            val installed = installedCache
             _uiState.update {
                 it.copy(
-                    modules = it.modules + listed.map { module -> OnlineModule(repo = module) },
+                    modules = it.modules + listed.map { module ->
+                        val row = OnlineModule(repo = module)
+                        if (installed != null) row.decoratedBy(installed) else row
+                    },
                     hasMore = listed.size >= ModuleRepo.PAGE_SIZE,
                     isLoadingMore = false
                 )
             }
-            applyInstalled(gen)
+            if (installed == null) applyInstalled(gen)
         }
     }
 
@@ -201,18 +210,20 @@ class OnlineViewModel(
      * Local installed detection is best effort: it can wait on root, so the
      * catalogue is shown first and this only decorates the rows it finds.
      */
-    private suspend fun applyInstalled(gen: Int) {
+    private fun applyInstalled(gen: Int) {
         val installed = installedModules()
         if (gen != generation) return
+        installedCache = installed
         _uiState.update { state ->
-            state.copy(
-                modules = state.modules.map { row ->
-                    val module = if (row.kpm) installed.second[row.id] else installed.first[row.id]
-                    row.copy(installedModule = module)
-                }
-            )
+            state.copy(modules = state.modules.map { row -> row.decoratedBy(installed) })
         }
     }
+
+    private fun OnlineModule.decoratedBy(
+        installed: Pair<Map<String, InstalledModule>, Map<String, InstalledModule>>
+    ): OnlineModule = copy(
+        installedModule = if (kpm) installed.second[id] else installed.first[id]
+    )
 
     private fun installedModules(): Pair<Map<String, InstalledModule>, Map<String, InstalledModule>> =
         runCatching { ModuleStore.listSystemModules() to ModuleStore.listKpmModules() }
