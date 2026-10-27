@@ -34,16 +34,6 @@ class SuperUserViewModel(
 
     private var searchJob: Job? = null
 
-    init {
-        // AppRepository stays the single source used by the WebUI bridge; mirror it into
-        // this screen's state so the UI never reads a second flow.
-        viewModelScope.launch {
-            AppRepository.apps.collect { apps ->
-                _uiState.update { it.copy(apps = apps).withVisibleApps() }
-            }
-        }
-    }
-
     private fun loadSortBy(): SortBy {
         val name = settingsRepo.getString("su_sort_by", SortBy.NAME.name)
         return SortBy.entries.find { it.name == name } ?: SortBy.NAME
@@ -71,6 +61,16 @@ class SuperUserViewModel(
 
     private fun buildComparator(sortBy: SortBy): Comparator<AppInfo> =
         priorityComparator.thenComparing(sortComparators.getValue(sortBy))
+
+    init {
+        // AppRepository stays the single source used by the WebUI bridge; mirror it into
+        // this screen's state so the UI never reads a second flow.
+        viewModelScope.launch {
+            AppRepository.apps.collect { apps ->
+                _uiState.update { it.copy(apps = apps).withVisibleApps() }
+            }
+        }
+    }
 
     /** Recomputes the single visible list held in [SuperUserUiState]. */
     private fun SuperUserUiState.withVisibleApps(): SuperUserUiState {
