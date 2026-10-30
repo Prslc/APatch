@@ -95,8 +95,8 @@ object AppRepository {
                 val h2p = HanziToPinyin.getInstance()
 
                 val uids = Natives.suUids().toSet()
-                Natives.su()
-                val configs = PkgConfig.readConfigs()
+                // Root-only read, elevated on a throwaway thread (see PkgConfig).
+                val configs = PkgConfig.readConfigsPrivileged()
 
                 val newApps = allPackages.list.map { pkg ->
                     async {

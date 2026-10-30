@@ -5,6 +5,7 @@ import androidx.annotation.Keep
 import androidx.compose.runtime.Immutable
 import dalvik.annotation.optimization.FastNative
 import kotlinx.parcelize.Parcelize
+import me.bmax.apatch.util.RootIo
 
 object Natives {
     init {
@@ -37,12 +38,19 @@ object Natives {
     @FastNative
     private external fun nativeSu(superKey: String, toUid: Int, scontext: String?): Long
 
-    fun su(toUid: Int, scontext: String?): Boolean {
+    /**
+     * Elevates the calling thread to root. Only [me.bmax.apatch.util.RootIo] may call
+     * this: the elevation is permanent for the thread, and supercalls from an elevated
+     * thread are rejected by the kernel. See [me.bmax.apatch.util.RootIo].
+     */
+    internal fun su(toUid: Int, scontext: String?): Boolean {
+        if (BuildConfig.DEBUG) {
+            check(Thread.currentThread().name == RootIo.THREAD_NAME) {
+                "Natives.su() must run on RootIo's throwaway thread, not " +
+                        "\"${Thread.currentThread().name}\""
+            }
+        }
         return nativeSu(APApplication.superKey, toUid, scontext) == 0L
-    }
-
-    fun su(): Boolean {
-        return su(0, "")
     }
 
     @FastNative

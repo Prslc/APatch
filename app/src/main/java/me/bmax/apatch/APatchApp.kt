@@ -17,6 +17,7 @@ import com.topjohnwu.superuser.CallbackList
 import me.bmax.apatch.ui.CrashHandleActivity
 import me.bmax.apatch.util.APatchCli
 import me.bmax.apatch.util.APatchKeyHelper
+import me.bmax.apatch.util.RootIo
 import me.bmax.apatch.util.Version
 import me.bmax.apatch.util.getRootShell
 import me.bmax.apatch.util.rootShellForResult
@@ -203,12 +204,6 @@ class APApplication : Application(), SingletonImageLoader.Factory, Thread.Uncaug
                 if (!ready) return
 
                 thread {
-                    val rc = Natives.su(0, null)
-                    if (!rc) {
-                        Log.e(TAG, "Native.su failed")
-                        return@thread
-                    }
-
                     // KernelPatch version
                     //val buildV = Version.buildKPVUInt()
                     //val installedV = Version.installedKPVUInt()
@@ -225,7 +220,14 @@ class APApplication : Application(), SingletonImageLoader.Factory, Thread.Uncaug
                     }
                     Log.d(TAG, "kp state: " + _kpStateLiveData.value)
 
-                    if (File(NEED_REBOOT_FILE).exists()) {
+                    // Root-only files are read on RootIo's throwaway thread; the rest of
+                    // this block issues supercalls, which need the app uid as caller.
+                    val needReboot = runCatching {
+                        RootIo.withRootBlocking { File(NEED_REBOOT_FILE).exists() }
+                    }.onFailure {
+                        Log.w(TAG, "Failed to read $NEED_REBOOT_FILE", it)
+                    }.getOrDefault(false)
+                    if (needReboot) {
                         _kpStateLiveData.postValue(State.KERNELPATCH_NEED_REBOOT)
                     }
                     Log.d(TAG, "kp state: " + _kpStateLiveData.value)
@@ -242,13 +244,16 @@ class APApplication : Application(), SingletonImageLoader.Factory, Thread.Uncaug
                     if (Version.installedApdVInt > 0 && mgv.toInt() != Version.installedApdVInt) {
                         _apStateLiveData.postValue(State.ANDROIDPATCH_NEED_UPDATE)
                         // su path
-                        val suPathFile = File(SU_PATH_FILE)
-                        if (suPathFile.exists()) {
-                            val suPath = suPathFile.readText().trim()
-                            if (suPath.isNotEmpty() && Natives.suPath() != suPath) {
-                                Log.d(TAG, "su path: $suPath")
-                                Natives.resetSuPath(suPath)
+                        val suPath = runCatching {
+                            RootIo.withRootBlocking {
+                                File(SU_PATH_FILE).takeIf { it.exists() }?.readText()?.trim().orEmpty()
                             }
+                        }.onFailure {
+                            Log.w(TAG, "Failed to read $SU_PATH_FILE", it)
+                        }.getOrDefault("")
+                        if (suPath.isNotEmpty() && Natives.suPath() != suPath) {
+                            Log.d(TAG, "su path: $suPath")
+                            Natives.resetSuPath(suPath)
                         }
                     }
                     Log.d(TAG, "ap state: " + _apStateLiveData.value)

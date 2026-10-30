@@ -49,10 +49,19 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: jetbrains
-          java-version: 21
+        # The ubuntu runner image already ships Temurin 21. Use it instead of
+        # actions/setup-java: its jetbrains distribution lists JBR releases on
+        # api.github.com and reads process.env.GITHUB_TOKEN directly, so the lookup
+        # is anonymous (60 requests/h per egress IP) and trips on shared runner IPs.
+        run: |
+          if [ -z "${JAVA_HOME_21_X64:-}" ]; then
+            echo "::error::JAVA_HOME_21_X64 is not set on this runner"
+            ls -1 /usr/lib/jvm || true
+            exit 1
+          fi
+          echo "JAVA_HOME=$JAVA_HOME_21_X64" >> "$GITHUB_ENV"
+          echo "$JAVA_HOME_21_X64/bin" >> "$GITHUB_PATH"
+          "$JAVA_HOME_21_X64/bin/java" -version
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6

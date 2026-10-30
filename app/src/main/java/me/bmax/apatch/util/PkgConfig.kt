@@ -4,8 +4,6 @@ import android.os.Parcelable
 import android.util.Log
 import androidx.annotation.Keep
 import androidx.compose.runtime.Immutable
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import me.bmax.apatch.APApplication
 import me.bmax.apatch.Natives
@@ -58,7 +56,7 @@ object PkgConfig {
         return columns.indices.all { columns[it].trim() == CSV_COLUMNS[it] }
     }
 
-    fun readConfigs(): HashMap<Int, Config> {
+    private fun readConfigs(): HashMap<Int, Config> {
         val configs = HashMap<Int, Config>()
         val file = File(APApplication.PACKAGE_CONFIG_FILE)
         if (file.exists()) {
@@ -134,27 +132,38 @@ object PkgConfig {
         }
     }
 
-    suspend fun changeConfig(config: Config) = withContext(Dispatchers.IO) {
-        synchronized(PkgConfig::class.java) {
-            if (!Natives.su()) {
-                Log.e(TAG, "su failed, abort change config")
-                return@synchronized
-            }
-            withConfigLock {
-                val configs = readConfigs()
-                val uid = config.profile.uid
-                // Root App should not be excluded
-                if (config.allow == 1) {
-                    config.exclude = 0
+    /** Reads the root-only config file; the only way outside code should read it. */
+    suspend fun readConfigsPrivileged(): HashMap<Int, Config> =
+        try {
+            RootIo.withRoot { readConfigs() }
+        } catch (_: SuUnavailableException) {
+            Log.e(TAG, "su failed, abort reading package config")
+            HashMap()
+        }
+
+    suspend fun changeConfig(config: Config) {
+        try {
+            RootIo.withRoot {
+                synchronized(PkgConfig::class.java) {
+                    withConfigLock {
+                        val configs = readConfigs()
+                        val uid = config.profile.uid
+                        // Root App should not be excluded
+                        if (config.allow == 1) {
+                            config.exclude = 0
+                        }
+                        if (config.allow == 0 && configs[uid] != null && config.exclude != 0) {
+                            configs.remove(uid)
+                        } else {
+                            Log.d(TAG, "change config: $config")
+                            configs[uid] = config
+                        }
+                        writeConfigs(configs)
+                    }
                 }
-                if (config.allow == 0 && configs[uid] != null && config.exclude != 0) {
-                    configs.remove(uid)
-                } else {
-                    Log.d(TAG, "change config: $config")
-                    configs[uid] = config
-                }
-                writeConfigs(configs)
             }
+        } catch (_: SuUnavailableException) {
+            Log.e(TAG, "su failed, abort change config")
         }
     }
 }
