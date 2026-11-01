@@ -31,46 +31,59 @@ object Version {
 
     fun getKpImg(): String {
         cachedKpImg?.let { return it }
-        val patchDir: ExtendedFile = FileSystemManager.getLocal().getFile(apApp.filesDir.parent, "check")
-        patchDir.deleteRecursively()
-        patchDir.mkdirs()
-        val execs = listOf(
-            "libkptools.so",  "libbusybox.so"
-        )
-
-        val info = apApp.applicationInfo
-        val libs = File(info.nativeLibraryDir).listFiles { _, name ->
-            execs.contains(name)
-        } ?: emptyArray()
-
-        for (lib in libs) {
-            val name = lib.name.substring(3, lib.name.length - 3)
-            Os.symlink(lib.path, "$patchDir/$name")
-        }
-
-        for (script in listOf(
-            "boot_patch.sh", "boot_unpatch.sh", "boot_extract.sh", "util_functions.sh", "kpimg"
-        )) {
-            val dest = File(patchDir, script)
-            apApp.assets.open(script).writeTo(dest)
-        }
-        createRootShell().use { shell ->
-            val result = shellForResult(
-                shell, "cd \"$patchDir\"", "./kptools -l -k kpimg"
+        // Older builds created "check" as root; use a per-run dir and clean it via the shell.
+        val appDataDir = apApp.filesDir.parentFile ?: return "unknown"
+        val legacyDir = File(appDataDir, "check")
+        val patchDir: ExtendedFile = FileSystemManager.getLocal()
+            .getFile(appDataDir.path, "check-${System.nanoTime()}")
+        try {
+            patchDir.mkdirs()
+            val execs = listOf(
+                "libkptools.so", "libbusybox.so"
             )
 
-            if (result.isSuccess) {
-                val ini = Ini(StringReader(result.out.joinToString("\n")))
-                val kpimg = ini["kpimg"]
-                if (kpimg != null) {
-                    val compileTime = kpimg["compile_time"].toString()
-                    cachedKpImg = compileTime
-                    return compileTime
+            val info = apApp.applicationInfo
+            val libs = File(info.nativeLibraryDir).listFiles { _, name ->
+                execs.contains(name)
+            } ?: emptyArray()
+
+            for (lib in libs) {
+                val name = lib.name.substring(3, lib.name.length - 3)
+                Os.symlink(lib.path, "$patchDir/$name")
+            }
+
+            for (script in listOf(
+                "boot_patch.sh", "boot_unpatch.sh", "boot_extract.sh", "util_functions.sh", "kpimg"
+            )) {
+                val dest = File(patchDir, script)
+                apApp.assets.open(script).writeTo(dest)
+            }
+            createRootShell().use { shell ->
+                if (legacyDir.isAbsolute && legacyDir.exists()) {
+                    shellForResult(shell, "rm -rf -- \"${legacyDir.path}\"")
+                }
+                val result = shellForResult(
+                    shell, "cd \"$patchDir\"", "./kptools -l -k kpimg"
+                )
+
+                if (result.isSuccess) {
+                    val ini = Ini(StringReader(result.out.joinToString("\n")))
+                    val kpimg = ini["kpimg"]
+                    if (kpimg != null) {
+                        val compileTime = kpimg["compile_time"].toString()
+                        cachedKpImg = compileTime
+                        return compileTime
+                    }
                 }
             }
-        }
 
-        return "unknown"
+            return "unknown"
+        } catch (e: Exception) {
+            Log.e("Version", "getKpImg failed", e)
+            return "unknown"
+        } finally {
+            runCatching { patchDir.deleteRecursively() }
+        }
     }
 
     fun uInt2String(ver: UInt): String {

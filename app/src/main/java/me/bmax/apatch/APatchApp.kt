@@ -204,59 +204,64 @@ class APApplication : Application(), SingletonImageLoader.Factory, Thread.Uncaug
                 if (!ready) return
 
                 thread {
-                    // KernelPatch version
-                    //val buildV = Version.buildKPVUInt()
-                    //val installedV = Version.installedKPVUInt()
-                    //use build time to check update
-                    val buildV = Version.getKpImg()
-                    val installedV = Version.installedKPTime()
+                    // Best effort: a failure here must not reach the crash handler.
+                    try {
+                        // KernelPatch version
+                        //val buildV = Version.buildKPVUInt()
+                        //val installedV = Version.installedKPVUInt()
+                        //use build time to check update
+                        val buildV = Version.getKpImg()
+                        val installedV = Version.installedKPTime()
 
 
-                    Log.d(TAG, "kp installed version: ${installedV}, build version: $buildV")
+                        Log.d(TAG, "kp installed version: ${installedV}, build version: $buildV")
 
-                    // use != instead of > to enable downgrade,
-                    if (buildV != installedV) {
-                        _kpStateLiveData.postValue(State.KERNELPATCH_NEED_UPDATE)
-                    }
-                    Log.d(TAG, "kp state: " + _kpStateLiveData.value)
-
-                    // Root-only files are read on RootIo's throwaway thread; the rest of
-                    // this block issues supercalls, which need the app uid as caller.
-                    val needReboot = runCatching {
-                        RootIo.withRootBlocking { File(NEED_REBOOT_FILE).exists() }
-                    }.onFailure {
-                        Log.w(TAG, "Failed to read $NEED_REBOOT_FILE", it)
-                    }.getOrDefault(false)
-                    if (needReboot) {
-                        _kpStateLiveData.postValue(State.KERNELPATCH_NEED_REBOOT)
-                    }
-                    Log.d(TAG, "kp state: " + _kpStateLiveData.value)
-
-                    // AndroidPatch version
-                    val mgv = Version.getManagerVersion().second
-                    val installedApdVInt = Version.installedApdVUInt()
-                    Log.d(TAG, "manager version: $mgv, installed apd version: $installedApdVInt")
-
-                    if (Version.installedApdVInt > 0) {
-                        _apStateLiveData.postValue(State.ANDROIDPATCH_INSTALLED)
-                    }
-
-                    if (Version.installedApdVInt > 0 && mgv.toInt() != Version.installedApdVInt) {
-                        _apStateLiveData.postValue(State.ANDROIDPATCH_NEED_UPDATE)
-                        // su path
-                        val suPath = runCatching {
-                            RootIo.withRootBlocking {
-                                File(SU_PATH_FILE).takeIf { it.exists() }?.readText()?.trim().orEmpty()
-                            }
-                        }.onFailure {
-                            Log.w(TAG, "Failed to read $SU_PATH_FILE", it)
-                        }.getOrDefault("")
-                        if (suPath.isNotEmpty() && Natives.suPath() != suPath) {
-                            Log.d(TAG, "su path: $suPath")
-                            Natives.resetSuPath(suPath)
+                        // use != instead of > to enable downgrade,
+                        if (buildV != installedV) {
+                            _kpStateLiveData.postValue(State.KERNELPATCH_NEED_UPDATE)
                         }
+                        Log.d(TAG, "kp state: " + _kpStateLiveData.value)
+
+                        // Root-only files are read on RootIo's throwaway thread; the rest of
+                        // this block issues supercalls, which need the app uid as caller.
+                        val needReboot = runCatching {
+                            RootIo.withRootBlocking { File(NEED_REBOOT_FILE).exists() }
+                        }.onFailure {
+                            Log.w(TAG, "Failed to read $NEED_REBOOT_FILE", it)
+                        }.getOrDefault(false)
+                        if (needReboot) {
+                            _kpStateLiveData.postValue(State.KERNELPATCH_NEED_REBOOT)
+                        }
+                        Log.d(TAG, "kp state: " + _kpStateLiveData.value)
+
+                        // AndroidPatch version
+                        val mgv = Version.getManagerVersion().second
+                        val installedApdVInt = Version.installedApdVUInt()
+                        Log.d(TAG, "manager version: $mgv, installed apd version: $installedApdVInt")
+
+                        if (Version.installedApdVInt > 0) {
+                            _apStateLiveData.postValue(State.ANDROIDPATCH_INSTALLED)
+                        }
+
+                        if (Version.installedApdVInt > 0 && mgv.toInt() != Version.installedApdVInt) {
+                            _apStateLiveData.postValue(State.ANDROIDPATCH_NEED_UPDATE)
+                            // su path
+                            val suPath = runCatching {
+                                RootIo.withRootBlocking {
+                                    File(SU_PATH_FILE).takeIf { it.exists() }?.readText()?.trim().orEmpty()
+                                }
+                            }.onFailure {
+                                Log.w(TAG, "Failed to read $SU_PATH_FILE", it)
+                            }.getOrDefault("")
+                            if (suPath.isNotEmpty() && Natives.suPath() != suPath) {
+                                Log.d(TAG, "su path: $suPath")
+                                Natives.resetSuPath(suPath)
+                            }
+                        }
+                        Log.d(TAG, "ap state: " + _apStateLiveData.value)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Startup probe failed", e)
                     }
-                    Log.d(TAG, "ap state: " + _apStateLiveData.value)
 
                     return@thread
                 }
