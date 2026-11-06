@@ -5,6 +5,8 @@
 #ifndef APATCH_APJNI_HPP
 #define APATCH_APJNI_HPP
 
+#include <cstdlib>
+
 #include <jni.h>
 #include <android/log.h>
 #include "jni_helper.hpp"
@@ -21,7 +23,7 @@ using namespace lsplant;
 void ensureSuperKeyNonNull(jstring super_key_jstr) {
     if (!super_key_jstr) [[unlikely]] {
         LOGE("[%s] Super Key is null!", __PRETTY_FUNCTION__);
-        abort();
+        std::abort();
     }
 }
 
