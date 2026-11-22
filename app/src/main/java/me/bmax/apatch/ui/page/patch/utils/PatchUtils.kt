@@ -8,7 +8,7 @@ import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import java.io.File
-import java.io.FileNotFoundException
+import java.io.IOException
 
 // Reject superkey chars that could break out of a root shell command.
 private val SHELL_METACHARACTERS = setOf(
@@ -53,17 +53,17 @@ fun insertDownload(context: Context, outUri: Uri?, inputUri: Uri): Boolean {
     if (outUri == null) return false
     return try {
         val resolver = context.contentResolver
-        resolver.openInputStream(inputUri)?.use { inputStream ->
-            resolver.openOutputStream(outUri)?.use { outputStream ->
-                inputStream.copyTo(outputStream)
-            }
+        val input = resolver.openInputStream(inputUri) ?: return false
+        input.use { inputStream ->
+            val output = resolver.openOutputStream(outUri) ?: return false
+            output.use { outputStream -> inputStream.copyTo(outputStream) }
         }
         val contentValues = ContentValues().apply {
             put(MediaStore.Downloads.IS_PENDING, 0)
         }
         resolver.update(outUri, contentValues, null, null)
         true
-    } catch (_: FileNotFoundException) {
+    } catch (_: IOException) {
         false
     }
 }
