@@ -72,6 +72,7 @@ class PatchEngine(
                     dest.setExecutable(true)
                 } catch (copyEx: Exception) {
                     onError("Failed to setup binary $name: ${copyEx.message}")
+                    throw IOException("Failed to setup binary $name", copyEx)
                 }
             }
         }
@@ -102,9 +103,12 @@ class PatchEngine(
                 }
             } else {
                 onError("parse kpimg error\n")
+                throw IOException("parse kpimg error")
             }
         } else {
-            onError(result.err.joinToString("\n"))
+            val message = result.err.joinToString("\n").ifBlank { "kptools failed" }
+            onError(message)
+            throw IOException(message)
         }
     }
 
@@ -127,7 +131,7 @@ class PatchEngine(
             if (kernel == null) {
                 onError("empty kernel section")
                 onStateUpdate { copy(kimgInfo = KPModel.KImgInfo("", false)) }
-                return@withContext
+                throw IOException("empty kernel section")
             }
 
             val isPatched = kernel["patched"].toBoolean()
@@ -174,8 +178,10 @@ class PatchEngine(
                 )
             }
         } else {
-            onError(result.err.joinToString("\n"))
+            val message = result.err.joinToString("\n").ifBlank { "kptools failed" }
+            onError(message)
             onStateUpdate { copy(kimgInfo = KPModel.KImgInfo("", false)) }
+            throw IOException(message)
         }
     }
 
@@ -189,8 +195,9 @@ class PatchEngine(
             val outSlot = result.out.firstOrNull { it.startsWith("SLOT=") }?.removePrefix("SLOT=") ?: ""
             val outDevLine = result.out.firstOrNull { it.startsWith("BOOTIMAGE=") }
             if (outDevLine == null) {
-                onError("No BOOTIMAGE= in boot_extract.sh output")
-                return@withContext
+                val message = "No BOOTIMAGE= in boot_extract.sh output"
+                onError(message)
+                throw IOException(message)
             }
             val outDev = outDevLine.removePrefix("BOOTIMAGE=")
 
@@ -201,7 +208,9 @@ class PatchEngine(
             onStateUpdate { copy(bootSlot = outSlot, bootDev = outDev) }
             parseBootimg(outDev, currentSuperKey)
         } else {
-            onError(result.err.joinToString("\n"))
+            val message = result.err.joinToString("\n").ifBlank { "boot_extract.sh failed" }
+            onError(message)
+            throw IOException(message)
         }
     }
 
