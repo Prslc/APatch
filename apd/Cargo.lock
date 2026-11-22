@@ -1418,7 +1418,7 @@ dependencies = [
 [[package]]
 name = "policy"
 version = "0.1.0"
-source = "git+https://github.com/AndroidPatch/ap_policy#51ff1161e23a343971e3db764056ec6ee7c8cc2e"
+source = "git+https://github.com/AndroidPatch/ap_policy?rev=51ff1161e23a343971e3db764056ec6ee7c8cc2e#51ff1161e23a343971e3db764056ec6ee7c8cc2e"
 dependencies = [
  "cc",
  "libc",

@@ -43,7 +43,7 @@ notify = "8.2"
 signal-hook = "0.4"
 regex-lite = "0.1.9"
 # for insmod (ELF parsing + symbol relocation, no version check)
-goblin = "0.10"
+goblin = { version = "0.10.7", default-features = false, features = ["std", "elf32", "elf64", "endian_fd"] }
 scroll = "0.13"
 # for magica (jailbreak adb-root escalation)
 adb_client = "3"
@@ -53,7 +53,7 @@ rustix = { version = "1", features = ["all-apis"] }
 # some android specific dependencies which compiles under unix are also listed here for convenience of coding
 android-properties = { version = "0.2.2", features = ["bionic-deprecated"] }
 prop-rs-android = { git = "https://github.com/Kernel-SU/ksu_props", rev = "6f5723105d8d4cacad31d83d343defbf032c7b33"}
-policy = {git = "https://github.com/AndroidPatch/ap_policy"}
+policy = {git = "https://github.com/AndroidPatch/ap_policy", rev = "51ff1161e23a343971e3db764056ec6ee7c8cc2e"}
 [target.'cfg(target_os = "android")'.dependencies]
 android_logger = { version = "0.15", default-features = false }
 
