@@ -3,6 +3,7 @@ package me.bmax.apatch.ui.page.patch
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -139,6 +140,8 @@ class PatchesViewModel : ViewModel() {
                 _uiState.update { it.copy(isPatching = true) }
                 try {
                     patchEngine.doUnpatch(_uiState.value.bootDev)
+                } catch (e: CancellationException) {
+                    throw e
                 } catch (e: Exception) {
                     logBuffer.append("Unpatch error: ${e.message}\n")
                     _uiState.update { it.copy(error = "Unpatch error: ${e.message}") }
@@ -158,6 +161,8 @@ class PatchesViewModel : ViewModel() {
                 _uiState.update { it.copy(isPatching = true) }
                 try {
                     patchEngine.doPatch(_uiState.value, mode, useKey)
+                } catch (e: CancellationException) {
+                    throw e
                 } catch (e: Exception) {
                     logBuffer.append("Patch error: ${e.message}\n")
                     _uiState.update { it.copy(error = "Patch error: ${e.message}") }
