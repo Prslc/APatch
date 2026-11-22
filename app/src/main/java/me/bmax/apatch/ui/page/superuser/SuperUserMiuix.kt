@@ -248,13 +248,7 @@ private fun AppItem(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable {
-                    if (!isAllowed) {
-                        isExpanded = !isExpanded
-                    } else {
-                        onToggleSu(false)
-                    }
-                }
+                .clickable { if (!isAllowed) isExpanded = !isExpanded }
                 .padding(horizontal = 12.dp, vertical = 8.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
