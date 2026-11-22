@@ -200,7 +200,8 @@ fun migrateStockBootBackup() {
     runCatching {
         withNewRootShell {
             newJob().add(
-                "for p in /data/user/*/com.example.apatch/patch/ori.img " +
+                "mkdir -p /data/adb/ap; " +
+                    "for p in /data/user/*/com.example.apatch/patch/ori.img " +
                     "/data/user/*/me.bmax.apatch/patch/ori.img; do " +
                     "[ -f \"\$p\" ] || continue; " +
                     "cp -f \"\$p\" /data/adb/ap/ori.img && rm -f \"\$p\"; " +
