@@ -5,11 +5,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.LocalModuleCounts
 import me.bmax.apatch.ui.UiMode
+import me.bmax.apatch.util.migrateLegacyKpmDir
 
 @Composable
 fun HomeScreen(
@@ -19,6 +22,10 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
 ) {
     val counts = LocalModuleCounts.current
+
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) { migrateLegacyKpmDir() }
+    }
 
     LaunchedEffect(viewModel) {
         viewModel.uiState

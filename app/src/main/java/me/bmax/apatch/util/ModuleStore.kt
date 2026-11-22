@@ -25,7 +25,7 @@ data class InstalledModule(
 /**
  * Reads the two stores the manager installs into, so a downloaded module can be
  * told apart from one that is already present: the system modules apd keeps
- * under /data/adb/modules, and the persisted KPMs under /data/adb/ap/kpms.
+ * under /data/adb/modules, and the persisted KPMs under /data/adb/ap/kpm.
  *
  * A KPM's store id is derived from the `name` in its kptools metadata, which is
  * also what the repository uses as the module id, so ids from the two sides can

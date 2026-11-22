@@ -178,6 +178,21 @@ fun listModuleJson(): String {
     return out.joinToString("\n").ifBlank { "[]" }
 }
 
+/** Move KPMs from the legacy kpms/ dir to kpm/, which the kernel reads at boot. */
+fun migrateLegacyKpmDir() {
+    runCatching {
+        withNewRootShell {
+            newJob().add(
+                "if [ -d /data/adb/ap/kpms ]; then " +
+                    "mkdir -p /data/adb/ap/kpm; " +
+                    "cp -a /data/adb/ap/kpms/. /data/adb/ap/kpm/ 2>/dev/null; " +
+                    "rm -rf /data/adb/ap/kpms; " +
+                    "fi; true"
+            ).exec()
+        }
+    }.onFailure { Log.w(TAG, "migrate legacy kpms dir failed", it) }
+}
+
 fun reboot(mode: RebootMode = RebootMode.NORMAL) {
     if (mode == RebootMode.SOFT) {
         softReboot()
