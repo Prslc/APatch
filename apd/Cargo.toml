@@ -36,7 +36,7 @@ regex-lite = "0.1.9"
 goblin = { version = "0.10.7", default-features = false, features = ["std", "elf32", "elf64", "endian_fd"] }
 scroll = "0.13"
 # for magica (jailbreak adb-root escalation)
-adb_client = "3"
+adb_client = { version = "3.2.3", default-features = false }
 
 [target.'cfg(any(target_os = "android", target_os = "linux"))'.dependencies]
 rustix = { version = "1", features = ["all-apis"] }
