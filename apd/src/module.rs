@@ -354,12 +354,11 @@ pub fn prune_modules() -> Result<()> {
     })?;
 
     // collect remaining modules, if none, clean up metamodule record
-    let remaining_modules: Vec<_> = std::fs::read_dir(defs::MODULE_DIR)?
+    let has_remaining = std::fs::read_dir(defs::MODULE_DIR)?
         .filter_map(std::result::Result::ok)
-        .filter(|entry| entry.path().join("module.prop").exists())
-        .collect();
+        .any(|entry| entry.path().join("module.prop").exists());
 
-    if remaining_modules.is_empty() {
+    if !has_remaining {
         info!("no remaining modules.");
     }
 
