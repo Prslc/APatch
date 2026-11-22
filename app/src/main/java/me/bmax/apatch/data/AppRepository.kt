@@ -205,7 +205,7 @@ object AppRepository {
         _apps.update { currentList ->
             currentList.map { app ->
                 if (app.uid == uid) {
-                    app.copy(config = newConfig)
+                    app.copy(config = newConfig.copy(pkg = app.packageName))
                 } else {
                     app
                 }
