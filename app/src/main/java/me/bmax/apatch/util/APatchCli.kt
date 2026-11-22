@@ -193,6 +193,21 @@ fun migrateLegacyKpmDir() {
     }.onFailure { Log.w(TAG, "migrate legacy kpms dir failed", it) }
 }
 
+/** Move a stock boot backup left by a manual-flash install to /data/adb/ap. */
+fun migrateStockBootBackup() {
+    runCatching {
+        withNewRootShell {
+            newJob().add(
+                "for p in /data/user/*/com.example.apatch/patch/ori.img " +
+                    "/data/user/*/me.bmax.apatch/patch/ori.img; do " +
+                    "[ -f \"\$p\" ] || continue; " +
+                    "cp -f \"\$p\" /data/adb/ap/ori.img && rm -f \"\$p\"; " +
+                    "done; true"
+            ).exec()
+        }
+    }.onFailure { Log.w(TAG, "migrate stock boot backup failed", it) }
+}
+
 fun reboot(mode: RebootMode = RebootMode.NORMAL) {
     if (mode == RebootMode.SOFT) {
         softReboot()

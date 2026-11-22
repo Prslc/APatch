@@ -46,6 +46,7 @@ class PatchEngine(
     var isPrepared = false
 
     suspend fun prepareEnv() = withContext(Dispatchers.IO) {
+        migrateOriImage()
         patchDir.deleteRecursively()
         patchDir.mkdirs()
 
