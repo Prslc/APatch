@@ -16,7 +16,6 @@ import me.bmax.apatch.APApplication
 import me.bmax.apatch.ui.LocalUiMode
 import me.bmax.apatch.ui.LocalModuleCounts
 import me.bmax.apatch.ui.UiMode
-import me.bmax.apatch.util.migrateLegacyKpmDir
 import me.bmax.apatch.util.migrateStockBootBackup
 
 @Composable
@@ -29,10 +28,7 @@ fun HomeScreen(
     val counts = LocalModuleCounts.current
 
     LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            migrateLegacyKpmDir()
-            migrateStockBootBackup()
-        }
+        withContext(Dispatchers.IO) { migrateStockBootBackup() }
     }
 
     LaunchedEffect(viewModel) {
