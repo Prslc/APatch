@@ -434,7 +434,7 @@ fun rememberRebootAction(): (RebootMode) -> Unit {
     val downloadContent = stringResource(R.string.reboot_download_confirm)
     val edlTitle = stringResource(R.string.reboot_edl)
     val edlContent = stringResource(R.string.reboot_edl_confirm)
-    var pendingMode by remember { mutableStateOf<RebootMode?>(null) }
+    var pendingMode by rememberSaveable { mutableStateOf<RebootMode?>(null) }
     val confirmDialog = rememberConfirmDialog(onConfirm = {
         pendingMode?.let { reboot(it) }
         pendingMode = null
