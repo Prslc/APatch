@@ -54,24 +54,20 @@ class PatchesViewModel : ViewModel() {
         entryMode = mode
         viewModelScope.launch(Dispatchers.IO) {
             actionMutex.withLock {
-                val jailbreak = isJailbreakMode()
-                _uiState.update {
-                    it.copy(error = "", jailbreakBlocked = jailbreak)
-                }
-                if (jailbreak) {
-                    _uiState.update { it.copy(isRunning = false) }
-                    return@withLock
-                }
+                _uiState.update { it.copy(error = "") }
                 ensurePrepared()
             }
         }
     }
 
     private suspend fun ensurePrepared(): Boolean {
-        if (prepared) return true
         if (isJailbreakMode()) {
             _uiState.update { it.copy(isRunning = false, jailbreakBlocked = true) }
             return false
+        }
+        if (prepared) {
+            _uiState.update { it.copy(jailbreakBlocked = false) }
+            return true
         }
         _uiState.update { it.copy(isRunning = true, error = "", jailbreakBlocked = false) }
         return try {
