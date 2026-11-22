@@ -135,6 +135,9 @@ class PatchesViewModel : ViewModel() {
                 _uiState.update { it.copy(isPatching = true) }
                 try {
                     patchEngine.doUnpatch(_uiState.value.bootDev)
+                } catch (e: Exception) {
+                    logBuffer.append("Unpatch error: ${e.message}\n")
+                    _uiState.update { it.copy(error = "Unpatch error: ${e.message}") }
                 } finally {
                     logBuffer.flush()
                     _uiState.update { it.copy(isPatching = false, isPatchDone = true) }
@@ -151,6 +154,9 @@ class PatchesViewModel : ViewModel() {
                 _uiState.update { it.copy(isPatching = true) }
                 try {
                     patchEngine.doPatch(_uiState.value, mode, useKey)
+                } catch (e: Exception) {
+                    logBuffer.append("Patch error: ${e.message}\n")
+                    _uiState.update { it.copy(error = "Patch error: ${e.message}") }
                 } finally {
                     logBuffer.flush()
                     _uiState.update { it.copy(isPatching = false, isPatchDone = true) }
