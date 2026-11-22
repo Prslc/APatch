@@ -103,9 +103,10 @@ fun HomeScreenMaterial(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val kpState = uiState.kpState
+    val checkUpdate = rememberCheckUpdate()
 
-    LaunchedEffect(isCurrentPage) {
-        if (isCurrentPage && APApplication.sharedPreferences.getBoolean("check_update", true)) {
+    LaunchedEffect(isCurrentPage, checkUpdate) {
+        if (isCurrentPage && checkUpdate) {
             viewModel.checkUpdate()
         }
     }
@@ -188,8 +189,6 @@ fun HomeScreenMaterial(
             ) {
                 AStatusCardMaterial(uiState.apState)
             }
-            val checkUpdate =
-                APApplication.sharedPreferences.getBoolean("check_update", true)
             if (checkUpdate) {
                 UpdateCardMaterial(uiState)
             }

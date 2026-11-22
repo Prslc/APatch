@@ -90,9 +90,10 @@ fun HomeScreenMiuix(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val availablePages = rememberAvailablePages()
+    val checkUpdate = rememberCheckUpdate()
 
-    LaunchedEffect(isCurrentPage) {
-        if (isCurrentPage && APApplication.sharedPreferences.getBoolean("check_update", true)) {
+    LaunchedEffect(isCurrentPage, checkUpdate) {
+        if (isCurrentPage && checkUpdate) {
             viewModel.checkUpdate()
         }
     }
@@ -163,8 +164,6 @@ fun HomeScreenMiuix(
                     if (!uiState.isJailbreak && uiState.kpState != APApplication.State.UNKNOWN_STATE && uiState.apState != APApplication.State.ANDROIDPATCH_INSTALLED) {
                         AStatusCard(uiState.apState)
                     }
-                    val checkUpdate =
-                        APApplication.sharedPreferences.getBoolean("check_update", true)
                     if (checkUpdate) {
                         UpdateCard(uiState)
                     }
