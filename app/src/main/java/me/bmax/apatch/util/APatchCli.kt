@@ -184,13 +184,16 @@ fun listModuleJson(): String {
 fun migrateLegacyKpmDir() {
     runCatching {
         withNewRootShell {
-            newJob().add(
+            val result = newJob().add(
                 "if [ -d /data/adb/ap/kpms ]; then " +
-                    "mkdir -p /data/adb/ap/kpm; " +
-                    "cp -a /data/adb/ap/kpms/. /data/adb/ap/kpm/ 2>/dev/null; " +
+                    "mkdir -p /data/adb/ap/kpm && " +
+                    "cp -a -n /data/adb/ap/kpms/. /data/adb/ap/kpm/ && " +
                     "rm -rf /data/adb/ap/kpms; " +
-                    "fi; true"
+                    "fi"
             ).exec()
+            if (!result.isSuccess) {
+                Log.w(TAG, "migrate legacy kpms dir failed: ${result.err.joinToString("\n")}")
+            }
         }
     }.onFailure { Log.w(TAG, "migrate legacy kpms dir failed", it) }
 }
