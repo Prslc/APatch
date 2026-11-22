@@ -1,6 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
-import com.android.build.gradle.tasks.PackageAndroidArtifact
+import com.android.build.gradle.tasks.PackageApplication
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.net.URI
 
@@ -166,7 +166,7 @@ android {
 }
 
 // https://stackoverflow.com/a/77745844
-tasks.withType<PackageAndroidArtifact> {
+tasks.withType<PackageApplication> {
     doFirst { appMetadata.asFile.orNull?.writeText("") }
 }
 
