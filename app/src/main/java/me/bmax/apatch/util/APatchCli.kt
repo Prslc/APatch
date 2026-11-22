@@ -182,16 +182,26 @@ fun listModuleJson(): String {
 
 /** Move a stock boot backup left by a manual-flash install to /data/adb/ap. */
 fun migrateStockBootBackup() {
+    val appDir = apApp.filesDir.parentFile ?: return
+    val userDir = appDir.parentFile ?: return
+    val current = File(appDir, "patch/ori.img")
+    val legacy = File(userDir, "me.bmax.apatch/patch/ori.img")
+
     runCatching {
         withNewRootShell {
-            newJob().add(
+            val err = ArrayList<String>()
+            val result = newJob().add(
                 "mkdir -p /data/adb/ap; " +
-                    "for p in /data/user/*/com.example.apatch/patch/ori.img " +
-                    "/data/user/*/me.bmax.apatch/patch/ori.img; do " +
+                    "ok=1; " +
+                    "for p in \"$legacy\" \"$current\"; do " +
                     "[ -f \"\$p\" ] || continue; " +
-                    "cp -f \"\$p\" /data/adb/ap/ori.img && rm -f \"\$p\"; " +
-                    "done; true"
-            ).exec()
+                    "cp -f \"\$p\" /data/adb/ap/ori.img && rm -f \"\$p\" || ok=0; " +
+                    "done; " +
+                    "[ \"\$ok\" = 1 ]"
+            ).to(ArrayList(), err).exec()
+            if (!result.isSuccess) {
+                Log.w(TAG, "migrate stock boot backup failed (${result.code}): ${err.joinToString("\n")}")
+            }
         }
     }.onFailure { Log.w(TAG, "migrate stock boot backup failed", it) }
 }
