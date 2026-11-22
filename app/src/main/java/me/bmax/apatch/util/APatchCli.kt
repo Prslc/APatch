@@ -99,8 +99,10 @@ private fun createMainRootShell(): Shell = createShell(globalMnt = false, asMain
 fun tryGetRootShell(): Shell = createShell(globalMnt = false, asMain = false)
 
 object APatchCli {
+    @Volatile
     var SHELL: Shell = createMainRootShell()
     val GLOBAL_MNT_SHELL: Shell = createRootShell(true)
+    @Synchronized
     fun refresh() {
         val tmp = SHELL
 
