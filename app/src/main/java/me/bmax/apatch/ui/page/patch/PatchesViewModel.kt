@@ -28,6 +28,9 @@ class PatchesViewModel : ViewModel() {
 
     private val actionMutex = Mutex()
 
+    private var entryMode = PatchMode.PATCH_ONLY
+    private var prepared = false
+
     private val _log = MutableStateFlow("")
     val log: StateFlow<String> = _log.asStateFlow()
 
@@ -47,40 +50,47 @@ class PatchesViewModel : ViewModel() {
     }
 
     fun prepare(mode: PatchMode) {
+        entryMode = mode
         viewModelScope.launch(Dispatchers.IO) {
             actionMutex.withLock {
                 val jailbreak = isJailbreakMode()
                 _uiState.update {
-                    it.copy(isRunning = true, error = "", jailbreakBlocked = jailbreak)
+                    it.copy(error = "", jailbreakBlocked = jailbreak)
                 }
                 if (jailbreak) {
                     _uiState.update { it.copy(isRunning = false) }
                     return@withLock
                 }
-                try {
-                    if (!patchEngine.isPrepared) {
-                        patchEngine.prepareEnv()
-                    }
-
-                    if (mode != PatchMode.UNPATCH) {
-                        patchEngine.parseKpimg()
-                    }
-
-                    if (mode in listOf(PatchMode.PATCH_AND_INSTALL, PatchMode.UNPATCH, PatchMode.INSTALL_TO_NEXT_SLOT)) {
-                        patchEngine.extractAndParseBootimg(mode, _uiState.value.superkey)
-                    }
-                } catch (e: Exception) {
-                    _uiState.update { it.copy(error = "Initialization failed: ${e.message}") }
-                } finally {
-                    _uiState.update { it.copy(isRunning = false) }
-                }
+                ensurePrepared()
             }
+        }
+    }
+
+    private suspend fun ensurePrepared(): Boolean {
+        if (prepared) return true
+        _uiState.update { it.copy(isRunning = true, error = "") }
+        return try {
+            patchEngine.prepareEnv()
+            if (entryMode != PatchMode.UNPATCH) {
+                patchEngine.parseKpimg()
+            }
+            if (entryMode in listOf(PatchMode.PATCH_AND_INSTALL, PatchMode.UNPATCH, PatchMode.INSTALL_TO_NEXT_SLOT)) {
+                patchEngine.extractAndParseBootimg(entryMode, _uiState.value.superkey)
+            }
+            prepared = true
+            true
+        } catch (e: Exception) {
+            _uiState.update { it.copy(error = "Initialization failed: ${e.message}") }
+            false
+        } finally {
+            _uiState.update { it.copy(isRunning = false) }
         }
     }
 
     fun copyAndParseBootimg(uri: Uri) {
         viewModelScope.launch(Dispatchers.IO) {
             actionMutex.withLock {
+                if (!ensurePrepared()) return@withLock
                 _uiState.update {
                     it.copy(
                         isRunning = true,
@@ -106,6 +116,7 @@ class PatchesViewModel : ViewModel() {
     fun embedKPM(uri: Uri) {
         viewModelScope.launch(Dispatchers.IO) {
             actionMutex.withLock {
+                if (!ensurePrepared()) return@withLock
                 _uiState.update { it.copy(isRunning = true, error = "") }
                 try {
                     patchEngine.embedKPM(uri)
@@ -119,6 +130,7 @@ class PatchesViewModel : ViewModel() {
     fun doUnpatch() {
         viewModelScope.launch(Dispatchers.IO) {
             actionMutex.withLock {
+                if (!ensurePrepared()) return@withLock
                 logBuffer.clear()
                 _uiState.update { it.copy(isPatching = true) }
                 try {
@@ -134,6 +146,7 @@ class PatchesViewModel : ViewModel() {
     fun doPatch(mode: PatchMode, useKey: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             actionMutex.withLock {
+                if (!ensurePrepared()) return@withLock
                 logBuffer.clear()
                 _uiState.update { it.copy(isPatching = true) }
                 try {
