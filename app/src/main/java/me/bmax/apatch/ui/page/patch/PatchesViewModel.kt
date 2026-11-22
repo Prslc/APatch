@@ -68,7 +68,11 @@ class PatchesViewModel : ViewModel() {
 
     private suspend fun ensurePrepared(): Boolean {
         if (prepared) return true
-        _uiState.update { it.copy(isRunning = true, error = "") }
+        if (isJailbreakMode()) {
+            _uiState.update { it.copy(isRunning = false, jailbreakBlocked = true) }
+            return false
+        }
+        _uiState.update { it.copy(isRunning = true, error = "", jailbreakBlocked = false) }
         return try {
             patchEngine.prepareEnv()
             if (entryMode != PatchMode.UNPATCH) {
