@@ -700,14 +700,16 @@ private fun KPModuleItem(
                             textDecoration = decoration
                         )
 
-                        Text(
-                            text = "$moduleArgs: ${module.args}",
-                            fontSize = 12.sp,
-                            modifier = Modifier.padding(bottom = 1.dp),
-                            fontWeight = FontWeight(550),
-                            color = colorScheme.onSurfaceVariantSummary,
-                            textDecoration = decoration
-                        )
+                        if (module.args.isNotBlank()) {
+                            Text(
+                                text = "$moduleArgs: ${module.args}",
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(bottom = 1.dp),
+                                fontWeight = FontWeight(550),
+                                color = colorScheme.onSurfaceVariantSummary,
+                                textDecoration = decoration
+                            )
+                        }
 
                         if (update != null) {
                             Text(

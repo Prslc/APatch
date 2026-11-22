@@ -695,12 +695,14 @@ private fun KPModuleItemMaterial(
                 lineHeight = MaterialTheme.typography.bodySmall.lineHeight,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Text(
-                text = "$moduleArgs: ${module.args}",
-                fontSize = MaterialTheme.typography.bodySmall.fontSize,
-                lineHeight = MaterialTheme.typography.bodySmall.lineHeight,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            if (module.args.isNotBlank()) {
+                Text(
+                    text = "$moduleArgs: ${module.args}",
+                    fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                    lineHeight = MaterialTheme.typography.bodySmall.lineHeight,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             if (update != null) {
                 Text(
                     text = stringResource(R.string.kpm_update_available, update.version),
