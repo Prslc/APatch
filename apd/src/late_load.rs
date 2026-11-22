@@ -35,7 +35,7 @@ pub fn detect_kmi() -> Option<String> {
     parse_kmi(&kernel_release()?)
 }
 
-const DEFAULT_PACKAGE: &str = "me.bmax.apatch";
+const DEFAULT_PACKAGE: &str = "com.example.apatch";
 
 /// Locate the manager APK by scanning `/data/app` directly, without going
 /// through the `package` service (binder/`pm` can be unreachable this early:
