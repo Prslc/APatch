@@ -17,11 +17,6 @@ zip = { version = "8.6.0",features = [
     "lzma",
     "xz",
 ], default-features = false }
-zip-extensions = { git = "https://github.com/AndroidPatch/zip-extensions-rs.git", branch = "master", features = [
-    "deflate",
-    "lzma",
-    "xz",
-], default-features = false }
 java-properties = { git = "https://github.com/AndroidPatch/java-properties.git", branch = "master", default-features = false }
 log = "0.4"
 env_logger = "0.11"
