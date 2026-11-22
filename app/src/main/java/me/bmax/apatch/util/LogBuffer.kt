@@ -2,6 +2,7 @@ package me.bmax.apatch.util
 
 import android.os.SystemClock
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -32,7 +33,7 @@ class LogBuffer(
                 lastEmitAt = now
                 snapshot = builder.toString()
             } else if (pendingJob?.isActive != true) {
-                pendingJob = scope.launch {
+                pendingJob = scope.launch(Dispatchers.Default) {
                     delay(intervalMs.milliseconds)
                     emit()
                 }
