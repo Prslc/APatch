@@ -21,6 +21,17 @@ fn get_kp_version() -> (u32, u32, u32) {
     (parse("MAJOR"), parse("MINOR"), parse("PATCH"))
 }
 
+fn get_version_epoch() -> u32 {
+    std::fs::read_to_string("../version.properties")
+        .expect("Failed to read ../version.properties")
+        .lines()
+        .find_map(|line| {
+            line.strip_prefix("managerVersionEpoch=")
+                .and_then(|v| v.trim().parse().ok())
+        })
+        .expect("managerVersionEpoch not found in version.properties")
+}
+
 fn get_git_version() -> Result<(u32, String), std::io::Error> {
     let output = Command::new("git")
         .args(["rev-list", "--count", "HEAD"])
@@ -32,7 +43,7 @@ fn get_git_version() -> Result<(u32, String), std::io::Error> {
         .trim()
         .parse()
         .map_err(|_| std::io::Error::new(std::io::ErrorKind::Other, "Failed to parse git count"))?;
-    let version_code = 10000 + 200 + version_code; // For historical reasons
+    let version_code = get_version_epoch() + version_code;
 
     let version_name = String::from_utf8(
         Command::new("git")
@@ -55,6 +66,7 @@ fn main() {
     println!("cargo:rerun-if-changed=../.git/HEAD");
     println!("cargo:rerun-if-changed=../.git/refs/");
     println!("cargo:rerun-if-changed=../app/src/main/cpp/version");
+    println!("cargo:rerun-if-changed=../version.properties");
 
     let (code, name) = match get_git_version() {
         Ok((code, name)) => (code, name),

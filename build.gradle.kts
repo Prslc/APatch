@@ -29,9 +29,10 @@ fun getGitDescribe(): String {
 }
 
 fun getVersionCode(): Int {
-    val commitCount = getGitCommitCount()
-    val major = 1
-    return major * 10000 + commitCount + 200
+    val epoch = java.util.Properties().apply {
+        File(rootDir, "version.properties").inputStream().use { load(it) }
+    }.getProperty("managerVersionEpoch").toInt()
+    return epoch + getGitCommitCount()
 }
 
 fun getBranch(): String {
