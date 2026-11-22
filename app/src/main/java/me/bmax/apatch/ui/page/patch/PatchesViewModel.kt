@@ -35,7 +35,7 @@ class PatchesViewModel : ViewModel() {
     private val _log = MutableStateFlow("")
     val log: StateFlow<String> = _log.asStateFlow()
 
-    private val logBuffer = LogBuffer(scope = viewModelScope) { _log.value = it }
+    private val logBuffer = LogBuffer(scope = viewModelScope, intervalMs = 0) { _log.value = it }
 
     private val patchEngine by lazy {
         val errorBuilder = StringBuilder()
