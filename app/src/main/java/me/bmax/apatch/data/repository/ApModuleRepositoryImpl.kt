@@ -116,7 +116,7 @@ object ApModuleRepositoryImpl : ApModuleRepository {
 
         resolver.openInputStream(uri)?.use { input ->
             file.outputStream().use { output -> input.copyTo(output) }
-        }
+        } ?: return false
 
         val stdoutCb = object : CallbackList<String?>() {
             override fun onAddElement(s: String?) { onStdout(s ?: "") }
