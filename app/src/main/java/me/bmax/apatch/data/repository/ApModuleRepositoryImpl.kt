@@ -114,9 +114,18 @@ object ApModuleRepositoryImpl : ApModuleRepository {
         val resolver = apApp.contentResolver
         val file = File(apApp.cacheDir, "module_${type}_${System.currentTimeMillis()}.zip")
 
-        resolver.openInputStream(uri)?.use { input ->
-            file.outputStream().use { output -> input.copyTo(output) }
-        } ?: return false
+        val copied = runCatching {
+            resolver.openInputStream(uri)?.use { input ->
+                file.outputStream().use { output -> input.copyTo(output) }
+            } != null
+        }.getOrElse {
+            Log.e(TAG, "copy module failed", it)
+            false
+        }
+        if (!copied) {
+            if (file.exists()) file.delete()
+            return false
+        }
 
         val stdoutCb = object : CallbackList<String?>() {
             override fun onAddElement(s: String?) { onStdout(s ?: "") }
