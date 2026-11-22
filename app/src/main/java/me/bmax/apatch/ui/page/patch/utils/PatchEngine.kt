@@ -383,15 +383,17 @@ class PatchEngine(
             builder.redirectErrorStream(true)
             val process = builder.start()
 
-            Thread {
+            val readerThread = Thread {
                 BufferedReader(InputStreamReader(process.inputStream)).use { reader ->
                     var line: String?
                     while (reader.readLine().also { line = it } != null) {
                         onLog(line!!)
                     }
                 }
-            }.start()
+            }
+            readerThread.start()
             succ = process.waitFor() == 0
+            readerThread.join()
         }
 
         if (!succ) {
