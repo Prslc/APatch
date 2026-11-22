@@ -420,10 +420,9 @@ fun rememberJailbreakSoftRebootDialog(): DialogHandle {
 }
 
 /**
- * Returns a reboot action for a reboot list. In jailbreak mode a plain reboot
- * ([RebootMode.NORMAL]) drops root, so it asks for confirmation first; the soft
- * reboot and recovery/bootloader/download/edl entries run immediately since the
- * user picked an explicit target.
+ * Returns a reboot action for a reboot list. Download and EDL confirm first
+ * because the device boots into a flashing interface; in jailbreak mode a plain
+ * reboot also confirms since it drops root.
  *
  * Mirrors KernelSU's `rememberRebootAction`.
  */
@@ -431,14 +430,33 @@ fun rememberJailbreakSoftRebootDialog(): DialogHandle {
 fun rememberRebootAction(): (RebootMode) -> Unit {
     val title = stringResource(R.string.reboot)
     val content = stringResource(R.string.settings_jailbreak_reboot_warning)
-    val confirmDialog = rememberConfirmDialog(onConfirm = { reboot() })
+    val downloadTitle = stringResource(R.string.reboot_download)
+    val downloadContent = stringResource(R.string.reboot_download_confirm)
+    val edlTitle = stringResource(R.string.reboot_edl)
+    val edlContent = stringResource(R.string.reboot_edl_confirm)
+    var pendingMode by remember { mutableStateOf<RebootMode?>(null) }
+    val confirmDialog = rememberConfirmDialog(onConfirm = {
+        pendingMode?.let { reboot(it) }
+        pendingMode = null
+    })
 
-    return remember(title, content, confirmDialog) {
+    return remember(title, content, downloadTitle, downloadContent, edlTitle, edlContent, confirmDialog) {
         { mode ->
-            if (isJailbreakMode() && mode == RebootMode.NORMAL) {
-                confirmDialog.showConfirm(title = title, content = content)
-            } else {
-                reboot(mode)
+            when {
+                mode == RebootMode.DOWNLOAD || mode == RebootMode.EDL -> {
+                    pendingMode = mode
+                    val (modeTitle, modeContent) = if (mode == RebootMode.DOWNLOAD) {
+                        downloadTitle to downloadContent
+                    } else {
+                        edlTitle to edlContent
+                    }
+                    confirmDialog.showConfirm(title = modeTitle, content = modeContent)
+                }
+                isJailbreakMode() && mode == RebootMode.NORMAL -> {
+                    pendingMode = mode
+                    confirmDialog.showConfirm(title = title, content = content)
+                }
+                else -> reboot(mode)
             }
         }
     }
